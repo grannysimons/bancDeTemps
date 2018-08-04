@@ -1,0 +1,29 @@
+- Id (automàtic i únic)
+- Sector (informàtica, cc socials, activitats esportives, llenguatges, matemàtiques...)
+- Subsector (*)
+- Descripció
+- Tags: array
+- Imatges: array d'urls
+- Horaris: Array d'objectes:
+  {
+    dia: 0-6,
+    franja: array [numeros de 0-47]
+  }
+- Durada (a negociar)
+- Historic: Boolean
+- Rating average
+- Rating activitat: array
+  {
+    - usuari servidor
+    {
+      - id qui valora
+      - rating
+      - review
+    }
+    - usuari receptor
+    {
+      - id qui valora
+      - rating
+      - review
+    }
+  }
