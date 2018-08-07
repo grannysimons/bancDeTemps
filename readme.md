@@ -151,7 +151,7 @@ ratingActivity:[{
 
 ### Trello
 
-[Link to your trello board](https://trello.com)
+https://trello.com/b/zRpitrHz/banc-de-temps
 
 ### Git
 

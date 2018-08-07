@@ -2,14 +2,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  Id: ObjectId,
+  Id: Schema.Types.ObjectId,
   name: String,
   lastName: String,
   userName: String,
   password: String,
   mail: String,
   direction: {
-    type: String,
+    roadType: String,
     name: String,
     number: Number,
     zip: String,
@@ -29,7 +29,7 @@ const userSchema = new Schema({
     review: String
   }],
   transactions: [{
-    involvedUserId: String,
+    involvedUserId: Schema.Types.ObjectId,
     state: {
       state: String,
       enum: ['Proposat', 'Acceptat', 'Rebutjat', 'Cancelat', 'Finalitzat']
@@ -37,11 +37,11 @@ const userSchema = new Schema({
     idActivitat: String
   }],
   offertedActivities: [{
-    type: ObjectId, 
+    type: Schema.Types.ObjectId, 
     ref: 'Activity',
   }],
   demandedActivities: [{
-    type: ObjectId, 
+    type: Schema.Types.ObjectId, 
     ref: 'Activity',
   }],
 });

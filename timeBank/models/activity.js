@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 activitySchema = new Schema({
-  id: ObjectId,
+  id: Schema.Types.ObjectId,
   sector: String,
   subsector: String,
   description: String,
@@ -22,12 +22,12 @@ activitySchema = new Schema({
   ratingAvg: Number,
   ratingActivity:[{
     userServer:{
-      idUserConsummer: ObjectId,
+      idUserConsummer: Schema.Types.ObjectId,
       rating: Number,
       review: String
     },
     userConsumer:{
-      idUserServer: ObjectId,
+      idUserServer: Schema.Types.ObjectId,
       rating: Number,
       review: String
     }
