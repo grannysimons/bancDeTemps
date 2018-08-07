@@ -10,7 +10,7 @@ const userSchema = new Schema({
   mail: String,
   direction: {
     roadType: String,
-    name: String,
+    roadName: String,
     number: Number,
     zip: String,
     city: String,

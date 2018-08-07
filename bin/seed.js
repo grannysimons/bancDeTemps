@@ -457,7 +457,7 @@ const users = [
   mail: 'papassi@iec.cat',
   direction: {
     roadType: 'avinguda',
-    name: 'Jacint Verdaguer',
+    roadName: 'Jacint Verdaguer',
     number: 94,
     zip: '08100',
     city: 'Barcelona',
@@ -483,7 +483,7 @@ const users = [
   mail: 'espriu@anyEspriu.cat',
   direction: {
     roadType: 'carrer',
-    name: 'Sagarra',
+    roadName: 'Sagarra',
     number: 12,
     zip: '08890',
     city: 'Arenys de Mar',
@@ -509,7 +509,7 @@ const users = [
   mail: 'pepo@ministerios.es',
   direction: {
     roadType: 'avinguda',
-    name: 'Generalísimo',
+    roadName: 'Generalísimo',
     number: 36,
     zip: '08380',
     city: 'Palafrugell',
@@ -535,7 +535,7 @@ const users = [
   mail: 'pereiv@gmail.com',
   direction: {
     roadType: 'carrer',
-    name: 'Lacy',
+    roadName: 'Lacy',
     number: 11,
     zip: '08202',
     city: 'Sabadell',

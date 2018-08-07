@@ -1,33 +1,33 @@
 <h1>Sign up</h1>
-<form>
+<form  action="/signup" method="post">
   <div class="form-group row">
     <label for="name" class="col-md-2">Name</label>
     <div class="col-md-10">
-      <input type="text" class="form-control form-control-plaintext" id="name" value="Mariona" readonly>
+      <input type="text" class="form-control" id="name" name="name">
     </div>
   </div>
   <div class="form-group row">
     <label for="lastName" class="col-md-2">Last name</label>
     <div class="col-md-10">
-      <input type="text" class="form-control form-control-plaintext" id="lastName" value="Roca Ros" readonly>
+      <input type="text" class="form-control" id="lastName" name="lastName">
     </div>
   </div>
   <div class="form-group row">
     <label for="userName" class="col-md-2">Username</label>
     <div class="col-md-10">
-      <input type="text" class="form-control form-control-plaintext" id="userName" value="marionaroca84" readonly>
+      <input type="text" class="form-control" id="userName" name="userName">
     </div>
   </div>
   <div class="form-group row">
     <label for="password" class="col-md-2">Password</label>
     <div class="col-md-10">
-      <input type="password" class="form-control" id="password" value="1234">
+      <input type="password" class="form-control" id="password" name="password">
     </div>
   </div>
   <div class="form-group row">
     <label for="mail" class="col-md-2">Mail</label>
     <div class="col-md-10">
-      <input type="mail" class="form-control" id="mail">
+      <input type="mail" class="form-control" id="mail" name="mail">
     </div>
   </div>
   <div class="form-group address">
@@ -35,62 +35,62 @@
     <div class="address-group row">
       <label for="roadType" class="col-md-3">Road type</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" id="roadType">
+        <input type="text" class="form-control" id="roadType" name="roadType">
       </div>
     </div>
     <div class="address-group row">
       <label for="roadName" class="col-md-3">Road name</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" id="roadName">
+        <input type="text" class="form-control" id="roadName" name="roadName">
       </div>
     </div>
     <div class="address-group row">
       <label for="number" class="col-md-3">Number</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" id="number">
+        <input type="text" class="form-control" id="number" name="number">
       </div>
     </div>
     <div class="address-group row">
       <label for="zipCode" class="col-md-3">Zip code</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" id="zipCode">
+        <input type="text" class="form-control" id="zipCode" name="zipCode">
       </div>
     </div>
     <div class="address-group row">
       <label for="city" class="col-md-3">City</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" id="city">
+        <input type="text" class="form-control" id="city" name="city">
       </div>
     </div>
     <div class="address-group row">
       <label for="province" class="col-md-3">Province</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" id="province">
+        <input type="text" class="form-control" id="province" name="province">
       </div>
     </div>
     <div class="address-group row">
       <label for="state" class="col-md-3">State</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" id="state">
+        <input type="text" class="form-control" id="state" name="state">
       </div>
     </div>
   </div>
   <div class="form-group row">
     <label for="contactTel" class="col-md-2">Contact Telephone</label>
     <div class="col-md-10">
-      <input type="mail" class="form-control" id="contactTel">
+      <input type="mail" class="form-control" id="contactTel" name="contactTel">
     </div>
   </div>
   <div class="form-group row">
     <label for="personalIntroducing" class="col-md-2">Introduce Yourself</label>
     <div class="col-md-10">
-      <textarea class="form-control" id="personalIntroducing"></textarea>
+      <textarea class="form-control" id="personalIntroducing" name="personalIntroducing"></textarea>
     </div>
   </div>
   <div class="form-group row">
     <label for="image" class="col-md-2">Profile Image</label>
     <div class="col-md-10">
-      <input type="file" class="form-control-file" id="image">
+      <input type="file" class="form-control-file" id="image" name="image">
     </div>
   </div>
   <button type="submit" class="btn-lg btn-primary">Sign up</button>
