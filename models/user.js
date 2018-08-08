@@ -12,7 +12,7 @@ const userSchema = new Schema({
     roadType: String,
     roadName: String,
     number: Number,
-    zip: String,
+    zipCode: String,
     city: String,
     province: String,
     state: String,

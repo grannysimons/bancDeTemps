@@ -1,10 +1,9 @@
 <h1>Sign up</h1>
 <form  action="/signup" method="post">
-  {{#if userData}}
-  <div class="alert alert-danger" role="alert">
-    {{message.userAlreadyExists}}
-    {{message.passwordsAreDifferent}}
-  </div>
+  {{#if message.passwordsAreDifferent}}
+    <div class="alert alert-danger" role="alert">
+      Passwords are different. Write them again
+    </div>
   {{/if}}
   <div class="form-group row">
     <label for="name" class="col-md-2">Name</label>
