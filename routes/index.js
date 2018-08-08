@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const Messages = require('../messages');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const mongoose = require('mongoose');
 const dbName = 'timeBank';
@@ -16,33 +19,73 @@ router.get('/signup', function(req, res, next) {
 });
 
 router.post('/signup', function(req, res, next) {
-  console.log('signup: ', req.body);
-  const userData = { 
-    name: req.body.name, 
-    lastName: req.body.lastName, 
-    userName: req.body.userName, 
-    password: req.body.password, 
-    mail: req.body.mail, 
-    direction: 
-    { roadType: req.body.roadType, 
-      roadName: req.body.roadName, 
-      number: req.body.number, 
-      zip: req.body.zip, 
-      city: req.body.city, 
-      province: req.body.province, 
-      state: req.body.state,
-    }, 
-    contactTel: req.body.contactTel, 
-    personalIntroducing: req.body.personalIntroducing, 
-    image: req.body.image, 
+  const messages = {
+    userAlreadyExists: '',
+    userInvalid: '',
+    passwordsAreDifferent: '',
   };
 
-  User.create(userData)
+  const username = req.body.userName;
+  User.findOne({userName: username})
   .then(user => {
-    console.log('usuari creat! ', user);
+    const userData = { 
+      name: req.body.name, 
+      lastName: req.body.lastName, 
+      userName: req.body.userName, 
+      password: req.body.password,
+      repeatedPassword: req.body.repeatPassword,
+      mail: req.body.mail, 
+      direction: 
+      { roadType: req.body.roadType, 
+        roadName: req.body.roadName, 
+        number: req.body.number, 
+        zipCode: req.body.zipCode, 
+        city: req.body.city, 
+        province: req.body.province, 
+        state: req.body.state,
+      }, 
+      contactTel: req.body.contactTel, 
+      personalIntroducing: req.body.personalIntroducing, 
+      image: req.body.image, 
+    };
+    if(user)
+    {
+      messages.userAlreadyExists = Messages.signup.userAlreadyExists;
+      const data = {
+        message: messages,
+        userData: userData,
+      };
+      console.log(data);
+      res.render('signup', data);
+    }
+    else
+    {
+      console.log(userData.password);
+      console.log(userData.repeatedPassword);
+      if(userData.password != userData.repeatedPassword)
+      {
+        messages.passwordsAreDifferent = Messages.signup.passwordsAreDifferent;
+        const data = {
+          message: messages,
+          userData: userData,
+        };
+        res.render('signup', data);
+      }
+      else
+      {
+        const salt = bcrypt.genSaltSync(saltRounds);
+        const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+        userData.password = hashedPassword;
+        User.create(userData)
+        .then(user => {
+          res.redirect('/');
+        })
+      }
+    }
   })
+
+  
   .catch(error => next(error));
-  res.redirect('/');
 });
 
 module.exports = router;

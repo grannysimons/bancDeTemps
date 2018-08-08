@@ -2,3 +2,4 @@
 .models
 esbós
 .DS_Store
+node_modules
