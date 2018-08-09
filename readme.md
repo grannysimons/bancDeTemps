@@ -51,16 +51,14 @@ Search activities:
 ```
 GET / - Homepage
 GET /signup - Formulari d'alta amb activitats ofertades i demandades. Action = "/"
-POST / - Body: Nom, Cognoms, Nom d'usuari, Password, Mail, Direcció, Telèfon de contacte, Presentació personal, Imatge, Activitats ofertades, Activitats demandades
+POST /signup - Formulari d'alta amb activitats ofertades i demandades. Action = "/"
 GET /profile/edit - Formulari de modificació del perfil
+POST /profile/edit - Formulari de modificació del perfil
 GET /profile/activities - Llista d'activitats (veure, editar i eliminar activitats amb modals)
 GET /profile/transactions - Llista de transaccions (acceptar pendents i valorar finalitzades)
-GET /api/:idAct/request
 
-//Mariona:
-POST /api/filter - Body: Sector, subsector, distància
-POST /api/pagination_right
-POST /api/pagination_left
+GET /api/:idAct/request
+GET /api/filter?sector=&subsector=&distance=
 ```
 
 ## MODELS

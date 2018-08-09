@@ -32,9 +32,12 @@ const userSchema = new Schema({
     involvedUserId: Schema.Types.ObjectId,
     state: {
       state: String,
-      enum: ['Proposat', 'Acceptat', 'Rebutjat', 'Cancelat', 'Finalitzat']
+      enum: ['Proposed', 'Accepted', 'Refused', 'Cancelled', 'Finished']
     },
-    idActivitat: String
+    idActivity: {
+      type: Schema.Types.ObjectId, 
+      ref: 'Activity',
+    }
   }],
   offertedActivities: [{
     type: Schema.Types.ObjectId, 

@@ -590,8 +590,17 @@ Activity.create(activities)
   users[2].demandedActivities.push(createdActivities[5]._id);
   users[3].offertedActivities.push(createdActivities[6]._id);
   users[3].offertedActivities.push(createdActivities[7]._id);
-  users[3].offertedActivities.push(createdActivities[10]._id); //activitats 0-10 -> servidor:3 - consumidor:1
-  users[3].demandedActivities.push(createdActivities[8]._id); //activitats 8-9 -> servidor:1 - consumidor:3
+  users[3].offertedActivities.push(createdActivities[10]._id); //activitats 0-10 -> servidor:3 - consumidor:1 //pending
+  users[1].transactions.involvedUserId=users[3]._id;
+  users[1].transactions.state='Proposed';
+  users[1].idActivity = createdActivities[0]._id;
+  users[3].demandedActivities.push(createdActivities[8]._id); //activitats 8-9 -> servidor:1 - consumidor:3 //Finished
+  users[3].transactions.involvedUserId=users[1]._id;
+  users[3].transactions.state='Finished';
+  users[3].idActivity = createdActivities[8]._id;
+  users[1].transactions.involvedUserId=users[3]._id;
+  users[1].transactions.state='Finished';
+  users[1].idActivity = createdActivities[9]._id;
   users[1].userRatings.push({userId: users[3]._id, rating: 8, review: 'persona molt seriosa'});
   users[1].userRatings.push({userId: users[3]._id, rating: 9, review: 'un plaer fer intercanvis amb aquest usuari'});
   users[1].ratingAvg = 8.5;
