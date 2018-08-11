@@ -1,5 +1,6 @@
 const Activity = require('../models/activity');
 const User = require('../models/user');
+const Transaction = require('../models/transactions');
 const mongoose = require('mongoose');
 
 const dbName = 'timeBank';
@@ -10,7 +11,6 @@ const activities = [{
   subsector: 'web developer',
   description: 'Busco classes de programació HTML, CSS, JS',
   tags: ['html', 'css', 'js'],
-  imatges: [],
   timetable: [
     {
     day: 0,
@@ -30,8 +30,6 @@ const activities = [{
   },
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'technology',
@@ -58,15 +56,12 @@ const activities = [{
   },
   ],
   duration: 20,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'construction',
   subsector: 'plumber',
   description: 'I can fix anything at home. 20 years of experience',
   tags: ['plumber', 'water', 'tap'],
-  imatges: [],
   timetable: [
     {
     day: 0,
@@ -94,15 +89,12 @@ const activities = [{
   },
   ],
   duration: 2,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'languages',
   subsector: 'classes',
   description: 'Ofereixo classes de català per a nouvinguts',
   tags: ['català', 'catalunya', 'nouvinguts'],
-  imatges: [],
   timetable: [{
     day: 0,
     timeSlot: 20
@@ -129,16 +121,14 @@ const activities = [{
   },
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'languages',
   subsector: 'classes',
   description: 'Ofereixo classes de castellà',
   tags: ['castellà', 'castellano', 'spanish'],
-  imatges: [],
-  timetable: [{
+  timetable: [
+  {
     day: 2,
     timeSlot: 15
   },
@@ -152,15 +142,12 @@ const activities = [{
   },
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'languages',
   subsector: 'negre',
   description: 'Busco un negre per escriure la meva autobiografia',
   tags: ['català', 'negre', 'black'],
-  imatges: [],
   timetable: [
     {
     day: 1,
@@ -224,15 +211,12 @@ const activities = [{
   },
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'languages',
   subsector: 'writer',
   description: 'Escric poemes per la teva estimada',
   tags: ['català', 'castellano', 'poesia', 'detalls'],
-  imatges: [],
   timetable: [
   {
     day: 3,
@@ -256,15 +240,12 @@ const activities = [{
   },
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'services',
   subsector: 'dog walker',
   description: 'Et passejo el gos quan estiguis de vacances',
   tags: ['gos', 'passejador', 'vacances'],
-  imatges: [],
   timetable: [
     {
     day: 0,
@@ -325,15 +306,12 @@ const activities = [{
   
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'music',
   subsector: 'piano',
   description: 'Busco classes de solfeig i piano. Sóc un palurdo',
   tags: ['musica', 'piano', 'solfeig'],
-  imatges: [],
   timetable: [
   {
     day: 1,
@@ -361,15 +339,12 @@ const activities = [{
   },
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'mechanics',
   subsector: 'car',
   description: 'Busco qui m\'arregli el cotxe. És molt antic',
   tags: ['cotxe', 'mecànic'],
-  imatges: [],
   timetable: [
   {
     day: 4,
@@ -393,15 +368,12 @@ const activities = [{
   },
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'mechanics',
   subsector: 'car',
   description: 'Arreglo cotxes. Models fins al 1924',
   tags: ['cotxe', 'mecànic'],
-  imatges: [],
   timetable: [
   {
     day: 4,
@@ -425,15 +397,12 @@ const activities = [{
   },
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
 },
 {
   sector: 'technology',
   subsector: 'web developer',
   description: 'Ofereixo classes de maquetació',
   tags: ['html', 'css', 'js'],
-  imatges: [],
   timetable: [
     {
     day: 0,
@@ -445,11 +414,9 @@ const activities = [{
   },
   ],
   duration: 1,
-  ratingAvg: 0,
-  ratingActivity:[],
-},];
+}];
 const users = [
-  {
+{
   name: 'Joan',
   lastName: 'Salvat i Papasseit',
   userName: 'SalviPapassi',
@@ -464,16 +431,10 @@ const users = [
     province: 'Barcelona',
     state: 'Catalunya',
   },
-  latitude: 41.40,
-  longitude: 2.13,
-  contactTel: '934129897',
-  personalIntroducing: 'Escriptor autodidacta. Estic redactant un llibre de poemes que es dirà "la Rosa als Llavis". M\'agrada viatjar. Sento el fred de la nit i la simbomba fosca',
-  image: '',
-  ratingAvg: 0,
-  userRatings: [],
-  transactions: [],
-  offertedActivities: [],
+  telephone: '934129897',
+  introducing: 'Escriptor autodidacta. Estic redactant un llibre de poemes que es dirà "la Rosa als Llavis". M\'agrada viatjar. Sento el fred de la nit i la simbomba fosca',
   demandedActivities: [],
+  offertedActivities: []
 },
 {
   name: 'Salvador',
@@ -490,16 +451,10 @@ const users = [
     province: 'Barcelona',
     state: 'Catalunya',
   },
-  latitude: 41.58,
-  longitude: 2.54,
-  contactTel: '932913415',
-  personalIntroducing: 'Sóc un friki dels poemes. M\'agrada molt escriure i tinc uns quants poemaris. Sóc activista contra l\'imperialisme de Safarad. Quan mori, enterreu-me al cementiri de Sinera',
-  image: '',
-  ratingAvg: 0,
-  userRatings: [],
-  transactions: [],
-  offertedActivities: [],
+  telephone: '932913415',
+  introducing: 'Sóc un friki dels poemes. M\'agrada molt escriure i tinc uns quants poemaris. Sóc activista contra l\'imperialisme de Safarad. Quan mori, enterreu-me al cementiri de Sinera',
   demandedActivities: [],
+  offertedActivities: []
 },
 {
   name: 'Josep',
@@ -516,16 +471,10 @@ const users = [
     province: 'Girona',
     state: 'España',
   },
-  latitude: 41.92,
-  longitude: 3.16,
-  contactTel: '972790325',
-  personalIntroducing: 'Sóc escriptor i persiodista. Una mica fatxilla. Sóc una persona conservadora i molt de costums.',
-  image: '',
-  ratingAvg: 0,
-  userRatings: [],
-  transactions: [],
-  offertedActivities: [],
+  telephone: '972790325',
+  introducing: 'Sóc escriptor i persiodista. Una mica fatxilla. Sóc una persona conservadora i molt de costums.',
   demandedActivities: [],
+  offertedActivities: []
 },
 {
   name: 'Joan',
@@ -542,45 +491,18 @@ const users = [
     province: 'Barcelona',
     state: 'Catalunya',
   },
-  latitude: 41.54,
-  longitude: 2.11,
-  contactTel: '937453248',
-  personalIntroducing: 'Encara que vinc d\'una important família burgesa sabadellenca, he participat en la lluita antifeixista i faré perquè tothom tingui accés a la cultura. Estimo la meva terra: En ma terra del Vallès, tres turons fan una serra, quatre pins un bosc espès i cinc quarteres massa terra. Com el Vallès no hi ha res!',
-  image: '',
-  ratingAvg: 0,
-  userRatings: [],
-  transactions: [],
-  offertedActivities: [],
+  telephone: '937453248',
+  introducing: 'Encara que vinc d\'una important família burgesa sabadellenca, he participat en la lluita antifeixista i faré perquè tothom tingui accés a la cultura. Estimo la meva terra: En ma terra del Vallès, tres turons fan una serra, quatre pins un bosc espès i cinc quarteres massa terra. Com el Vallès no hi ha res!',
   demandedActivities: [],
+  offertedActivities: []
 }];
 
-function updateObject(idUserConsumer, ratingServer, reviewServer, idUserServer, ratingConsumer, reviewConsumer, ratingAvg)
-{
-    return {
-      ratingActivity:
-      [
-        {
-          userServer:
-          {
-            idUserConsumer: idUserConsumer,
-            rating: ratingServer,
-            review: reviewServer,
-          },
-          userConsumer:
-          {
-            idUserServer: idUserServer,
-            rating: ratingConsumer,
-            review: reviewConsumer,
-          }
-        }
-      ], 
-      ratingAvg: ratingAvg,
-    }
-}
+var retrievedActivities = undefined;
 
-let retrievedActivities = [];
 Activity.create(activities)
 .then(createdActivities => {
+  retrievedActivities = Object.assign({}, createdActivities);
+
   users[1].demandedActivities.push(createdActivities[0]._id);
   users[1].offertedActivities.push(createdActivities[1]._id);
   users[1].offertedActivities.push(createdActivities[9]._id);
@@ -590,62 +512,30 @@ Activity.create(activities)
   users[2].demandedActivities.push(createdActivities[5]._id);
   users[3].offertedActivities.push(createdActivities[6]._id);
   users[3].offertedActivities.push(createdActivities[7]._id);
-  users[3].offertedActivities.push(createdActivities[10]._id); //activitats 0-10 -> servidor:3 - consumidor:1 //pending
-  users[1].transactions.involvedUserId=users[3]._id;
-  users[1].transactions.state='Proposed';
-  users[1].idActivity = createdActivities[0]._id;
-  users[3].demandedActivities.push(createdActivities[8]._id); //activitats 8-9 -> servidor:1 - consumidor:3 //Finished
-  users[3].transactions.involvedUserId=users[1]._id;
-  users[3].transactions.state='Finished';
-  users[3].idActivity = createdActivities[8]._id;
-  users[1].transactions.involvedUserId=users[3]._id;
-  users[1].transactions.state='Finished';
-  users[1].idActivity = createdActivities[9]._id;
-  users[1].userRatings.push({userId: users[3]._id, rating: 8, review: 'persona molt seriosa'});
-  users[1].userRatings.push({userId: users[3]._id, rating: 9, review: 'un plaer fer intercanvis amb aquest usuari'});
-  users[1].ratingAvg = 8.5;
-  users[3].userRatings.push({userId: users[1]._id, rating: 5, review: 'poc puntual'});
-  users[3].userRatings.push({userId: users[1]._id, rating: 8, review: 's\'ha posat les piles i ha millorat respecte les últimes activitats intercanviades'});
-  users[3].ratingAvg = 6.5;
-  retrievedActivities = Object.assign(createdActivities, {});
-})
-.then(()=>{
-  User.create(users)
-  .then(createdUsers => {
-    const Promise1 = new Promise((resolve, reject) => {
-      Activity.update({_id: retrievedActivities[0]._id}, updateObject(createdUsers[1]._id, 8, 'és un crac!', createdUsers[3]._id, 9, 'molt bon usuari', 8))
-      .then((updatedActivity)=>{
-        resolve(updatedActivity);
-      })
-      .catch(err => reject(err))
-    });
-    const Promise2 = new Promise((resolve, reject) => {
-      Activity.update({_id: retrievedActivities[10]._id}, updateObject(createdUsers[1]._id, 8, 'és un crac!', createdUsers[3]._id, 9, 'molt bon usuari', 8))
-      .then((updatedActivity)=>{
-        resolve(updatedActivity);
-      })
-      .catch(err => reject(err))
-    });
-    const Promise3 = new Promise((resolve, reject) => {
-      Activity.update({_id: retrievedActivities[8]._id}, updateObject(createdUsers[3]._id, 6, 'podria millorar', createdUsers[1]._id, 10, 'amb gent així dona gust', 6))
-      .then((updatedActivity)=>{
-        resolve(updatedActivity);
-      })
-      .catch(err => reject(err))
-    });
-    const Promise4 = new Promise((resolve, reject) => {
-      Activity.update({_id: retrievedActivities[9]._id}, updateObject(createdUsers[3]._id, 6, 'podria millorar', createdUsers[1]._id, 10, 'amb gent així dona gust', 6))
-      .then((updatedActivity)=>{
-        resolve(updatedActivity);
-      })
-      .catch(err => reject(err))
-    });
+  users[3].offertedActivities.push(createdActivities[10]._id);
+  users[3].demandedActivities.push(createdActivities[8]._id);
 
-    Promise.all([ Promise1, Promise2, Promise3, Promise4])
-    .then(()=>{
-      console.log('correctly created users and activities');
-      mongoose.connection.close();
-    })
-  })
+  return User.create(users)
+})
+.then((createdUsers)=>{
+  const transactions = [
+    {
+      idActivity: [0]._id,
+      offertingUserId: createdUsers[3]._id,
+      demandingUserId: createdUsers[1]._id,
+      state: 'Proposed',
+    },
+    {
+      idActivity: retrievedActivities[8]._id,
+      offertingUserId: createdUsers[1]._id,
+      demandingUserId: createdUsers[3]._id,
+      state: 'Finished',
+    },
+  ];
+  return Transaction.create(transactions)
+})
+.then(() => {
+  console.log('correctly created users, activities and transactions');
+  mongoose.connection.close();
 })
 .catch(error => console.log('error creating users and activities in the database', error));

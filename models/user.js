@@ -17,35 +17,19 @@ const userSchema = new Schema({
     province: String,
     state: String,
   },
-  latitude: Number,
-  longitude: Number,
-  contactTel: String,
-  personalIntroducing: String,
-  image: String,
-  ratingAvg: Number,
-  userRatings: [{
-    userId: String,
-    rating: Number,
-    review: String
-  }],
+  telephone: String,
+  introducing: String,
   transactions: [{
-    involvedUserId: Schema.Types.ObjectId,
-    state: {
-      state: String,
-      enum: ['Proposed', 'Accepted', 'Refused', 'Cancelled', 'Finished']
-    },
-    idActivity: {
-      type: Schema.Types.ObjectId, 
-      ref: 'Activity',
-    }
+    type: Schema.Types.ObjectId,
+    ref: 'transaction',
   }],
   offertedActivities: [{
-    type: Schema.Types.ObjectId, 
-    ref: 'Activity',
+    type: Schema.Types.ObjectId,
+    ref: 'activity',
   }],
   demandedActivities: [{
-    type: Schema.Types.ObjectId, 
-    ref: 'Activity',
+    type: Schema.Types.ObjectId,
+    ref: 'activity',
   }],
 });
 

@@ -7,7 +7,6 @@ activitySchema = new Schema({
   subsector: String,
   description: String,
   tags: [String],
-  imatges: [String],
   timetable: [{
     day: {
       type: Number,
@@ -19,21 +18,7 @@ activitySchema = new Schema({
     }
   }],
   duration: Number,
-  ratingAvg: Number,
-  ratingActivity:[{
-    userServer:{
-      idUserConsummer: Schema.Types.ObjectId,
-      rating: Number,
-      review: String
-    },
-    userConsumer:{
-      idUserServer: Schema.Types.ObjectId,
-      rating: Number,
-      review: String
-    }
-  }],
 });
-
 
 const Activity = mongoose.model('Activity', activitySchema);
 
