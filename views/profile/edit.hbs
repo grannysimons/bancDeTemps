@@ -15,19 +15,19 @@
   <div class="form-group row">
     <label for="name" class="col-md-2">Name</label>
     <div class="col-md-10">
-      <input type="text" class="form-control form-control-plaintext" id="name" name="name" {{#if userPrevData}} value="{{userPrevData.name}}" {{/if}} {{#if userData}} value="{{userData.name}}" {{/if}} readonly>
+      <input type="text" class="form-control" id="name" name="name" {{#if userPrevData}} value="{{userPrevData.name}}" {{/if}} {{#if userData}} value="{{userData.name}}" {{/if}}>
     </div>
   </div>
   <div class="form-group row">
     <label for="lastName" class="col-md-2">Last name</label>
     <div class="col-md-10">
-      <input type="text" class="form-control form-control-plaintext" id="lastName" name="lastName" {{#if userPrevData}} value="{{userPrevData.lastName}}" {{/if}}  {{#if userData}} value="{{userData.lastName}}" {{/if}}readonly>
+      <input type="text" class="form-control" id="lastName" name="lastName" {{#if userPrevData}} value="{{userPrevData.lastName}}" {{/if}}  {{#if userData}} value="{{userData.lastName}}" {{/if}}>
     </div>
   </div>
   <div class="form-group row">
     <label for="userName" class="col-md-2">Username</label>
     <div class="col-md-10">
-      <input type="text" class="form-control form-control-plaintext {{#if message.userAlreadyExists}} is-invalid {{/if}}" id="userName" name="userName" {{#if userPrevData}} {{#unless message.userAlreadyExists}}value="{{userPrevData.userName}}" {{/unless}}{{/if}}  {{#if userData}} value="{{userData.userName}}" {{/if}} readonly>
+      <input type="text" class="form-control form-control-plain-text {{#if message.userAlreadyExists}} is-invalid {{/if}}" id="userName" name="userName" {{#if userPrevData}} {{#unless message.userAlreadyExists}}value="{{userPrevData.userName}}" {{/unless}}{{/if}}  {{#if userData}} value="{{userData.userName}}" {{/if}} readonly>
     </div>
   </div>
   <div class="form-group row">
@@ -53,7 +53,7 @@
   <div class="form-group row">
     <label for="mail" class="col-md-2">Mail</label>
     <div class="col-md-10">
-      <input type="mail" class="form-control" id="mail" name="mail" {{#if userPrevData}} value="{{userPrevData.mail}}" {{/if}} {{#if userData}} value="{{userData.mail}}" {{/if}}>
+      <input type="mail" class="form-control form-control-plain-text" id="mail" name="mail" {{#if userPrevData}} value="{{userPrevData.mail}}" {{/if}} {{#if userData}} value="{{userData.mail}}" {{/if}} readonly>
     </div>
   </div>
   <div class="form-group address">
@@ -61,7 +61,7 @@
     <div class="address-group row">
       <label for="roadType" class="col-md-3">Road type</label>
       <div class="col-md-9">
-        <input type="text" class="form-control" id="roadType" name="roadType" {{#if userPrevData}} value="{{userPrevData.direction.roadType}}" {{/if}} {{#if userData}} value="{{userData.direction.roadType}}" {{/if}}>
+        <input type="text" class="form-control" id="roadType" name="roadType" {{#if userPrevData}} value="{{userPrevData.direction.roadType}}" {{/if}} {{#if userData}} value="aaaaaa_{{userData.direction.roadType}}" {{/if}}>
       </div>
     </div>
     <div class="address-group row">
@@ -102,15 +102,15 @@
     </div>
   </div>
   <div class="form-group row">
-    <label for="contactTel" class="col-md-2">Contact Telephone</label>
+    <label for="telephone" class="col-md-2">Contact Telephone</label>
     <div class="col-md-10">
-      <input type="mail" class="form-control" id="contactTel" name="contactTel" {{#if userPrevData}} value="{{userPrevData.contactTel}}" {{/if}} {{#if userData}} value="{{userData.contactTel}}" {{/if}}>
+      <input type="mail" class="form-control" id="telephone" name="telephone" {{#if userPrevData}} value="{{userPrevData.telephone}}" {{/if}} {{#if userData}} value="{{userData.telephone}}" {{/if}}>
     </div>
   </div>
   <div class="form-group row">
-    <label for="personalIntroducing" class="col-md-2">Introduce Yourself</label>
+    <label for="introducing" class="col-md-2">Introduce Yourself</label>
     <div class="col-md-10">
-      <textarea class="form-control" id="personalIntroducing" name="personalIntroducing">{{#if userPrevData}}{{userPrevData.personalIntroducing}}{{/if}}  {{#if userData}}{{userData.personalIntroducing}}{{/if}}</textarea>
+      <textarea class="form-control" id="introducing" name="introducing">{{#if userPrevData}}{{userPrevData.introducing}}{{/if}}  {{#if userData}}{{userData.introducing}}{{/if}}</textarea>
     </div>
   </div>
   <div class="form-group row">

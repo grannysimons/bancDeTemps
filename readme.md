@@ -13,6 +13,7 @@ User profile:
 - login
 - CRUD offerted activities
 - CRUD demanded activities
+- CRUD transactions
 
 Search activities:
 - Show all activities from any user.

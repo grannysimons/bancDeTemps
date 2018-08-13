@@ -21,15 +21,15 @@ const userSchema = new Schema({
   introducing: String,
   transactions: [{
     type: Schema.Types.ObjectId,
-    ref: 'transaction',
+    ref: 'Transaction',
   }],
   offertedActivities: [{
     type: Schema.Types.ObjectId,
-    ref: 'activity',
+    ref: 'Activity',
   }],
   demandedActivities: [{
     type: Schema.Types.ObjectId,
-    ref: 'activity',
+    ref: 'Activity',
   }],
 });
 

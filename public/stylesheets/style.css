@@ -29,7 +29,6 @@ form
 .address
 {
   padding: 0 0 10px 30%;
-  /* background-color: rgba(245,245,245,0.9); */
 }
 .address-group
 {
@@ -53,22 +52,14 @@ button.btn-lg
   margin-left: auto;
   margin-top: 100px;
 }
-/* .form-group
+/* prova */
+#filtreProva input,
+#aplicarActivitat input
 {
-  display: inline-block;
-  width: 40%;
+  border: 1px solid gray;
 }
-.address
+#filtreProva button,
+#aplicarActivitat button
 {
-  width: 100%;
+  border: 1px solid gray;
 }
-
-.form-group input
-{
-  width: 65%;
-  padding-left: 20px;
-}
-.form-group label
-{
-  width: 30%;
-} */

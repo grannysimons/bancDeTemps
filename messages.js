@@ -1,5 +1,5 @@
 module.exports = {
-  signup: {
+  signUp: {
     userAlreadyExists: "username already exists",
     userInvalid: "username has invalid characters",
     passwordsAreDifferent: "passwords are different",

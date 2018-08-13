@@ -1,2 +1,113 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+<div class="container-fluid align-items-center" style="width:100vw;height: 100vh;min-height: 300px;">
+  <div class="row bg-primary" id="navbar-main">
+    <div class="col-sm-12">
+      <div class="dropdown" style="margin: 20px 0 20px 20px;">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <i id="icon-menu" class="fas fa-bars fa-3x" aria-hidden="true"></i>
+          <!-- <i class="fa fa-list" aria-hidden="true"></i> -->
+          <!-- <span class="glyphicon glyphicon-align-justify"></span> Align Justify -->
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="/signUp">Sign-up</a>
+          <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"> Open modal
+            </button> -->
+          <!-- <a id="my-login" class="dropdown-item" data-toggle="modal" href="#myModal">Login</a> -->
+          <a class="dropdown-item" data-toggle="modal" href="#myModal">Login</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/profile/edit">Edit Profile</a>
+          <a class="dropdown-item" href="#">Add Activity</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/profile/activityManager">Activity manager</a>
+          <a class="dropdown-item" href="#">Transaction manager</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Search for a user</a>
+          <a class="dropdown-item" href="#">Search for an activity</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="text-banc" class="row align-items-center">
+    <div class="col-12">
+      <h1 class="text-center">BANC DE TEMPS</h1>
+    </div>
+  </div>
+  <div id="footer-main-page" class="row">
+    <div class="col-12 text-center align-self-center">
+      <a href="#search-form">
+        <i class="fas fa-chevron-down fa-2x"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- <h1 class="text-center my-auto">BANC DE TEMPS</h1> -->
+
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+  Open modal
+</button> -->
+
+<!-- <a data-toggle="modal" href="#myModal">Open Modal</a> -->
+
+<!-- The Modal -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Login</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div class="col-md-12 col-sm-12 col-xs-12 user-login-box">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="User Name" id="usr">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Password" id="usr">
+          </div>
+          <!-- <a href="#" class="btn btn-defualt">Login</a> -->
+          <button type="button" class="btn btn-primary">Login</button>
+        </div>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="search-form" class="container-fluid align-items-center" style="height: 100vh;min-height: 300px;">
+  <div class="row">
+    <div class="col-sm-12">
+      <h2>Gat activities:</h2>
+      <form id="filter">
+        <div class="form-group">
+          <label for="UserInput">Username:</label>
+          <input type="text" class="form-control" id="user" name="user" placeholder="Username" style="width: 300px;">
+        </div>
+        <div class="form-group">
+          <label for="UserSector">Sector:</label>
+          <input type="text" class="form-control" id="sector" name="sector" placeholder="Sector of Activity" style="width: 300px;">
+        </div>
+        <div class="form-group">
+          <label for="UserSubSector">Subsector:</label>
+          <input type="text" class="form-control" id="subsector" name="subsector" placeholder="Sub Sector of Activity" style="width: 300px;">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<ol>
+  <li></li>
+</ol>
+    
+
+<!-- <button type="button" class="btn btn-primary">Login</button> -->
