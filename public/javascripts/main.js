@@ -38,7 +38,14 @@ function filter(){
     document.getElementById('results').innerHTML = '';
     for(let i=0; i<act.data.activities.length; i++)
     {
-        document.getElementById('results').innerHTML += '<li>' + act.data.activities[i].description + '</li>';
+      const element = 
+      `<div>
+      ${act.data.activities[i].description}
+      </div>
+      <div>
+      duration: ${act.data.activities[i].duration} hours
+      </div>`;
+      document.getElementById('results').innerHTML += '<li>' + element + '</li>';
     }
   })
   .catch(error => {

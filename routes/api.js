@@ -37,17 +37,15 @@ router.get('/:idAct/request', (req, res, next) => {
 
 router.get('/filter', (req, res, next) => {
   const filter = {};
+  if (req.query.user) filter.user = req.query.user;
   if (req.query.sector) filter.sector = req.query.sector;
   if (req.query.subsector) filter.subsector = req.query.subsector;
-  console.log('filter: ', req.query);
   Activity.find(filter)
   .then(activities => {
-    console.log('activities: ', activities);
     res.status(200);
     res.json({ activities });
   })
   .catch(error => {
-    console.log('error');
     res.status(500);
     res.json({ error });
   });
