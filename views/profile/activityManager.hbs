@@ -3,7 +3,26 @@
 <ol>
   {{#each offertedActivities}}
     <li>
-      <div>{{this.description}}</div>
+      <div>Category: {{this.sector}}/{{this.subsector}}</div>
+      <div>Description: {{this.description}}</div>
+      <div>
+        Tags:
+        <ol>
+        {{#each this.tags}}
+            <li>{{this}}</li>
+        {{/each}}
+        </ol>
+      </div>
+      <div>
+        Timetable:
+        <ol>
+      {{#each this.timetable}}
+          <li>{{this.day}} - {{this.timeSlot}}</li>
+      {{/each}}
+        </ol>
+      </div>
+      <div>Duration: {{this.duration}} hours</div>
+      </ol>
     </li>
   {{/each}}
 </ol>
@@ -11,7 +30,26 @@
 <ol>
   {{#each demandedActivities}}
     <li>
-      <div>{{this.description}}</div>
-   </li>
+      <div>Category: {{this.sector}}/{{this.subsector}}</div>
+      <div>Description: {{this.description}}</div>
+      <div>
+        Tags:
+        <ol>
+        {{#each this.tags}}
+            <li>{{this}}</li>
+        {{/each}}
+        </ol>
+      </div>
+      <div>
+        Timetable:
+        <ol>
+      {{#each this.timetable}}
+          <li>{{this.day}} - {{this.timeSlot}}</li>
+      {{/each}}
+        </ol>
+      </div>
+      <div>Duration: {{this.duration}} hours</div>
+      </ol>
+    </li>
   {{/each}}
 </ol>
