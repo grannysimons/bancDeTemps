@@ -39,12 +39,10 @@ router.get('/filter', (req, res, next) => {
   const filter = {};
   if (req.query.sector) filter.sector = req.query.sector;
   if (req.query.subsector) filter.subsector = req.query.subsector;
-  filter.offerted = true;
-  // if (req.query.distance) filter.distance = req.query.distance;
   console.log('filter: ', req.query);
   Activity.find(filter)
   .then(activities => {
-    // console.log('activities: ', activities);
+    console.log('activities: ', activities);
     res.status(200);
     res.json({ activities });
   })

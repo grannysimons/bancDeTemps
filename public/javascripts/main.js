@@ -1,6 +1,6 @@
 window.addEventListener('load', ()=>{
-  document.querySelector('#filtreProva #submit').addEventListener('click', filter);
-  document.querySelector('#aplicarActivitat #aplicar').addEventListener('click', apply);
+  document.querySelector('#filter #submit').addEventListener('click', filter);
+  // document.querySelector('#aplicarActivitat #aplicar').addEventListener('click', apply);
 
   var viewportHeight = $(window).height();  
   var viewportWidth = $(window).width();
@@ -20,22 +20,13 @@ window.onbeforeunload = function () {
   window.scrollTo(0, 0);
 }
 
-$( window ).resize(function() {
-  viewportHeight = $(window).height(); 
-  heightMainTitle = viewportHeight-2*heightNavBar;
-  document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
-  document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
-  document.getElementById('new').setAttribute("style",`height:${viewportHeight}px`);
-});
-
-// linkLogin.onclick = function(){
-//   $('#myModal').modal();
-//   // $('#ModalLogin').modal({
-//   //   keyboard: false
-//   // })
-//   // $('#ModalLogin').modal('show');
-//   console.log("we request for the modal");
-// }
+// $( window ).resize(function() {
+//   viewportHeight = $(window).height(); 
+//   heightMainTitle = viewportHeight-2*heightNavBar;
+//   document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
+//   document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
+//   document.getElementById('new').setAttribute("style",`height:${viewportHeight}px`);
+// });
 
 
 function filter(){
@@ -43,6 +34,7 @@ function filter(){
   const subSector = document.getElementById('subsector').value;
   axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}`)
   .then((act) => {
+    console.log("then");
     document.getElementById('results').innerHTML = '';
     for(let i=0; i<act.data.activities.length; i++)
     {
@@ -50,6 +42,7 @@ function filter(){
     }
   })
   .catch(error => {
+    console.log("catch");
     document.getElementById('results').innerHTML = "erroooor!" + error;
   })
 } 
