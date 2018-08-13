@@ -29,7 +29,6 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
 });
 
 router.get('/activityManager', Middlewares.activityManager.getActivities, (req, res, next) => {
-  console.log('activitiessssssss: ', data);
   const data = {
     offertedActivities: res.locals.offertedActivities,
     demandedActivities: res.locals.demandedActivities,

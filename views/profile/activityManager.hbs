@@ -1,11 +1,17 @@
 <h1>Activity Manager</h1>
+<h2>Offerted activities</h2>
 <ol>
   {{#each offertedActivities}}
-    <li>{{this.description}}</li>
+    <li>
+      <div>{{this.description}}</div>
+    </li>
   {{/each}}
 </ol>
+<h2>Demanded activities</h2>
 <ol>
   {{#each demandedActivities}}
-    <li>{{this.description}}</li>
+    <li>
+      <div>{{this.description}}</div>
+   </li>
   {{/each}}
 </ol>
