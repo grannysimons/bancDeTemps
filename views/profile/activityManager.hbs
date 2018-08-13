@@ -1,55 +1,55 @@
 <h1>Activity Manager</h1>
 <h2>Offerted activities</h2>
-<ol>
+<ul>
   {{#each offertedActivities}}
     <li>
       <div>Category: {{this.sector}}/{{this.subsector}}</div>
       <div>Description: {{this.description}}</div>
       <div>
         Tags:
-        <ol>
+        <ul>
         {{#each this.tags}}
             <li>{{this}}</li>
         {{/each}}
-        </ol>
+        </ul>
       </div>
       <div>
         Timetable:
-        <ol>
+        <ul>
       {{#each this.timetable}}
           <li>{{this.day}} - {{this.timeSlot}}</li>
       {{/each}}
-        </ol>
+        </ul>
       </div>
       <div>Duration: {{this.duration}} hours</div>
-      </ol>
+      </ul>
     </li>
   {{/each}}
-</ol>
+</ul>
 <h2>Demanded activities</h2>
-<ol>
+<ul>
   {{#each demandedActivities}}
     <li>
       <div>Category: {{this.sector}}/{{this.subsector}}</div>
       <div>Description: {{this.description}}</div>
       <div>
         Tags:
-        <ol>
+        <ul>
         {{#each this.tags}}
             <li>{{this}}</li>
         {{/each}}
-        </ol>
+        </ul>
       </div>
       <div>
         Timetable:
-        <ol>
+        <ul>
       {{#each this.timetable}}
           <li>{{this.day}} - {{this.timeSlot}}</li>
       {{/each}}
-        </ol>
+        </ul>
       </div>
       <div>Duration: {{this.duration}} hours</div>
-      </ol>
+      </ul>
     </li>
   {{/each}}
-</ol>
+</ul>
