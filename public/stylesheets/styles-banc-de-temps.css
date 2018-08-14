@@ -83,3 +83,8 @@ h6 {font-size: 0.6rem;}
   width: 100%;
   text-align: center;
 }
+
+.dropdown-toggle::after
+{
+  content: none;
+}
