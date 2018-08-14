@@ -1,4 +1,5 @@
 window.addEventListener('load', ()=>{
+  filter();
   document.querySelector('#filter #submit').addEventListener('click', filter);
   document.querySelector('#aplicarActivitat').addEventListener('click', apply);
 
