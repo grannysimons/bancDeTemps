@@ -191,6 +191,7 @@ module.exports = {
         console.log('1');
         res.locals.activitiesBySectorSubsector = activities;
         console.log('reees ', activities);
+        console.log('boom!');
         next();
       })
       .catch(error => next(error));

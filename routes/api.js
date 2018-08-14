@@ -46,13 +46,15 @@ router.get('/filter', Middleware.filter.filterByUsername, Middleware.filter.filt
 
   if(activitiesByUserSectorSubsector && activitiesByUserSectorSubsector.length > 0)
   {
+    activities = activitiesByUserSectorSubsector;
     res.status(200);
-    res.json({ activitiesByUserSectorSubsector });
+    res.json({ activities });
   }
   else if (activitiesBySectorSubsector && activitiesBySectorSubsector.length > 0)
   {
+    activities = activitiesBySectorSubsector;
     res.status(200);
-    res.json({ activitiesBySectorSubsector });
+    res.json({ activities });
   }
   else if(activitiesByUserSectorSubsector || activitiesBySectorSubsector)
   {

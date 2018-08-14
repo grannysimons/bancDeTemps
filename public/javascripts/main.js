@@ -33,9 +33,9 @@ function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
-  axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${userName}`)
+  axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   .then((act) => {
-    console.log("then");
+    console.log("then ",act);
     document.getElementById('results').innerHTML = '';
     for(let i=0; i<act.data.activities.length; i++)
     {
