@@ -13,17 +13,17 @@ mongoose.connect(`mongodb://localhost/${dbName}`);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-// console.log(`el currentUser existeix?:${req.session.currentUser[0].userName}`);  
+// console.log(`el currentUser existeix?:${req.session.currentUser.userName}`);  
   
 
   if (req.session.currentUser) {
     console.log(req.session);
-    console.log(`la sessió activa de usuari es: ${req.session.currentUser[0].userName}`);
-    console.log(`el _id de usuari és: ${req.session.currentUser[0]._id}`);
+    console.log(`la sessió activa de usuari es: ${req.session.currentUser.userName}`);
+    console.log(`el _id de usuari és: ${req.session.currentUser._id}`);
     var data2;
-    var userName = req.session.currentUser[0].userName;
+    var userName = req.session.currentUser.userName;
     // we get the  transactions for the current logged user
-    const user_id = req.session.currentUser[0]._id;
+    const user_id = req.session.currentUser._id;
     Transaction.find()
     .populate('offertingUserId')
     .populate('demandingUserId')
@@ -73,18 +73,18 @@ router.post('/login', (req,res,next) => {
     {   
         //Nota: Important, al fer el metode find sobre un objecte Schema de Mongoose, ens retorna un array d'objectes
         // Per tant, si existeix l'objecte, llavors agafem la primera posició de l'array
-        User.find({ userName })
+        User.findOne({ userName })
         .then((user) => {
             if(user)
             {   
-                console.log(user[0]); 
-                console.log(user[0].lastName);
-                console.log(user[0].userName);
-                console.log(user[0].mail);
+                console.log(user); 
+                console.log(user.lastName);
+                console.log(user.userName);
+                console.log(user.mail);
                 console.log('hem passat user.find'); 
                 console.log(`el password entrat per usuari és: ${password}`);
-                console.log(`el password de la BBDD és: ${user[0].password}`);
-                if(bcrypt.compareSync(password, user[0].password))
+                console.log(`el password de la BBDD és: ${user.password}`);
+                if(bcrypt.compareSync(password, user.password))
                 {
                     req.session.currentUser = user;
                     res.redirect('/');
