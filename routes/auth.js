@@ -16,7 +16,8 @@ router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.check
   const userData = res.locals.userData;
   userData.password = hashedPassword;
   User.create(userData)
-  .then(() => {
+  .then(user => {
+    req.session.currentUser = user;
     res.redirect('/');
   })
   .catch(error => next(error));

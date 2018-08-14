@@ -9,22 +9,21 @@
                 {{!-- <!-- <span class="glyphicon glyphicon-align-justify"></span> Align Justify --> --}}
               </a>
               <div class="dropdown-menu">
-                  <a class="dropdown-item" href="/signup">Sign-up</a>
                   {{#unless username}}
-                    <a class="dropdown-item" data-toggle="modal" href="#myModal">Login</a>
+                  <a class="dropdown-item" href="/signup">Sign-up</a>
+                  <a class="dropdown-item" data-toggle="modal" href="#myModal">Login</a>
                   {{/unless}}
                   {{#if username}}
                      <a class="dropdown-item" href="/logout">Logout</a>
                   {{/if}}   
-                  <div class="dropdown-divider"></div>
                   {{#if username}}
+                    <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="/profile/edit">Edit Profile</a>
                     <a class="dropdown-item" href="/profile/activityManager">Activity Manager</a>
                     <a class="dropdown-item" href="/transactions">Transaction Manager</a>
                   {{/if}}  
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#">Search for a user</a>
-                  <a class="dropdown-item" href="#">Search for an activity</a>
+                  <a class="dropdown-item" href="#">Search</a>
                   
               </div>
             </div>
@@ -94,7 +93,7 @@
   <div id="search-form" class="container-fluid align-items-center" style="height: 100vh;min-height: 300px;">
   <div class="row">
     <div class="col-sm-12">
-      <h2>Gat activities:</h2>
+      <h2>Get activities:</h2>
       <form id="filter">
         <div class="form-group">
           <label for="UserInput">Username:</label>
@@ -112,11 +111,11 @@
       </form>
     </div>
   </div>
-        <div id="footer-search-page" class="row align-self-center" style="height: 50px;" >
+        {{!-- <div id="footer-search-page" class="row align-self-center" style="height: 50px;" >
           <div class="col-12 text-center ">
             <a href="#results-bbdd"><i class="fas fa-chevron-down fa-2x"></i></a>
           </div>
-        </div>  
+        </div>   --}}
       </div>
   <ul id="results">
   <li></li>

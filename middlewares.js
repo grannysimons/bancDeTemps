@@ -122,8 +122,7 @@ module.exports = {
   },
   activityManager: {
     getActivities: (req, res, next) => {
-      // const currentUser = req.session.currentUser;
-      const currentUser = 'pereIV';
+      const currentUser = req.session.currentUser;
       User.findOne({userName: currentUser})
       .populate('offertedActivities')
       .populate('demandedActivities')
@@ -139,7 +138,6 @@ module.exports = {
   },
   filter: {
     filterByUsername: (req, res, next) => {
-      console.log('bu!');
       if(req.query.userName)
       {
         User.findOne({userName: req.query.userName})

@@ -1,6 +1,6 @@
 window.addEventListener('load', ()=>{
   document.querySelector('#filter #submit').addEventListener('click', filter);
-  // document.querySelector('#aplicarActivitat #aplicar').addEventListener('click', apply);
+  document.querySelector('#aplicarActivitat').addEventListener('click', apply);
 
   var viewportHeight = $(window).height();  
   var viewportWidth = $(window).width();
@@ -45,7 +45,8 @@ function filter(){
       </div>
       <div>
       duration: ${act.data.activities[i].duration} hours
-      </div>`;
+      </div>
+      <button type="button" class="btn btn-info" id="aplicarActivitat">Apply</button>`;
       document.getElementById('results').innerHTML += '<li>' + element + '</li>';
     }
   })
@@ -56,7 +57,7 @@ function filter(){
 } 
 
 function apply(){
-  const idActivitat = document.querySelector('#aplicarActivitat #activity').value;
+  const idActivitat = document.querySelector('#aplicarActivitat').value;
   axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
     document.getElementById('results').innerHTML = 'activitat '+idActivitat+' demanada correctament. Ara toca esperar';
