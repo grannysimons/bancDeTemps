@@ -1,7 +1,7 @@
 window.addEventListener('load', ()=>{
   filter();
   document.querySelector('#filter #submit').addEventListener('click', filter);
-  document.querySelector('#aplicarActivitat').addEventListener('click', apply);
+  // document.querySelector('#aplicarActivitat').addEventListener('click', apply);
 
   var viewportHeight = $(window).height();  
   var viewportWidth = $(window).width();
@@ -14,6 +14,36 @@ window.addEventListener('load', ()=>{
   document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
   // document.getElementById('new').setAttribute("style",`height:${viewportHeight}px`);
   var linkLogin = document.getElementById("my-login");
+
+  //smooth scroll
+  const y = document.getElementById('search-form').offsetHeight;
+  document.getElementById('scroll').onclick = function () {
+    scrollTo(document.body, y, 500);   
+  }
+    
+  function scrollTo(element, to, duration) {
+    var start = element.scrollTop,
+        change = to - start,
+        currentTime = 0,
+        increment = 20;
+        
+    var animateScroll = function(){        
+        currentTime += increment;
+        var val = Math.easeInOutQuad(currentTime, start, change, duration);
+        element.scrollTop = val;
+        if(currentTime < duration) {
+            setTimeout(animateScroll, increment);
+        }
+    };
+    animateScroll();
+  }
+
+  Math.easeInOutQuad = function (t, b, c, d) {
+  t /= d/2;
+  if (t < 1) return c/2*t*t + b;
+  t--;
+  return -c/2 * (t*(t-2) - 1) + b;
+  };
 
 });
 
@@ -36,7 +66,6 @@ function filter(){
   const user = document.getElementById('user').value;
   axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   .then((act) => {
-    console.log("then ",act);
     document.getElementById('results').innerHTML = '';
     for(let i=0; i<act.data.activities.length; i++)
     {
@@ -52,7 +81,6 @@ function filter(){
     }
   })
   .catch(error => {
-    console.log("catch");
     document.getElementById('results').innerHTML = "erroooor!" + error;
   })
 } 
