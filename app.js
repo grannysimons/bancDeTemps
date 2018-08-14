@@ -1,6 +1,7 @@
 const session  = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const flash = require('connect-flash');
+const bodyParser = require('body-parser');
 
 
 var createError = require('http-errors');
@@ -8,7 +9,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-require('./database');
+const mongoose = require('./database');
 
 var indexRouter = require('./routes/index');
 var authRouter = require('./routes/auth');

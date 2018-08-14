@@ -9,3 +9,5 @@ mongoose.connect(`mongodb://localhost/${dbName}`)
     console.log('😔');
     mongoose.connection.close();
   })
+
+  module.exports = mongoose;
