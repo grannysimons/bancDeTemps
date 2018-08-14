@@ -1,0 +1,85 @@
+html {
+  /* font-size: 1rem; */
+  /* line-height: 1.25; */
+  overflow-x: hidden; /* amb aixo desactivem el scroll horitzontal*/
+  width: 100%;
+  height: 100%;
+  /* font-size: 62.5%; tots els browsers tenen per defecte un font-size de 16px. Posant 62.5%, ho estem passant a 10px, i per tant els rem units seran multiples de 10 */
+  
+  /* margin: 0;
+  font-family: "Montserrat-Light","Montserrat-Medium";
+  letter-spacing: 2.2px; */
+  background-color: white;
+}
+
+/* Definim aquestes media-queries, per aplicar diferents tamanys de lletra */
+@media (min-width: 0px) {
+  html { font-size: 14px; } 
+}
+
+@media (min-width: 576px) {
+  /* font-size: 160%; */
+  html { font-size: 16px; }
+}
+@media (min-width: 768px) {
+  /* font-size: 180%; */
+  html { font-size: 18px; }
+}
+@media (min-width: 992px) {
+  /* font-size: 200%; */
+  html { font-size: 20px; }
+}
+@media (min-width: 1200px) {
+  /* font-size: 240%; */
+  html { font-size: 24px; }
+  
+}
+
+
+
+/* Estem posant el tamany de referencia en funció del media query */
+
+h1 {font-size: 1.6rem;}
+h2 {font-size: 1.4rem;}
+h3 {font-size: 1.2rem;}
+h4 {font-size: 1rem;}
+h5 {font-size: 0.8rem;}
+h6 {font-size: 0.6rem;}
+
+
+
+
+/* .first-section {
+      background-image: url('../images/home-real-willian-justen-de-vasconcellos-531167-unsplash 1@2x.jpg') ;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover; */
+      /* min-height:300px;  indiquem la mínima alçada. Si l'usuari redueix el viewport, es reduirà ffins a un mínim de 300px */
+      /* height: 100%;
+      width: 100%;
+      border: 2px solid violet;
+
+  } */
+
+  #icon-menu {
+      color: white;
+  }
+
+  .menu-text {
+  font-size: 0.8rem;
+  font-family: Arial, Helvetica, sans-serif;
+  color: blue;
+  padding: 20px 0 20px 20px;
+  margin: 20px 0 20px 20px;
+}
+
+#footer-search-page {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}

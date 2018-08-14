@@ -5,15 +5,15 @@ const transactionSchema = new Schema({
   Id: Schema.Types.ObjectId,
   idActivity: {
     type: Schema.Types.ObjectId,
-    reference: 'activity',
+    ref: 'activity',
   },
   offertingUserId: {
     type: Schema.Types.ObjectId,
-    reference: 'user',
+    ref: 'User',
   },
   demandingUserId: {
     type: Schema.Types.ObjectId,
-    reference: 'user',
+    ref: 'User',
   },
   state: {
     type: String,
