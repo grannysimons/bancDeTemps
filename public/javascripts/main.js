@@ -32,7 +32,8 @@ window.onbeforeunload = function () {
 function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
-  axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}`)
+  const user = document.getElementById('user').value;
+  axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${userName}`)
   .then((act) => {
     console.log("then");
     document.getElementById('results').innerHTML = '';

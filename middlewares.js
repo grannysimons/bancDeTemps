@@ -1,5 +1,6 @@
 const Messages = require('./messages');
 const User = require('./models/user');
+const Activity = require('./models/activity');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
@@ -136,4 +137,63 @@ module.exports = {
       })
     }
   },
+  filter: {
+    filterByUsername: (req, res, next) => {
+      console.log('bu!');
+      if(req.query.userName)
+      {
+        User.findOne({userName: req.query.userName})
+        .populate('offertedActivities')
+        .populate('demandedActivities')
+        .then(user => {
+          res.locals.activitiesByUserSectorSubsector = [];
+          if(user)
+          {
+            for(let i=0; i<user.offertedActivities.length; i++)
+            {
+              if((!req.query.sector && !req.query.subsector) || 
+              (user.offertedActivities[i].sector === req.query.sector && user.offertedActivities[i].subsector === req.query.subsector) || 
+              (user.offertedActivities[i].sector === req.query.sector && !req.query.subsector ) ||
+              (!req.query.sector && user.offertedActivities[i].subsector === req.query.subsector))
+              {
+                res.locals.activitiesByUserSectorSubsector.push(user.offertedActivities[i]);
+              }
+            }
+            for(let i=0; i<user.demandedActivities.length; i++)
+            {
+              if((!req.query.sector && !req.query.subsector) || 
+              (user.demandedActivities[i].sector === req.query.sector && user.demandedActivities[i].subsector === req.query.subsector) || 
+              (user.demandedActivities[i].sector === req.query.sector && !req.query.subsector ) ||
+              (!req.query.sector && user.demandedActivities[i].subsector === req.query.subsector))
+              {
+                res.locals.activitiesByUserSectorSubsector.push(user.demandedActivities[i]);
+              }
+            }
+          }
+          next();
+        })
+        .catch(error => next(error));
+      }
+      else
+      {
+        next();
+      }
+    },
+    filterBySectorSubsector: (req, res, next) => {
+      if(res.locals.activitiesByUserSectorSubsector && res.locals.activitiesByUserSectorSubsector.length > 0) next();
+      console.log('filterBySectorSubsector ', req.query);
+      const filter = {};
+      if (req.query.sector) filter.sector = req.query.sector;
+      if (req.query.subsector) filter.subsector = req.query.subsector;
+      console.log(filter);
+      Activity.find( filter )
+      .then(activities => {
+        console.log('1');
+        res.locals.activitiesBySectorSubsector = activities;
+        console.log('reees ', activities);
+        next();
+      })
+      .catch(error => next(error));
+    }
+  }
 };

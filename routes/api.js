@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const Activity = require('../models/activity');
+const Middleware = require('../middlewares');
 
 router.get('/:idAct/request', (req, res, next) => {
   // const user = req.session.currentUser;
@@ -35,20 +36,35 @@ router.get('/:idAct/request', (req, res, next) => {
   })
 });
 
-router.get('/filter', (req, res, next) => {
-  const filter = {};
-  if (req.query.user) filter.user = req.query.user;
-  if (req.query.sector) filter.sector = req.query.sector;
-  if (req.query.subsector) filter.subsector = req.query.subsector;
-  Activity.find(filter)
-  .then(activities => {
+router.get('/filter', Middleware.filter.filterByUsername, Middleware.filter.filterBySectorSubsector, (req, res, next) => {
+  console.log('aaaaa');
+  const activitiesByUserSectorSubsector = res.locals.activitiesByUserSectorSubsector;
+  const activitiesBySectorSubsector = res.locals.activitiesBySectorSubsector;
+
+  console.log(res.locals.activitiesByUserSectorSubsector);
+  console.log(res.locals.activitiesBySectorSubsector);
+
+  if(activitiesByUserSectorSubsector && activitiesByUserSectorSubsector.length > 0)
+  {
     res.status(200);
-    res.json({ activities });
-  })
-  .catch(error => {
+    res.json({ activitiesByUserSectorSubsector });
+  }
+  else if (activitiesBySectorSubsector && activitiesBySectorSubsector.length > 0)
+  {
+    res.status(200);
+    res.json({ activitiesBySectorSubsector });
+  }
+  else if(activitiesByUserSectorSubsector || activitiesBySectorSubsector)
+  {
+    res.status(200);
+    res.json({ message: "no results to show" });
+  }
+  else
+  {
+    console.log('3');
     res.status(500);
     res.json({ error });
-  });
+  }
 });
 
 module.exports = router;
