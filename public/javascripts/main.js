@@ -68,14 +68,14 @@ function filter(){
     document.getElementById('results').innerHTML = '';
     for(let i=0; i<act.data.activities.length; i++)
     {
-      const element = 
+      var element = 
       `<div>
       ${act.data.activities[i].description}
       </div>
       <div>
       duration: ${act.data.activities[i].duration} hours
-      </div>
-      <button type="button" class="btn btn-info apply-${act.data.activities[i]._id}" id="apply-${i}">Apply</button>`;
+      </div>`;
+      if(act.data.currentUser) element += `<button type="button" class="btn btn-info apply-${act.data.activities[i]._id}" id="apply-${i}">Apply</button>`;
       document.getElementById('results').innerHTML += '<li>' + element + '</li>';
     }
     for(let i=0; i<act.data.activities.length; i++)
@@ -84,7 +84,7 @@ function filter(){
     }
   })
   .catch(error => {
-    document.getElementById('results').innerHTML = "erroooor!" + error;
+    document.getElementById('results').innerHTML = "erroooor!" + error + act.data.currentUser;
   })
 } 
 

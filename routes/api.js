@@ -27,24 +27,20 @@ router.get('/:idAct/request', Middleware.startRequest.getInvolvedUser, Middlewar
 });
 
 router.get('/filter', Middleware.filter.filterByUsername, Middleware.filter.filterBySectorSubsector, (req, res, next) => {
-  console.log('aaaaa');
   const activitiesByUserSectorSubsector = res.locals.activitiesByUserSectorSubsector;
   const activitiesBySectorSubsector = res.locals.activitiesBySectorSubsector;
-
-  console.log(res.locals.activitiesByUserSectorSubsector);
-  console.log(res.locals.activitiesBySectorSubsector);
 
   if(activitiesByUserSectorSubsector && activitiesByUserSectorSubsector.length > 0)
   {
     activities = activitiesByUserSectorSubsector;
     res.status(200);
-    res.json({ activities });
+    res.json({ activities, currentUser: req.session.currentUser });
   }
   else if (activitiesBySectorSubsector && activitiesBySectorSubsector.length > 0)
   {
     activities = activitiesBySectorSubsector;
     res.status(200);
-    res.json({ activities });
+    res.json({ activities, currentUser: req.session.currentUser });
   }
   else if(activitiesByUserSectorSubsector || activitiesBySectorSubsector)
   {
@@ -53,7 +49,6 @@ router.get('/filter', Middleware.filter.filterByUsername, Middleware.filter.filt
   }
   else
   {
-    console.log('3');
     res.status(500);
     res.json({ error });
   }
