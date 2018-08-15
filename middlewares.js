@@ -1,5 +1,6 @@
 const Messages = require('./messages');
 const User = require('./models/user');
+const Transaction = require('./models/transaction');
 const Activity = require('./models/activity');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -193,6 +194,85 @@ module.exports = {
         next();
       })
       .catch(error => next(error));
-    }
-  }
+    },
+  },
+  startRequest: {
+    getInvolvedUser: (req, res, next) => {
+      console.log('getInvolvedUser');
+      const idActivity = req.params.idAct;
+      res.locals.idActivity = idActivity;
+      User.findOne({offertedActivities: idActivity})
+      .then((user) => {
+        if(user)
+        {
+          res.locals.users = {
+            offertingUser: user._id,
+            demandingUser: req.session.currentUser._id,
+          }
+          next();
+        }
+        else
+        {
+          User.findOne({demandedActivities: idActivity})
+          .then((user) => {
+            if (user)
+            {
+              res.locals.users = {
+                offertingUser: req.session.currentUser._id,
+                demandingUser: user._id,
+              };
+              next();
+            } 
+            else
+            {
+              res.status(500);
+              res.json({ message: "this activity corresponds to no user" });
+            }
+          })
+        }
+      })
+    },
+    transactionExists: (req, res, next) => {
+      console.log('transactionExists');
+      Transaction.findOne({
+        idActivity: res.locals.idActivity,
+        offertingUserId: res.locals.users.offertingUser,
+        demandingUserId: res.locals.users.demandingUser ,
+      })
+      .then(transaction => {
+        console.log('1 locals', res.locals);
+        if(!transaction)
+        {
+          next();
+        }
+        else
+        {
+          res.status(500);
+          res.json({ message: "transaction already exists"});
+        }
+      })
+      .catch(error =>{
+        console.log('1 locals', res.locals);
+        res.status(500);
+        res.json({ error });
+      })
+    },
+    createTransaction: (req, res, next) => {
+      console.log('createTransaction');
+      Transaction.create({
+        idActivity: res.locals.idActivity,
+        offertingUserId: res.locals.users.offertingUser,
+        demandingUserId: res.locals.users.demandingUser,
+        state: 'Proposed',
+      })
+      .then(createdTransaction => {
+        res.locals.transactionId = createdTransaction._id;
+        next();
+      })
+      .catch(error => {
+        res.status(500);
+        res.json({ error });
+      })
+    },
+  },
 };

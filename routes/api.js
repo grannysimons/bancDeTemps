@@ -2,38 +2,28 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const Activity = require('../models/activity');
+const Transaction = require('../models/transaction');
 const Middleware = require('../middlewares');
 
-router.get('/:idAct/request', (req, res, next) => {
-  // const user = req.session.currentUser;
-  const userName = 'Uirpse';
-  const idActivity = req.params.idAct;
-  User.findOne({offertedActivities: idActivity})
-  .then((user) => {
-    if (user)
-    {
-      User.updateOne(
-        { userName: userName }, 
-        { $push: { transactions: { involvedUser: user._id, state: 'Proposed', idActivity: idActivity } } } )
-      .then(userUpdate => {
-        res.status(200);
-        res.json({ userUpdate });
-      })
-      .catch((error) => {
-        res.status(500);
-        res.json({ error });
-      })
-    }
-    else
-    {
-      res.status(500);
-      res.json({ error });
-    }
+router.get('/:idAct/request', Middleware.startRequest.getInvolvedUser, Middleware.startRequest.transactionExists, Middleware.startRequest.createTransaction, (req, res, next) => {
+  User.updateOne(
+    { _id: res.locals.users.offertingUser }, 
+    { $push: { transactions: res.locals.transactionId } } )
+  .then(updatedOffertingUser => {
+    User.updateOne(
+      { _id: res.locals.users.demandingUser }, 
+      { $push: { transactions: res.locals.transactionId } } )
+    .then(updatedDemandingUser => {
+      console.log('updatedDemandingUser: ',updatedDemandingUser);
+      res.status(200);
+      res.json({ message: 'ok' });
+    })
   })
-  .catch((error) => {
+  .catch(error => {
     res.status(500);
     res.json({ error });
   })
+
 });
 
 router.get('/filter', Middleware.filter.filterByUsername, Middleware.filter.filterBySectorSubsector, (req, res, next) => {

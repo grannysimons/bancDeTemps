@@ -1,6 +1,6 @@
 const Activity = require('../models/activity');
 const User = require('../models/user');
-const Transaction = require('../models/transactions');
+const Transaction = require('../models/transaction');
 const mongoose = require('mongoose');
 
 const dbName = 'timeBank';
