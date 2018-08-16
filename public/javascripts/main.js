@@ -97,7 +97,7 @@ function filter(){
 
 function apply(e){
   const idActivitat = e.target.classList[2].substring(6);
-  // console.log(`http://localhost:3000/api/${idActivitat}/request`);
+  console.log(`http://localhost:3000/api/${idActivitat}/request`);
   axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
     if (act.data.message === 'ok')
@@ -110,8 +110,8 @@ function apply(e){
     }
   })
   .catch(error => {
-    // console.log('error: '. error);
-    document.getElementById('results').innerHTML = "2 erroooor!" + error;
+    console.log('error: ', error.response.data);
+    document.getElementById('results').innerHTML = error.response.data.error;
   })
 }
 
