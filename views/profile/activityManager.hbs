@@ -72,12 +72,18 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        bla bla bla
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
+      <form action="/profile/activityManager" method="post">
+        <div class="modal-body">
+            <input type="text" name="sector" id="sector" placeholder="sector">
+            <input type="text" name="subsector" id="subsector" placeholder="subsector">
+            <input type="text" name="description" id="description" placeholder="description">
+            <input type="text" name="tags" id="tags" placeholder="tags separated by comma">
+            <input type="text" name="duration" id="duration" placeholder="duration">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

@@ -6,7 +6,7 @@ window.addEventListener('load', ()=>{
   var viewportWidth = $(window).width();
 
   var heightNavBar = document.getElementById('navbar-main').offsetHeight;
-  console.log('La altura del icono menu es de:',heightNavBar);
+  // console.log('La altura del icono menu es de:',heightNavBar);
 
   var heightMainTitle = viewportHeight-2*heightNavBar;
   document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
@@ -65,32 +65,39 @@ function filter(){
   const user = document.getElementById('user').value;
   axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   .then((act) => {
+    // console.log(act.data);
     document.getElementById('results').innerHTML = '';
     for(let i=0; i<act.data.activities.length; i++)
     {
-      var element = 
-      `<div>
-      ${act.data.activities[i].description}
-      </div>
-      <div>
-      duration: ${act.data.activities[i].duration} hours
-      </div>`;
-      if(act.data.currentUser) element += `<button type="button" class="btn btn-info apply-${act.data.activities[i]._id}" id="apply-${i}">Apply</button>`;
-      document.getElementById('results').innerHTML += '<li>' + element + '</li>';
-    }
-    for(let i=0; i<act.data.activities.length; i++)
-    {
-      document.querySelector(`#apply-${i}`).addEventListener('click', apply);
+      let divDescription = document.createElement('div');
+      divDescription.innerHTML = act.data.activities[i].description;
+      let divDuration = document.createElement('div');
+      divDuration.innerHTML = 'duration: ' + act.data.activities[i].duration + 'hours';
+      document.getElementById('results').appendChild(divDescription);
+      document.getElementById('results').appendChild(divDuration);
+      
+      if(act.data.currentUser) 
+      {
+        let dynamicClass = 'apply-'+act.data.activities[i]._id;
+        let buttonApply = document.createElement('button');
+        buttonApply.classList.add('btn', 'btn-info', dynamicClass);
+        buttonApply.setAttribute('id', 'apply-'+i);
+        buttonApply.addEventListener('click', apply);
+        buttonApply.innerHTML = 'Apply';
+
+        document.getElementById('results').appendChild(buttonApply);
+      }
+
     }
   })
   .catch(error => {
-    document.getElementById('results').innerHTML = "erroooor!" + error + act.data.currentUser;
+    document.getElementById('results').innerHTML = "erroooor!" + error;
   })
 } 
 
 function apply(e){
   const idActivitat = e.target.classList[2].substring(6);
-  console.log(`http://localhost:3000/api/${idActivitat}/request`);
+  // console.log(`http://localhost:3000/api/${idActivitat}/request`);
   axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
     if (act.data.message === 'ok')
@@ -103,6 +110,7 @@ function apply(e){
     }
   })
   .catch(error => {
+    // console.log('error: '. error);
     document.getElementById('results').innerHTML = "2 erroooor!" + error;
   })
 }
