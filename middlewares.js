@@ -81,7 +81,6 @@ module.exports = {
       const { name, lastName, userName, password, repeatPassword, mail, roadType, roadName, number, zipCode, city, province, state, telephone, introducing } = req.body;
       res.locals.userData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
       res.locals.messages = { passwordsAreDifferent: '' };
-      console.log(res.locals.userData);
       next();
     },
     checkPassword: (req,res,next) => {
@@ -249,6 +248,8 @@ module.exports = {
         }
       })
       .catch(error =>{
+        // const error = new Error("fdsafass"
+        // next(error)
         console.log('1 locals', res.locals);
         res.status(500);
         res.json({ error });

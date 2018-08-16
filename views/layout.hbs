@@ -37,12 +37,12 @@
           <div class="dropdown-menu">
 
             
-            {{#unless username}}
+            {{#unless currentUser}}
             <a class="dropdown-item" href="/signup">Sign-up</a>
             <a class="dropdown-item" data-toggle="modal" href="#myModal">Login</a>
-            {{/unless}} {{#if username}}
+            {{/unless}} {{#if currentUser}}
             <a class="dropdown-item" href="/logout">Logout</a>
-            {{/if}} {{#if username}}
+            {{/if}} {{#if currentUser}}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/profile/edit">Edit Profile</a>
             <a class="dropdown-item" href="/profile/activityManager">Activity Manager</a>
@@ -53,10 +53,10 @@
 
           </div>
         </div>
-        {{#if username}}
-        <p>Login: {{username}}</p>
-        {{/if}} {{#unless username}}
-        <p>Logout: {{username}}</p>
+        {{#if currentUser}}
+        <p>Login: {{currentUser.userName}}</p>
+        {{/if}} {{#unless currentUser}}
+        <p>Logout {{currentUser}}</p>
         {{/unless}}
       </div>
     </div>
