@@ -124,10 +124,11 @@ module.exports = {
   activityManager: {
     getActivities: (req, res, next) => {
       const currentUser = req.session.currentUser;
-      User.findOne({userName: currentUser})
+      User.findOne({userName: currentUser.userName})
       .populate('offertedActivities')
       .populate('demandedActivities')
       .then(user => {
+        console.log('user: ', user);
         res.locals.offertedActivities = user.offertedActivities;
         res.locals.demandedActivities = user.demandedActivities;
         next();
