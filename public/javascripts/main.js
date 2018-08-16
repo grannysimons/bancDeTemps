@@ -1,7 +1,6 @@
 window.addEventListener('load', ()=>{
   filter();
   document.querySelector('#filter #submit').addEventListener('click', filter);
-  // document.querySelector('#aplicarActivitat').addEventListener('click', apply);
 
   var viewportHeight = $(window).height();  
   var viewportWidth = $(window).width();
@@ -69,30 +68,42 @@ function filter(){
     document.getElementById('results').innerHTML = '';
     for(let i=0; i<act.data.activities.length; i++)
     {
-      const element = 
+      var element = 
       `<div>
       ${act.data.activities[i].description}
       </div>
       <div>
       duration: ${act.data.activities[i].duration} hours
-      </div>
-      <button type="button" class="btn btn-info" id="aplicarActivitat">Apply</button>`;
+      </div>`;
+      if(act.data.currentUser) element += `<button type="button" class="btn btn-info apply-${act.data.activities[i]._id}" id="apply-${i}">Apply</button>`;
       document.getElementById('results').innerHTML += '<li>' + element + '</li>';
+    }
+    for(let i=0; i<act.data.activities.length; i++)
+    {
+      document.querySelector(`#apply-${i}`).addEventListener('click', apply);
     }
   })
   .catch(error => {
-    document.getElementById('results').innerHTML = "erroooor!" + error;
+    document.getElementById('results').innerHTML = "erroooor!" + error + act.data.currentUser;
   })
 } 
 
-function apply(){
-  const idActivitat = document.querySelector('#aplicarActivitat').value;
+function apply(e){
+  const idActivitat = e.target.classList[2].substring(6);
+  console.log(`http://localhost:3000/api/${idActivitat}/request`);
   axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
-    document.getElementById('results').innerHTML = 'activitat '+idActivitat+' demanada correctament. Ara toca esperar';
+    if (act.data.message === 'ok')
+    {
+      document.getElementById('results').innerHTML = 'activitat '+idActivitat+' demanada correctament. Ara toca esperar';
+    }
+    else
+    {
+      document.getElementById('results').innerHTML = "1 erroooor!" + act.data.message;
+    }
   })
   .catch(error => {
-    document.getElementById('results').innerHTML = "erroooor!" + error;
+    document.getElementById('results').innerHTML = "2 erroooor!" + error;
   })
 }
 
