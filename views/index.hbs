@@ -1,6 +1,6 @@
 
       <div class="container-fluid align-items-center" style="position: relative; width:100vw;height: 100vh;min-height: 300px;">
-        <div class="row bg-primary" id="navbar-main">
+        <div class="row bg-primary" id="navbar-main" style="border: 2px solid green">
           <div class="col-sm-12">
             <div class="dropdown" style="margin: 20px 0 20px 20px;">  
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -35,14 +35,21 @@
             {{/unless}}
           </div>
         </div>
-        <div id="text-banc" class="row d-flex align-items-center" >
+        <div id="text-banc" class="row d-flex align-items-center" style="border: 2px solid blue" >
           <div class="col-12">
             {{#unless username}} 
               <h1 class="text-center">BANC DE TEMPS</h1>
             {{/unless}} 
             {{!-- if session is active, we show the finish and proposed transactions pending to be accepted   --}}
             {{#if username}}
-
+              {{!-- <p>{{transactions}}</p> --}}
+              
+                
+              
+              
+              {{!-- {{ #each this._id }}
+                <p>{{ direction.roadName }}</p>
+              {{/each}} --}}
             {{/if}} 
           </div>
         </div>  

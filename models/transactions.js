@@ -18,7 +18,11 @@ const transactionSchema = new Schema({
   state: {
     type: String,
     enum: ['Proposed', 'Accepted', 'Refused', 'Cancelled', 'Finished'],
-  }
+  },
+  idTransactionsInvolved: {
+    type: Schema.Types.ObjectId,
+    ref: 'Transaction',
+  },
 });
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
