@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-const Activity = require('../models/activity');
-const Transaction = require('../models/transaction');
 const Middleware = require('../middlewares');
 
-router.get('/:idAct/request', Middleware.startRequest.getInvolvedUser, Middleware.startRequest.transactionExists, Middleware.startRequest.createTransaction, (req, res, next) => {
+router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getInvolvedUser, Middleware.startRequest.transactionExists, Middleware.startRequest.createTransaction, (req, res, next) => {
   User.updateOne(
     { _id: res.locals.users.offertingUser }, 
     { $push: { transactions: res.locals.transactionId } } )
@@ -14,7 +12,7 @@ router.get('/:idAct/request', Middleware.startRequest.getInvolvedUser, Middlewar
       { _id: res.locals.users.demandingUser }, 
       { $push: { transactions: res.locals.transactionId } } )
     .then(updatedDemandingUser => {
-      console.log('updatedDemandingUser: ',updatedDemandingUser);
+      // console.log('updatedDemandingUser: ',updatedDemandingUser);
       res.status(200);
       res.json({ message: 'ok' });
     })

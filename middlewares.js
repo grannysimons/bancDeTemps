@@ -185,13 +185,9 @@ module.exports = {
       const filter = {};
       if (req.query.sector) filter.sector = req.query.sector;
       if (req.query.subsector) filter.subsector = req.query.subsector;
-      console.log(filter);
       Activity.find( filter )
       .then(activities => {
-        console.log('1');
         res.locals.activitiesBySectorSubsector = activities;
-        console.log('reees ', activities);
-        console.log('boom!');
         next();
       })
       .catch(error => next(error));
@@ -227,7 +223,7 @@ module.exports = {
             else
             {
               res.status(500);
-              res.json({ message: "this activity corresponds to no user" });
+              res.json({ error: "this activity corresponds to no user" });
             }
           })
         }
@@ -249,7 +245,7 @@ module.exports = {
         else
         {
           res.status(500);
-          res.json({ message: "transaction already exists"});
+          res.json({ error: "transaction already exists"});
         }
       })
       .catch(error =>{
@@ -276,4 +272,9 @@ module.exports = {
       })
     },
   },
+  isLogged: (req, res, next) => {
+    console.log('isLogged');
+    if(req.session.currentUser) next();
+    else res.redirect('/');
+  }
 };
