@@ -27,6 +27,7 @@ router.get('/', function(req, res, next) {
     Transaction.find()
     .populate('offertingUserId')
     .populate('demandingUserId')
+    .populate('idActivity')
     .then(transactions => {
       
       

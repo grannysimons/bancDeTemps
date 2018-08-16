@@ -39,12 +39,23 @@ router.get('/activityManager', Middlewares.activityManager.getActivities, (req, 
 
 router.post('/activityManager', (req, res, next) => {
   console.log('body: ',req.body);
-  
-  Activity.create({
-    
-  })
 
-  res.redirect('/profile/activityManager');
+  const { sector, subsector, description, tags, duration } = req.body;
+
+  Activity.create({
+    sector,
+    subsector,
+    description,
+    tags,
+    timetable,
+    duration,
+  })
+  .then(activity => {
+    res.redirect('/profile/activityManager');
+  })
+  .catch(error => {
+    next(error);
+  })
 });
 
 module.exports = router;
