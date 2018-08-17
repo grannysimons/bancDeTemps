@@ -37,25 +37,39 @@ router.get('/activityManager', Middlewares.activityManager.getActivities, (req, 
   res.render('profile/activityManager', data);
 });
 
-router.post('/activityManager', (req, res, next) => {
-  console.log('body: ',req.body);
-
+router.post('/activityManager/:type', (req, res, next) => {
+  const type = req.params.type;
   const { sector, subsector, description, tags, duration } = req.body;
-
   Activity.create({
     sector,
     subsector,
     description,
     tags,
-    timetable,
     duration,
   })
   .then(activity => {
-    res.redirect('/profile/activityManager');
+    const pushFilter = type === 'offerted' ? {offertedActivities: activity._id} : {demandedActivities: activity._id}
+    User.update({userName: req.session.currentUser.userName},{$push: pushFilter})
+    .then(user => {
+      res.redirect('/profile/activityManager');
+    })
+    .catch(error => {
+      next(error);
+    })
   })
   .catch(error => {
     next(error);
   })
 });
+
+router.post('/activityManager/:idAct/delete', (req, res, next) => {
+  Activity.findByIdAndRemove(req.params.idAct)
+  .then(() => {
+    res.redirect('/profile/activityManager');
+  })
+  .catch(error => {
+    console.log(error);
+  })
+})
 
 module.exports = router;
