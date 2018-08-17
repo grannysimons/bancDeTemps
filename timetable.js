@@ -1,4 +1,4 @@
-class Timetable {
+module.exports = {
   constructor(timetableArray) {
     this.timetableArray = timetableArray;
     this.timetableNumberedStructure = {
@@ -9,7 +9,7 @@ class Timetable {
       friday:[],
       saturday:[],
       sunday:[]
-    },
+    };
     this.timetableFinalStructure = {
       monday:[],
       tuesday:[],
@@ -18,9 +18,10 @@ class Timetable {
       friday:[],
       saturday:[],
       sunday:[]
-    }
-  }
-  setTimetableNumberedStructure(){
+    };
+    this._setTimetableNumberedStructure();
+  },
+  _setTimetableNumberedStructure(){
     this.timetableArray.forEach(timePosition => {
       switch(timePosition.day)
       {
@@ -47,28 +48,29 @@ class Timetable {
         break;
       }
     });
-  }
+  },
   _fromDecimalToStringTime(decimal){
     let int = Math.floor(decimal);
     let dec = decimal - int;
     return int.toString() + ':' + dec.toString();
-  }
+  },
 
   _setTimetableFinalStructureByDay(day)
   {
-    let lastTimeSlot = 0;
+    let lastTimeSlot = -10;
     let compactedTimeSlot = [];
     this.timetableNumberedStructure[day].forEach(timeSlot => {
       if(timeSlot < lastTimeSlot -1)
       {
-        compactedTimeSlot.push({from: _fromDecimalToStringTime(timeSlot/2)})
+        compactedTimeSlot.push({from: _fromDecimalToStringTime(timeSlot/2)});
       }
       compactedTimeSlot[compactedTimeSlot.length-1].to = this._fromDecimalToStringTime(timeSlot/2);
       lastTimeSlot = timeSlot;
     }.bind(this));
-  }
+    this.timetableFinalStructure.day = compactedTimeSlot;
+  },
 
-  setTimetableFinalStructure(){
+  _setTimetableFinalStructure(){
     if(this.timetableNumberedStructure.monday != []) this._setTimetableFinalStructureByDay('monday');
     if(this.timetableNumberedStructure.tuesday != []) this._setTimetableFinalStructureByDay('tuesday');
     if(this.timetableNumberedStructure.wednesday != []) this._setTimetableFinalStructureByDay('wednesday');
@@ -76,4 +78,10 @@ class Timetable {
     if(this.timetableNumberedStructure.friday != []) this._setTimetableFinalStructureByDay('friday');
     if(this.timetableNumberedStructure.saturday != []) this._setTimetableFinalStructureByDay('saturday');
     if(this.timetableNumberedStructure.sunday != []) this._setTimetableFinalStructureByDay('sunday');
+  },
+
+  getTimetableArray(){
+    _setTimetableFinalStructure();
+    return this.timetableFinalStructure;
+  }
 }

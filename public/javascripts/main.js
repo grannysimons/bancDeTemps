@@ -1,3 +1,5 @@
+// import timetable from '../../timetable';
+
 window.addEventListener('load', ()=>{
   filter();
   document.querySelector('#filter #submit').addEventListener('click', filter);
@@ -65,32 +67,116 @@ function filter(){
   const user = document.getElementById('user').value;
   axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   .then((act) => {
-    // console.log(act.data);
     document.getElementById('results').innerHTML = '';
-    for(let i=0; i<act.data.activities.length; i++)
+    if(act.data.activities)
     {
-      let divDescription = document.createElement('div');
-      divDescription.innerHTML = act.data.activities[i].description;
-      let divDuration = document.createElement('div');
-      divDuration.innerHTML = 'duration: ' + act.data.activities[i].duration + 'hours';
-      document.getElementById('results').appendChild(divDescription);
-      document.getElementById('results').appendChild(divDuration);
-      
-      if(act.data.currentUser) 
+      for(let i=0; i<act.data.activities.length; i++)
       {
-        let dynamicClass = 'apply-'+act.data.activities[i]._id;
-        let buttonApply = document.createElement('button');
-        buttonApply.classList.add('btn', 'btn-info', dynamicClass);
-        buttonApply.setAttribute('id', 'apply-'+i);
-        buttonApply.addEventListener('click', apply);
-        buttonApply.innerHTML = 'Apply';
-
-        document.getElementById('results').appendChild(buttonApply);
+        // console.log(act.data.activities[i]);
+        let liElement = document.createElement('li');
+        liElement.classList.add('row');
+        document.getElementById('results').appendChild(liElement);
+        let divLeft = document.createElement('div');
+        divLeft.classList.add('col-md-8');
+        liElement.appendChild(divLeft);
+  
+        let divDescription = document.createElement('div');
+        divDescription.innerHTML = act.data.activities[i].description;
+        let divDuration = document.createElement('div');
+        divDuration.innerHTML = 'duration: ' + act.data.activities[i].duration + ' hours';
+        divLeft.appendChild(divDescription);
+        divLeft.appendChild(divDuration);
+        
+        let divRight = document.createElement('div');
+        divRight.classList.add('col-md-4');
+        liElement.appendChild(divRight);
+  
+        let buttonMoreInfo = document.createElement('button');
+        buttonMoreInfo.setAttribute('type', 'button');
+        buttonMoreInfo.classList.add('btn', 'btn-info');
+        buttonMoreInfo.setAttribute('data-toggle', 'modal');
+        buttonMoreInfo.setAttribute('data-target', '#activity'+i);
+        buttonMoreInfo.innerHTML = 'More info';
+        divRight.appendChild(buttonMoreInfo);
+  
+        let modal = document.createElement('div');
+        modal.classList.add('modal', 'fade');
+        modal.setAttribute('id', 'activity'+i);
+        modal.setAttribute('tabindex', '-1');
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-labelledby', 'exampleModalCenterTitle');
+        modal.setAttribute('aria-hidden', 'true');
+        liElement.appendChild(modal);
+  
+        let innerModal = document.createElement('div');
+        innerModal.classList.add('modal-dialog', 'modal-dialog-centered');
+        innerModal.setAttribute('role', 'document');
+        modal.appendChild(innerModal);
+  
+        let modalContent = document.createElement('div');
+        modalContent.classList.add('modal-content');
+  
+        modalContent.innerHTML = 
+        `<div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">More info</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <ul>
+            <li>${act.data.activities[i].sector} / ${act.data.activities[i].subsector}</li>
+            <li>tags: `;
+              for(let j=0; j<act.data.activities[i].length; j++)
+              {
+                modalContent.innerHTML += act.data.activities[i][j];
+                if(i < act.data.activities[i].length) modalContent.innerHTML += ' / ';
+              }
+              // modalContent.innerHTML += '</li>';
+  
+              // modalContent.innerHTML += '<li>';
+              // timetable.setTimetableFinalStructure(act.data.activities[i].timetable);
+              // const timetable = timetable.fetTimetableArray();
+              // timetable.forEach((timetable, key) => {
+              //   if(timetable) modalContent.innerHTML += key,': from ',timetable.from,' to ', timetable.to;
+              // });
+              modalContent.innerHTML += `</li>
+          </ul>
+        </div>`;
+        innerModal.appendChild(modalContent);
+    
+        
+        if(act.data.currentUser) 
+        {
+          let dynamicClass = 'apply-'+act.data.activities[i]._id;
+  
+          let modalFooter = document.createElement('div');
+          modalFooter.classList.add('modal-footer');
+          modalContent.appendChild(modalFooter);
+          let buttonApplyModal = document.createElement('button');
+          buttonApplyModal.setAttribute('type', 'button');
+          buttonApplyModal.classList.add('btn', 'btn-primary', dynamicClass);
+          buttonApplyModal.innerHTML = 'Apply';
+          buttonApplyModal.addEventListener('click', apply);
+          modalFooter.appendChild(buttonApplyModal);
+  
+          let buttonApply = document.createElement('button');
+          buttonApply.classList.add('btn', 'btn-info', dynamicClass);
+          buttonApply.setAttribute('id', 'apply-'+i);
+          buttonApply.addEventListener('click', apply);
+          buttonApply.innerHTML = 'Apply';
+  
+          divRight.appendChild(buttonApply);
+        }
       }
-
+    }
+    else
+    {
+      document.getElementById('results').innerHTML = 'No results to show';
     }
   })
   .catch(error => {
+    console.log(error);
     document.getElementById('results').innerHTML = "erroooor!" + error;
   })
 } 

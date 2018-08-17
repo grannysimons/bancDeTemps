@@ -12,8 +12,9 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
     crossorigin="anonymous"> {{!--
   <!-- main CSS -->--}}
-  <link href="/stylesheets/styles-banc-de-temps.css" rel="stylesheet" type="text/css"> {{!--
-  <!-- adding Font-Awwsome icon -->--}}
+  <link href="/stylesheets/styles-banc-de-temps.css" rel="stylesheet" type="text/css">
+
+  <link href="https://fonts.googleapis.com/css?family=Aclonica|Alegreya+Sans+SC|Berkshire+Swash|Meddon|Rochester|Rubik+Mono+One" rel="stylesheet">
 
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
     crossorigin="anonymous"> {{!--
@@ -24,15 +25,12 @@
 </head>
 
 <body>
-  <div class="container-fluid align-items-center" style="position: relative; width:100vw;min-height: 300px;">
-    <div class="row bg-primary" id="navbar-main">
-      <div class="col-sm-12">
-        <div class="dropdown" style="margin: 20px 0 20px 20px;">
+  <div class="container-fluid align-items-center" style="position: relative;">
+    <div class="row" id="navbar-main">
+      {{!-- <div class="col-sm-12"> --}}
+        <div class="dropdown col-sm-3">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <i id="icon-menu" class="fas fa-bars fa-3x" aria-hidden="true"></i>
-            {{!--
-            <!-- <i class="fa fa-list" aria-hidden="true"></i> -->--}} {{!--
-            <!-- <span class="glyphicon glyphicon-align-justify"></span> Align Justify -->--}}
           </a>
           <div class="dropdown-menu">
 
@@ -41,7 +39,7 @@
             <a class="dropdown-item" href="/signup">Sign-up</a>
             <a class="dropdown-item" data-toggle="modal" href="#myModal">Login</a>
             {{/unless}} {{#if currentUser}}
-            <a class="dropdown-item" href="/logout">Logout</a>
+            <a class="dropdown-item" href="#search-form">Search</a>
             {{/if}} {{#if currentUser}}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/profile/edit">Edit Profile</a>
@@ -49,16 +47,19 @@
             <a class="dropdown-item" href="/transactions">Transaction Manager</a>
             {{/if}}
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#search-form">Search</a>
+            <a class="dropdown-item" href="/logout">Logout</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="/">Home</a>
 
           </div>
         </div>
         {{#if currentUser}}
-        <p>Login: {{currentUser.userName}}</p>
-        {{/if}} {{#unless currentUser}}
+        <div class="col-sm-9 login">Hi, {{currentUser.userName}}!</div>
+        {{/if}} 
+        {{!-- {{#unless currentUser}}
         <p>Logout {{currentUser}}</p>
-        {{/unless}}
-      </div>
+        {{/unless}} --}}
+      {{!-- </div> --}}
     </div>
   </div>
 

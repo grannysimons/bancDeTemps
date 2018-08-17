@@ -27,6 +27,9 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
 router.get('/filter', Middleware.filter.filterByUsername, Middleware.filter.filterBySectorSubsector, (req, res, next) => {
   const activitiesByUserSectorSubsector = res.locals.activitiesByUserSectorSubsector;
   const activitiesBySectorSubsector = res.locals.activitiesBySectorSubsector;
+  console.log('/filter: ',activitiesByUserSectorSubsector);
+  console.log('/filter: ',activitiesBySectorSubsector);
+
 
   if(activitiesByUserSectorSubsector && activitiesByUserSectorSubsector.length > 0)
   {

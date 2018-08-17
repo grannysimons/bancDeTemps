@@ -1,7 +1,8 @@
 html {
   /* font-size: 1rem; */
   /* line-height: 1.25; */
-  overflow-x: hidden; /* amb aixo desactivem el scroll horitzontal*/
+  /* amb aixo desactivem el scroll horitzontal*/
+  overflow-x: hidden; 
   width: 100%;
   height: 100%;
   /* font-size: 62.5%; tots els browsers tenen per defecte un font-size de 16px. Posant 62.5%, ho estem passant a 10px, i per tant els rem units seran multiples de 10 */
@@ -12,11 +13,161 @@ html {
   background-color: white;
 }
 
+/* Estem posant el tamany de referencia en funció del media query */
+
+h1 {font-size: 1.6rem;}
+h2 {font-size: 1.4rem;}
+h3 {font-size: 1.2rem;}
+h4 {font-size: 1rem;}
+h5 {font-size: 0.8rem;}
+h6 {font-size: 0.6rem;}
+
+#icon-menu {
+    color: white;
+}
+
+.menu-text {
+font-size: 0.8rem;
+font-family: Arial, Helvetica, sans-serif;
+color: blue;
+padding: 20px 0 20px 20px;
+margin: 20px 0 20px 20px;
+}
+
+#footer-search-page {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.dropdown-toggle::after
+{
+  content: none;
+}
+
+.dropdown
+{
+  padding: 20px 0 20px 40px;
+}
+.login
+{
+  padding: 20px 40px;
+  text-align: right;
+  align-self: flex-end;
+  color: white;
+}
+
+/* index */
+#navbar-main
+{
+  background-color: #2a3b43;
+}
+#text-banc
+{
+  background-image: url("/images/background2.jpg");
+  background-position: center;
+  background-size: cover;
+  height: 100vh;
+}
+.header.container-fluid
+{
+  position: relative;
+}
+.header.container-fluid h1
+{
+  /* font-family: 'Alegreya Sans SC', sans-serif; */
+  font-family: 'Berkshire Swash', cursive;
+  /* font-family: 'Aclonica', sans-serif; */
+  /* font-family: 'Meddon', cursive; */
+  /* font-family: 'Rubik Mono One', sans-serif;  */
+  font-size: 100px;
+  color: white;
+}
+#text-banc h2
+{
+  color: white;
+  /* font-family: 'Alegreya Sans SC', sans-serif; */
+  font-family: 'Berkshire Swash', cursive;
+  /* font-family: 'Aclonica', sans-serif; */
+  /* font-family: 'Meddon', cursive; */
+  /* font-family: 'Rubik Mono One', sans-serif;  */
+}
+#footer-main-page
+{
+  background-color: transparent;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+#footer-main-page button
+{
+  color: white;
+  background-color: transparent;
+  width: 100%;
+  text-align: center;
+}
+#search-form
+{
+  background-color: #567383;
+  padding: 70px 0;
+  color: white;
+}
+#search-form i
+{
+  color: white;
+}
+
+#filter
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0;
+}
+.form-group
+{
+  margin: 0 20px;
+}
+.form-group input
+{
+  width: 300px;
+}
+.form-group label
+{
+  position: relative;
+  top: 10px;
+}
+#submit
+{
+  -webkit-appearance:none;
+  background-color: transparent;
+  border-width: 0px;
+  position: relative;
+  /* top: 20px; */
+}
+/* results */
+#results
+{
+  list-style-type: none;
+  padding: 50px; 
+}
+#results li
+{
+  border: 3px #d8f8f5 solid;
+  padding: 50px;
+  margin-bottom: 10px;
+}
+#results li .btn-info
+{
+  margin-right: 20px;
+}
 /* Definim aquestes media-queries, per aplicar diferents tamanys de lletra */
 @media (min-width: 0px) {
   html { font-size: 14px; } 
 }
-
 @media (min-width: 576px) {
   /* font-size: 160%; */
   html { font-size: 16px; }
@@ -33,58 +184,4 @@ html {
   /* font-size: 240%; */
   html { font-size: 24px; }
   
-}
-
-
-
-/* Estem posant el tamany de referencia en funció del media query */
-
-h1 {font-size: 1.6rem;}
-h2 {font-size: 1.4rem;}
-h3 {font-size: 1.2rem;}
-h4 {font-size: 1rem;}
-h5 {font-size: 0.8rem;}
-h6 {font-size: 0.6rem;}
-
-
-
-
-/* .first-section {
-      background-image: url('../images/home-real-willian-justen-de-vasconcellos-531167-unsplash 1@2x.jpg') ;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-      -webkit-background-size: cover;
-      -moz-background-size: cover;
-      -o-background-size: cover; */
-      /* min-height:300px;  indiquem la mínima alçada. Si l'usuari redueix el viewport, es reduirà ffins a un mínim de 300px */
-      /* height: 100%;
-      width: 100%;
-      border: 2px solid violet;
-
-  } */
-
-  #icon-menu {
-      color: white;
-  }
-
-  .menu-text {
-  font-size: 0.8rem;
-  font-family: Arial, Helvetica, sans-serif;
-  color: blue;
-  padding: 20px 0 20px 20px;
-  margin: 20px 0 20px 20px;
-}
-
-#footer-search-page {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  text-align: center;
-}
-
-.dropdown-toggle::after
-{
-  content: none;
 }

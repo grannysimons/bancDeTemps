@@ -139,33 +139,46 @@ module.exports = {
   },
   filter: {
     filterByUsername: (req, res, next) => {
+      console.log('filterByUserName');
+      res.locals.activitiesByUserSectorSubsector = [];
       if(req.query.userName)
       {
-        User.findOne({userName: req.query.userName})
+        User.find({userName: req.query.userName})
         .populate('offertedActivities')
         .populate('demandedActivities')
         .then(user => {
-          res.locals.activitiesByUserSectorSubsector = [];
           if(user)
           {
-            for(let i=0; i<user.offertedActivities.length; i++)
+            if(user[0].offertedActivities)
             {
-              if((!req.query.sector && !req.query.subsector) || 
-              (user.offertedActivities[i].sector === req.query.sector && user.offertedActivities[i].subsector === req.query.subsector) || 
-              (user.offertedActivities[i].sector === req.query.sector && !req.query.subsector ) ||
-              (!req.query.sector && user.offertedActivities[i].subsector === req.query.subsector))
+              for(let i=0; i<user[0].offertedActivities.length; i++)
               {
-                res.locals.activitiesByUserSectorSubsector.push(user.offertedActivities[i]);
+                if((!req.query.sector && !req.query.subsector) || 
+                ((user[0].offertedActivities[i].sector == req.query.sector) 
+                  && (user[0].offertedActivities[i].subsector == req.query.subsector)) || 
+                ((user[0].offertedActivities[i].sector == req.query.sector) 
+                  && !req.query.subsector ) ||
+                (!req.query.sector && (user[0].offertedActivities[i].subsector === req.query.subsector)))
+                {
+                  let activities = Object.assign(user[0].offertedActivities[i]);
+                  activities.user = user[0].userName;
+                  res.locals.activitiesByUserSectorSubsector.push(activities);
+                }
               }
             }
-            for(let i=0; i<user.demandedActivities.length; i++)
+            if(user[0].demandedActivities)
             {
-              if((!req.query.sector && !req.query.subsector) || 
-              (user.demandedActivities[i].sector === req.query.sector && user.demandedActivities[i].subsector === req.query.subsector) || 
-              (user.demandedActivities[i].sector === req.query.sector && !req.query.subsector ) ||
-              (!req.query.sector && user.demandedActivities[i].subsector === req.query.subsector))
+              for(let i=0; i<user[0].demandedActivities.length; i++)
               {
-                res.locals.activitiesByUserSectorSubsector.push(user.demandedActivities[i]);
+                if((!req.query.sector && !req.query.subsector) || 
+                (user[0].demandedActivities[i].sector === req.query.sector && user[0].demandedActivities[i].subsector === req.query.subsector) || 
+                (user[0].demandedActivities[i].sector === req.query.sector && !req.query.subsector ) ||
+                (!req.query.sector && user[0].demandedActivities[i].subsector === req.query.subsector))
+                {
+                  let activities = Object.assign({}, user[0].demandedActivities[i]);
+                  activities.user = user[0].userName;
+                  res.locals.activitiesByUserSectorSubsector.push(activities);
+                }
               }
             }
           }
@@ -180,16 +193,46 @@ module.exports = {
     },
     filterBySectorSubsector: (req, res, next) => {
       if(res.locals.activitiesByUserSectorSubsector && res.locals.activitiesByUserSectorSubsector.length > 0) next();
-      console.log('filterBySectorSubsector ', req.query);
-      const filter = {};
-      if (req.query.sector) filter.sector = req.query.sector;
-      if (req.query.subsector) filter.subsector = req.query.subsector;
-      Activity.find( filter )
-      .then(activities => {
-        res.locals.activitiesBySectorSubsector = activities;
+      else if(req.query.userName)
+      {
         next();
-      })
-      .catch(error => next(error));
+      }
+      else
+      {
+        res.locals.activitiesBySectorSubsector = [];
+        const filter = {};
+        if (req.query.sector) filter.sector = req.query.sector;
+        if (req.query.subsector) filter.subsector = req.query.subsector;
+        Activity.find( filter )
+        .then(activities => {
+          if(activities.length > 0)
+          {
+            for(let i=0; i<activities.length; i++)
+            {
+              const filter = {$or: [{demandedActivities: activities[i]._id,},{offertedActivities: activities[i]._id}]};
+              User.findOne(filter)
+              .then(user => {
+                // console.log('locals: ', res.locals);
+                const act = JSON.parse(JSON.stringify(activities[i]));
+                if(user)
+                {
+                  act.user = user.userName;
+                } 
+                else
+                {
+                  act.user = 'unknown user';
+                }
+                res.locals.activitiesBySectorSubsector.push(act);
+              })
+              .catch(error => next(error));
+            }
+
+            console.log('array: ',res.locals.activitiesByUserSectorSubsector);
+            console.log('array: ',res.locals.activitiesBySectorSubsector);
+          }
+          next();
+        })
+      }
     },
   },
   startRequest: {
