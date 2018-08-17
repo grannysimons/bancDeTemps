@@ -1,11 +1,23 @@
- <div class="container-fluid">
-    <div id="text-banc" class="row d-flex align-items-center">
-      <div class="col-12">
+ <div class="container-fluid" id="transaction-container">
+    <div id="text-banc" class="row" style="border: 2px solid green">
+      <div class="col-12 align-items-start" style="border: 2px solid green">
         {{#unless username}}
         <h1 class="text-center">BANC DE TEMPS</h1>
-        {{/unless}} {{!-- if session is active, we show the finish and proposed transactions pending to be accepted --}} {{#if username}}
-     <p>he fet un canvi</p>
-      </div>
+        {{/unless}} {{!-- if session is active, we show the finish and proposed transactions pending to be accepted --}} 
+        {{#if username}}
+          {{#each transactions}}
+            {{#if idActivity}}
+            <p><span><b>Transaction #{{@index}}</b></span><span class="status">Status: {{ state }}</span></p>
+            <p class="transaction-paragraf">Description: {{ idActivity.description }}</p>
+            <p class="transaction-paragraf">User Offering: {{ demandingUserId.userName }}
+            <p class="transaction-paragraf">Sector: {{ idActivity.sector }}</p>
+            <p class="transaction-paragraf">Subsector: {{ idActivity.subsector }}</p> 
+            <p class="transaction-paragraf">Duration: {{ idActivity.duration }} hour</p>
+            {{!-- <hr style="height:2px> --}}
+            {{/if}} 
+          {{/each}}
+        {{/if}}
+       </div>
     </div>
     <div id="footer-main-page" class="row">
       <div class="col-12 text-center align-self-center">
@@ -48,7 +60,4 @@
 <script src="/javascripts/main.js"></script>
 
 
-
-
-
-
+      

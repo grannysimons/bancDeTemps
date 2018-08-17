@@ -88,3 +88,22 @@ h6 {font-size: 0.6rem;}
 {
   content: none;
 }
+
+.transaction-paragraf {
+  margin: 5px 0 5px 0;
+  font-size: 0.8rem;
+}
+
+#transaction-container {
+  position: relative;
+  margin: 10px 0 0 0;
+}
+
+.status {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  text-align: right;
+}
+
