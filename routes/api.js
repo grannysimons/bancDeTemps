@@ -13,7 +13,6 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
       { _id: res.locals.users.demandingUser }, 
       { $push: { transactions: res.locals.transactionId } } )
     .then(updatedDemandingUser => {
-      // console.log('updatedDemandingUser: ',updatedDemandingUser);
       res.status(200);
       res.json({ message: 'ok' });
     })

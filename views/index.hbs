@@ -1,22 +1,10 @@
  <div class="container-fluid" id="transaction-container">
-    <div id="text-banc" class="row" style="border: 2px solid green">
-      <div class="col-12 align-items-start" style="border: 2px solid green">
+    <div id="text-banc" class="row" >
+      <div class="col-12 align-items-start" >
         {{#unless username}}
         <h1 class="text-center">BANC DE TEMPS</h1>
         {{/unless}} {{!-- if session is active, we show the finish and proposed transactions pending to be accepted --}} 
-        {{#if username}}
-          {{#each transactions}}
-            {{#if idActivity}}
-            <p><span><b>Transaction #{{@index}}</b></span><span class="status">Status: {{ state }}</span></p>
-            <p class="transaction-paragraf">Description: {{ idActivity.description }}</p>
-            <p class="transaction-paragraf">User Offering: {{ demandingUserId.userName }}
-            <p class="transaction-paragraf">Sector: {{ idActivity.sector }}</p>
-            <p class="transaction-paragraf">Subsector: {{ idActivity.subsector }}</p> 
-            <p class="transaction-paragraf">Duration: {{ idActivity.duration }} hour</p>
-            {{!-- <hr style="height:2px> --}}
-            {{/if}} 
-          {{/each}}
-        {{/if}}
+        
        </div>
     </div>
     <div id="footer-main-page" class="row">
@@ -25,39 +13,36 @@
       </div>
     </div>
   </div>
- <div id="search-form" class="container-fluid align-items-center" style="height: 100vh;min-height: 300px;">
-  <div class="row">
-    <div class="col-sm-12">
-      <h2>Get activities:</h2>
-      <form id="filter">
-        <div class="form-group">
-          <label for="UserInput">Username:</label>
-          <input type="text" class="form-control" id="user" name="user" placeholder="Username" style="width: 300px;">
-        </div>
-        <div class="form-group">
-          <label for="UserSector">Sector:</label>
-          <input type="text" class="form-control" id="sector" name="sector" placeholder="Sector of Activity" style="width: 300px;">
-        </div>
-        <div class="form-group">
-          <label for="UserSubSector">Subsector:</label>
-          <input type="text" class="form-control" id="subsector" name="subsector" placeholder="Sub Sector of Activity" style="width: 300px;">
-        </div>
-        <button type="button" id="submit" class="btn btn-primary">Search</button>
-      </form>
+  {{!-- <div id="footer-main-page" class="row">
+    <button class="btn"><i class="fas fa-chevron-down fa-2x" id="scroll"></i></button>
+  </div> --}}
+
+<div id="search-form" class="container-fluid align-items-center">
+  <form id="filter">
+    <h2>Get activities:</h2>
+    <div class="form-group">
+      {{!-- <label for="UserInput">Username:</label> --}}
+      <input type="text" class="form-control" id="user" name="user" placeholder="Username">
     </div>
-  </div>
-        {{!-- <div id="footer-search-page" class="row align-self-center" style="height: 50px;" >
-          <div class="col-12 text-center ">
-            <a href="#results-bbdd"><i class="fas fa-chevron-down fa-2x"></i></a>
-          </div>
-        </div>   --}}
-      </div>
-  <ul id="results">
-  <li></li>
+    <div class="form-group">
+      {{!-- <label for="UserSector">Sector:</label> --}}
+      <input type="text" class="form-control" id="sector" name="sector" placeholder="Sector of Activity">
+    </div>
+    <div class="form-group">
+      {{!-- <label for="UserSubSector">Subsector:</label> --}}
+      <input type="text" class="form-control" id="subsector" name="subsector" placeholder="Subsector of Activity">
+    </div>
+    <button type="button" id="submit"><i class="fas fa-search"></i></button>
+  </form>
+  {{!--
+  <div id="footer-search-page" class="row align-self-center" style="height: 50px;">
+    <div class="col-12 text-center ">
+      <a href="#results-bbdd"><i class="fas fa-chevron-down fa-2x"></i></a>
+    </div>
+  </div> --}}
+</div>
+<ul id="results">
 </ul>
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="/javascripts/main.js"></script>
-
-
-      

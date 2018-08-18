@@ -2,9 +2,8 @@
 // var viewportWidth = $(window).width();
 
 // var heightNavBar = document.getElementById('navbar-main').offsetHeight;
-// console.log('La altura del icono menu es de:',heightNavBar);
 
-// var heightMainTitle = viewportHeight-2*heightNavBar;
+// var heightMainTitle = viewportHeight - 2*heightNavBar;
 // document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
 // document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
 
@@ -15,13 +14,12 @@
 // }
 
 
-// $( window ).resize(() => {
-//   viewportHeight = $(window).height(); 
-//   heightMainTitle = viewportHeight-2*heightNavBar;
-//   // main section index.hbs
-//   document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
-//   document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
-//  });
+$( window ).resize(() => {
+  // viewportHeight = $(window).height(); 
+  // heightMainTitle = viewportHeight-2*heightNavBar;
+  // document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
+  // document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
+ });
 
 
 var linkLogin = document.getElementById("my-login");
