@@ -130,10 +130,10 @@ margin: 20px 0 20px 20px;
 .form-group
 {
   margin: 0 20px;
+  width: 20%;
 }
 .form-group input
 {
-  width: 300px;
 }
 .form-group label
 {
@@ -146,23 +146,42 @@ margin: 20px 0 20px 20px;
   background-color: transparent;
   border-width: 0px;
   position: relative;
-  /* top: 20px; */
 }
 /* results */
 #results
 {
   list-style-type: none;
-  padding: 50px; 
+  padding: 50px 200px; 
 }
 #results li
 {
-  border: 3px #d8f8f5 solid;
+  border-bottom: 3px #567383 solid;
   padding: 50px;
   margin-bottom: 10px;
 }
-#results li .btn-info
+#results li .btn-outline-info
 {
   margin-right: 20px;
+}
+/* modal results */
+#results .modal-content .modal-body ul
+{
+  list-style-type: none;
+}
+#results .modal-content .modal-body ul li
+{
+  padding: 0;
+  margin: 0 0 0 0;
+  border-bottom: 0px solid transparent;
+}
+#results .modal-content .modal-body ul li.description
+{
+  font-weight: bolder;
+  font-size: 26px;
+}
+.right-container
+{
+  text-align: right;
 }
 /* Definim aquestes media-queries, per aplicar diferents tamanys de lletra */
 @media (min-width: 0px) {
@@ -185,3 +204,51 @@ margin: 20px 0 20px 20px;
   html { font-size: 24px; }
   
 }
+@media (max-width: 1100px) {
+  #results#results li .btn-outline-info
+  {
+    margin-bottom: 10px; 
+  }
+  #results
+  {
+    padding: 50px 80px;
+  }
+} 
+@media (max-width: 750px) {
+  #search-form
+  {
+    padding: 20px 0;
+  }
+  #filter
+  {
+    display:block;
+    text-align: center;
+    margin: auto;
+  }
+  .form-group
+  {
+    /* margin: 0 20px; */
+    width: 80%;
+    margin: 10px auto;
+    display: block;
+  }
+  #filter h2, #filter button#submit
+  {
+    display: block;
+    margin: 10px auto;
+  }
+} 
+@media (max-width: 600px) {
+  #results
+  {
+    padding: 10px; 
+  }
+  #results li div
+  {
+    text-align: center;
+  }
+  #results#results li .btn-outline-info
+  {
+    margin: 10px 5px 0;
+  }
+} 

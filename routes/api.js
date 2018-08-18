@@ -12,7 +12,6 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
       { _id: res.locals.users.demandingUser }, 
       { $push: { transactions: res.locals.transactionId } } )
     .then(updatedDemandingUser => {
-      // console.log('updatedDemandingUser: ',updatedDemandingUser);
       res.status(200);
       res.json({ message: 'ok' });
     })
@@ -27,9 +26,6 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
 router.get('/filter', Middleware.filter.filterByUsername, Middleware.filter.filterBySectorSubsector, (req, res, next) => {
   const activitiesByUserSectorSubsector = res.locals.activitiesByUserSectorSubsector;
   const activitiesBySectorSubsector = res.locals.activitiesBySectorSubsector;
-  console.log('/filter: ',activitiesByUserSectorSubsector);
-  console.log('/filter: ',activitiesBySectorSubsector);
-
 
   if(activitiesByUserSectorSubsector && activitiesByUserSectorSubsector.length > 0)
   {

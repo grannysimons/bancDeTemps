@@ -95,7 +95,7 @@ module.exports = {
           res.locals.messages.passwordsAreDifferent='';
           User.update({userName: res.locals.data.userName}, res.locals.userData)
           .then(user => {
-            console.log('user ' + req.body.userName + ' correctly updated: ', user);
+            // console.log('user ' + req.body.userName + ' correctly updated: ', user);
           })
           .catch(error => next(error));
 
@@ -127,7 +127,6 @@ module.exports = {
       .populate('offertedActivities')
       .populate('demandedActivities')
       .then(user => {
-        console.log('user: ', user);
         res.locals.offertedActivities = user.offertedActivities;
         res.locals.demandedActivities = user.demandedActivities;
         next();
@@ -139,45 +138,40 @@ module.exports = {
   },
   filter: {
     filterByUsername: (req, res, next) => {
-      console.log('filterByUserName');
       res.locals.activitiesByUserSectorSubsector = [];
       if(req.query.userName)
       {
-        User.find({userName: req.query.userName})
+        User.findOne({userName: req.query.userName})
         .populate('offertedActivities')
         .populate('demandedActivities')
         .then(user => {
           if(user)
           {
-            if(user[0].offertedActivities)
+            if(user.offertedActivities)
             {
-              for(let i=0; i<user[0].offertedActivities.length; i++)
+              for(let i=0; i<user.offertedActivities.length; i++)
               {
-                if((!req.query.sector && !req.query.subsector) || 
-                ((user[0].offertedActivities[i].sector == req.query.sector) 
-                  && (user[0].offertedActivities[i].subsector == req.query.subsector)) || 
-                ((user[0].offertedActivities[i].sector == req.query.sector) 
-                  && !req.query.subsector ) ||
-                (!req.query.sector && (user[0].offertedActivities[i].subsector === req.query.subsector)))
+                if((req.query.sector === '' && req.query.subsector === '') || 
+                ((user.offertedActivities[i].sector == req.query.sector) 
+                  && (user.offertedActivities[i].subsector == req.query.subsector)) || 
+                ((user.offertedActivities[i].sector == req.query.sector) 
+                  && req.query.subsector === '' ) ||
+                (req.query.sector === '' && (user.offertedActivities[i].subsector === req.query.subsector)))
                 {
-                  let activities = Object.assign(user[0].offertedActivities[i]);
-                  activities.user = user[0].userName;
-                  res.locals.activitiesByUserSectorSubsector.push(activities);
+                  res.locals.activitiesByUserSectorSubsector.push(user.offertedActivities[i]);
                 }
               }
             }
-            if(user[0].demandedActivities)
+            if(user.demandedActivities)
             {
-              for(let i=0; i<user[0].demandedActivities.length; i++)
+              for(let i=0; i<user.demandedActivities.length; i++)
               {
-                if((!req.query.sector && !req.query.subsector) || 
-                (user[0].demandedActivities[i].sector === req.query.sector && user[0].demandedActivities[i].subsector === req.query.subsector) || 
-                (user[0].demandedActivities[i].sector === req.query.sector && !req.query.subsector ) ||
-                (!req.query.sector && user[0].demandedActivities[i].subsector === req.query.subsector))
+                if((req.query.sector === '' && req.query.subsector === '') || 
+                (user.demandedActivities[i].sector === req.query.sector && user.demandedActivities[i].subsector === req.query.subsector) || 
+                (user.demandedActivities[i].sector === req.query.sector && req.query.subsector === '' ) ||
+                (req.query.sector === '' && user.demandedActivities[i].subsector === req.query.subsector))
                 {
-                  let activities = Object.assign({}, user[0].demandedActivities[i]);
-                  activities.user = user[0].userName;
-                  res.locals.activitiesByUserSectorSubsector.push(activities);
+                  res.locals.activitiesByUserSectorSubsector.push(user.demandedActivities[i]);
                 }
               }
             }
@@ -204,31 +198,12 @@ module.exports = {
         if (req.query.sector) filter.sector = req.query.sector;
         if (req.query.subsector) filter.subsector = req.query.subsector;
         Activity.find( filter )
+        .populate('idUser')
         .then(activities => {
-          if(activities.length > 0)
+          console.log(activities);
+          for(let i=0; i<activities.length; i++)
           {
-            for(let i=0; i<activities.length; i++)
-            {
-              const filter = {$or: [{demandedActivities: activities[i]._id,},{offertedActivities: activities[i]._id}]};
-              User.findOne(filter)
-              .then(user => {
-                // console.log('locals: ', res.locals);
-                const act = JSON.parse(JSON.stringify(activities[i]));
-                if(user)
-                {
-                  act.user = user.userName;
-                } 
-                else
-                {
-                  act.user = 'unknown user';
-                }
-                res.locals.activitiesBySectorSubsector.push(act);
-              })
-              .catch(error => next(error));
-            }
-
-            console.log('array: ',res.locals.activitiesByUserSectorSubsector);
-            console.log('array: ',res.locals.activitiesBySectorSubsector);
+            res.locals.activitiesBySectorSubsector.push(activities[i]);
           }
           next();
         })
@@ -237,7 +212,6 @@ module.exports = {
   },
   startRequest: {
     getInvolvedUser: (req, res, next) => {
-      console.log('getInvolvedUser');
       const idActivity = req.params.idAct;
       res.locals.idActivity = idActivity;
       User.findOne({offertedActivities: idActivity})
@@ -272,14 +246,12 @@ module.exports = {
       })
     },
     transactionExists: (req, res, next) => {
-      console.log('transactionExists');
       Transaction.findOne({
         idActivity: res.locals.idActivity,
         offertingUserId: res.locals.users.offertingUser,
         demandingUserId: res.locals.users.demandingUser ,
       })
       .then(transaction => {
-        console.log('1 locals', res.locals);
         if(!transaction)
         {
           next();
@@ -293,13 +265,11 @@ module.exports = {
       .catch(error =>{
         // const error = new Error("fdsafass"
         // next(error)
-        console.log('1 locals', res.locals);
         res.status(500);
         res.json({ error });
       })
     },
     createTransaction: (req, res, next) => {
-      console.log('createTransaction');
       Transaction.create({
         idActivity: res.locals.idActivity,
         offertingUserId: res.locals.users.offertingUser,
@@ -317,7 +287,6 @@ module.exports = {
     },
   },
   isLogged: (req, res, next) => {
-    console.log('isLogged');
     if(req.session.currentUser) next();
     else res.redirect('/');
   }

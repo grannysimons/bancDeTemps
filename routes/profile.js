@@ -46,6 +46,7 @@ router.post('/activityManager/:type', (req, res, next) => {
     description,
     tags,
     duration,
+    idUser: req.session.currentUser._id, 
   })
   .then(activity => {
     const pushFilter = type === 'offerted' ? {offertedActivities: activity._id} : {demandedActivities: activity._id}

@@ -18,6 +18,10 @@ activitySchema = new Schema({
     }
   }],
   duration: Number,
+  idUser: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
 });
 
 const Activity = mongoose.model('Activity', activitySchema);

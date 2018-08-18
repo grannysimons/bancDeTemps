@@ -65,6 +65,7 @@ function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
+  console.log(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`);
   axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   .then((act) => {
     document.getElementById('results').innerHTML = '';
@@ -72,12 +73,11 @@ function filter(){
     {
       for(let i=0; i<act.data.activities.length; i++)
       {
-        // console.log(act.data.activities[i]);
         let liElement = document.createElement('li');
         liElement.classList.add('row');
         document.getElementById('results').appendChild(liElement);
         let divLeft = document.createElement('div');
-        divLeft.classList.add('col-md-8');
+        divLeft.classList.add('col-sm-7');
         liElement.appendChild(divLeft);
   
         let divDescription = document.createElement('div');
@@ -88,12 +88,12 @@ function filter(){
         divLeft.appendChild(divDuration);
         
         let divRight = document.createElement('div');
-        divRight.classList.add('col-md-4');
+        divRight.classList.add('col-sm-5', 'right-container');
         liElement.appendChild(divRight);
   
         let buttonMoreInfo = document.createElement('button');
         buttonMoreInfo.setAttribute('type', 'button');
-        buttonMoreInfo.classList.add('btn', 'btn-info');
+        buttonMoreInfo.classList.add('btn', 'btn-outline-info');
         buttonMoreInfo.setAttribute('data-toggle', 'modal');
         buttonMoreInfo.setAttribute('data-target', '#activity'+i);
         buttonMoreInfo.innerHTML = 'More info';
@@ -125,22 +125,10 @@ function filter(){
         </div>
         <div class="modal-body">
           <ul>
-            <li>${act.data.activities[i].sector} / ${act.data.activities[i].subsector}</li>
-            <li>tags: `;
-              for(let j=0; j<act.data.activities[i].length; j++)
-              {
-                modalContent.innerHTML += act.data.activities[i][j];
-                if(i < act.data.activities[i].length) modalContent.innerHTML += ' / ';
-              }
-              // modalContent.innerHTML += '</li>';
-  
-              // modalContent.innerHTML += '<li>';
-              // timetable.setTimetableFinalStructure(act.data.activities[i].timetable);
-              // const timetable = timetable.fetTimetableArray();
-              // timetable.forEach((timetable, key) => {
-              //   if(timetable) modalContent.innerHTML += key,': from ',timetable.from,' to ', timetable.to;
-              // });
-              modalContent.innerHTML += `</li>
+            <li>sector/subsector: ${act.data.activities[i].sector} / ${act.data.activities[i].subsector}</li>
+            <li>user: ${act.data.activities[i].idUser.userName} </li>
+            <li class="description"> ${act.data.activities[i].description} </li>
+            <li>tags: ${act.data.activities[i].tags} </li>
           </ul>
         </div>`;
         innerModal.appendChild(modalContent);
@@ -155,13 +143,13 @@ function filter(){
           modalContent.appendChild(modalFooter);
           let buttonApplyModal = document.createElement('button');
           buttonApplyModal.setAttribute('type', 'button');
-          buttonApplyModal.classList.add('btn', 'btn-primary', dynamicClass);
+          buttonApplyModal.classList.add('btn', 'btn-outline-info', dynamicClass);
           buttonApplyModal.innerHTML = 'Apply';
           buttonApplyModal.addEventListener('click', apply);
           modalFooter.appendChild(buttonApplyModal);
   
           let buttonApply = document.createElement('button');
-          buttonApply.classList.add('btn', 'btn-info', dynamicClass);
+          buttonApply.classList.add('btn', 'btn-outline-info', dynamicClass);
           buttonApply.setAttribute('id', 'apply-'+i);
           buttonApply.addEventListener('click', apply);
           buttonApply.innerHTML = 'Apply';
@@ -176,7 +164,6 @@ function filter(){
     }
   })
   .catch(error => {
-    console.log(error);
     document.getElementById('results').innerHTML = "erroooor!" + error;
   })
 } 
