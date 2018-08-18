@@ -263,7 +263,10 @@ module.exports = {
         else
         {
           res.status(500);
-          res.json({ error: "transaction already exists"});
+          const error = `<div class="alert alert-warning" role="alert">
+              Transaction already exists
+            </div>`;
+          res.json({ error });
         }
       })
       .catch(error =>{

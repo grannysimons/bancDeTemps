@@ -163,7 +163,7 @@ function filter(){
     }
   })
   .catch(error => {
-    document.getElementById('results').innerHTML = "erroooor!" + error;
+    document.getElementById('results').innerHTML = "Error " + error;
   })
 } 
 
@@ -174,11 +174,14 @@ function apply(e){
   .then(act => {
     if (act.data.message === 'ok')
     {
-      document.getElementById('results').innerHTML = 'activitat '+idActivitat+' demanada correctament. Ara toca esperar';
+      const message = `<div class="alert alert-success" role="alert">
+        Correctly started transation. You must wait until the other user accepts
+      </div>`;
+      document.getElementById('results').innerHTML = message;
     }
     else
     {
-      document.getElementById('results').innerHTML = "1 erroooor!" + act.data.message;
+      document.getElementById('results').innerHTML = "Error " + act.data.message;
     }
   })
   .catch(error => {
