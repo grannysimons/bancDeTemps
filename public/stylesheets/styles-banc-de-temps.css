@@ -163,6 +163,17 @@ margin: 20px 0 20px 20px;
 {
   margin-right: 20px;
 }
+/* modal login */
+.user-login-box .form-group
+{
+  width: auto;
+  margin-bottom: 20px;
+}
+.user-login-box form button
+{
+  display: block;
+  margin-left: auto;
+}
 /* modal results */
 #results .modal-content .modal-body ul
 {
@@ -183,6 +194,45 @@ margin: 20px 0 20px 20px;
 {
   text-align: right;
 }
+/* edit profile */
+#editProfile
+{
+  padding: 40px 200px;
+}
+#editProfile h1
+{
+  margin-bottom: 60px;
+}
+.editProfile .form-group, #editProfile .address-group
+{
+  width: auto;
+  margin-bottom: 20px;
+}
+.editProfile .label-address
+{
+  font-weight: bolder;
+  margin-bottom: 30px;
+}
+/* signup */
+#signUp
+{
+  padding: 40px 200px;
+}
+#signUp h1
+{
+  margin-bottom: 60px;
+}
+.signUp .form-group, #signUp .address-group
+{
+  width: auto;
+  margin-bottom: 20px;
+}
+.signUp .label-address
+{
+  font-weight: bolder;
+  margin-bottom: 30px;
+}
+
 /* Definim aquestes media-queries, per aplicar diferents tamanys de lletra */
 @media (min-width: 0px) {
   html { font-size: 14px; } 

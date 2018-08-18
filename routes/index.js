@@ -78,13 +78,13 @@ router.post('/login', (req,res,next) => {
         .then((user) => {
             if(user)
             {   
-                console.log(user); 
-                console.log(user.lastName);
-                console.log(user.userName);
-                console.log(user.mail);
-                console.log('hem passat user.find'); 
-                console.log(`el password entrat per usuari és: ${password}`);
-                console.log(`el password de la BBDD és: ${user.password}`);
+                // console.log('user: ',user); 
+                // console.log(user.lastName);
+                // console.log(user.userName);
+                // console.log(user.mail);
+                // console.log('hem passat user.find'); 
+                // console.log(`el password entrat per usuari és: ${password}`);
+                // console.log(`el password de la BBDD és: ${user.password}`);
                 if(bcrypt.compareSync(password, user.password))
                 {
                     req.session.currentUser = user;

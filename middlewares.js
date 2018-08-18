@@ -54,13 +54,15 @@ module.exports = {
   },
   editProfile_get: {
     checkUserExists: (req, res, next) => {
-      // const currentUser = req.session.currentUser;
-      const currentUser = 'usernameee';
-      User.findOne({userName : currentUser})
+      console.log('checkUserExists');
+      // if(req.session.currentUser) next();
+      // else res.render('/');
+      const currentUser = req.session.currentUser;
+      User.findOne({userName : currentUser.userName})
       .then(user => {
         if(!user)
         {
-          res.render('index', { title: 'Express' });
+          res.render('/');
         }
         else
         {
@@ -71,6 +73,8 @@ module.exports = {
       .catch(error => next(error));
     },
     retrieveData: (req, res, next) => {
+      console.log('retrieveData ', req.session.currentUser);
+
       const { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, } = res.locals.user;
       res.locals.userPrevData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, }
       next();
@@ -93,7 +97,8 @@ module.exports = {
           res.locals.userData.password = hashedPassword;
           res.locals.userData.repeatedPassword = hashedPassword;
           res.locals.messages.passwordsAreDifferent='';
-          User.update({userName: res.locals.data.userName}, res.locals.userData)
+          console.log('userName: ', res.locals);
+          User.update({userName: res.locals.userData.userName}, res.locals.userData)
           .then(user => {
             // console.log('user ' + req.body.userName + ' correctly updated: ', user);
           })
@@ -200,7 +205,6 @@ module.exports = {
         Activity.find( filter )
         .populate('idUser')
         .then(activities => {
-          console.log(activities);
           for(let i=0; i<activities.length; i++)
           {
             res.locals.activitiesBySectorSubsector.push(activities[i]);

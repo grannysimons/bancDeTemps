@@ -1,116 +1,118 @@
-<h1>Sign up</h1>
-<form  action="/signup" method="post">
-  {{#if message.passwordsAreDifferent}}
-    <div class="alert alert-danger" role="alert">
-      Passwords are different. Write them again
-    </div>
-  {{/if}}
-  {{!-- <div class="form-group row">
-    <label for="name" class="col-md-2">Name</label>
-    <div class="col-md-10">
-      <input type="text" class="form-control" id="name" name="name" {{#if userData}} value="{{userData.name}}" {{/if}}>
-    </div>
-  </div>
-  <div class="form-group row">
-    <label for="lastName" class="col-md-2">Last name</label>
-    <div class="col-md-10">
-      <input type="text" class="form-control" id="lastName" name="lastName" {{#if userData}} value="{{userData.lastName}}" {{/if}}>
-    </div>
-  </div> --}}
-  <div class="form-group row">
-    <label for="userName" class="col-md-2">Username</label>
-    <div class="col-md-10">
-      <input type="text" class="form-control {{#if message.userAlreadyExists}} is-invalid {{/if}}" id="userName" name="userName" {{#if userData}} {{#unless message.userAlreadyExists}}value="{{userData.userName}}" {{/unless}}{{/if}}>
-      {{#if message.userAlreadyExists}}
-      <div class="invalid-feedback">
-        Please choose a valid username.
+<div id="signUp">
+  <h1>Sign up</h1>
+  <form  action="/signup" method="post" class="signUp">
+    {{#if message.passwordsAreDifferent}}
+      <div class="alert alert-danger" role="alert">
+        Passwords are different. Write them again
       </div>
-      {{/if}}
+    {{/if}}
+    {{!-- <div class="form-group row">
+      <label for="name" class="col-md-2">Name</label>
+      <div class="col-md-10">
+        <input type="text" class="form-control" id="name" name="name" {{#if userData}} value="{{userData.name}}" {{/if}}>
+      </div>
     </div>
-  </div>
-  <div class="form-group row">
-    <label for="mail" class="col-md-2">Mail</label>
-    <div class="col-md-10">
-      <input type="mail" class="form-control" id="mail" name="mail" {{#if userData}} value="{{userData.mail}}" {{/if}}>
+    <div class="form-group row">
+      <label for="lastName" class="col-md-2">Last name</label>
+      <div class="col-md-10">
+        <input type="text" class="form-control" id="lastName" name="lastName" {{#if userData}} value="{{userData.lastName}}" {{/if}}>
+      </div>
+    </div> --}}
+    <div class="form-group row">
+      <label for="userName" class="col-md-2">Username</label>
+      <div class="col-md-10">
+        <input type="text" class="form-control {{#if message.userAlreadyExists}} is-invalid {{/if}}" id="userName" name="userName" {{#if userData}} {{#unless message.userAlreadyExists}}value="{{userData.userName}}" {{/unless}}{{/if}}>
+        {{#if message.userAlreadyExists}}
+        <div class="invalid-feedback">
+          Please choose a valid username.
+        </div>
+        {{/if}}
+      </div>
     </div>
-  </div>
-  <div class="form-group row">
-    <label for="password" class="col-md-2">Password</label>
-    <div class="col-md-4">
-      <input type="password" class="form-control {{#if message.passwordsAreDifferent}} is-invalid {{/if}}" id="password" name="password">
+    <div class="form-group row">
+      <label for="mail" class="col-md-2">Mail</label>
+      <div class="col-md-10">
+        <input type="mail" class="form-control" id="mail" name="mail" {{#if userData}} value="{{userData.mail}}" {{/if}}>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="password" class="col-md-2">Password</label>
+      <div class="col-md-4">
+        <input type="password" class="form-control {{#if message.passwordsAreDifferent}} is-invalid {{/if}}" id="password" name="password">
+        {{#if message.passwordsAreDifferent}}
+          <div class="invalid-feedback">
+            Passwords are different. Write them again
+          </div>
+        {{/if}}
+      </div>
+      <label for="repeatPassword" class="col-md-2">Repeat password</label>
+      <div class="col-md-4">
+        <input type="password" class="form-control {{#if message.passwordsAreDifferent}} is-invalid {{/if}}" id="repeatPassword" name="repeatPassword">
       {{#if message.passwordsAreDifferent}}
         <div class="invalid-feedback">
           Passwords are different. Write them again
         </div>
       {{/if}}
-    </div>
-    <label for="repeatPassword" class="col-md-2">Repeat password</label>
-    <div class="col-md-4">
-      <input type="password" class="form-control {{#if message.passwordsAreDifferent}} is-invalid {{/if}}" id="repeatPassword" name="repeatPassword">
-    {{#if message.passwordsAreDifferent}}
-      <div class="invalid-feedback">
-        Passwords are different. Write them again
-      </div>
-    {{/if}}
-    </div>
-  </div>
-  {{!-- <div class="form-group address">
-    <div class="label-address">Address</div>
-    <div class="address-group row">
-      <label for="roadType" class="col-md-3">Road type</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" id="roadType" name="roadType" {{#if userData}} value="{{userData.direction.roadType}}" {{/if}}>
       </div>
     </div>
-    <div class="address-group row">
-      <label for="roadName" class="col-md-3">Road name</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" id="roadName" name="roadName" {{#if userData}} value="{{userData.direction.roadName}}" {{/if}}>
+    {{!-- <div class="form-group address">
+      <div class="label-address">Address</div>
+      <div class="address-group row">
+        <label for="roadType" class="col-md-3">Road type</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" id="roadType" name="roadType" {{#if userData}} value="{{userData.direction.roadType}}" {{/if}}>
+        </div>
+      </div>
+      <div class="address-group row">
+        <label for="roadName" class="col-md-3">Road name</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" id="roadName" name="roadName" {{#if userData}} value="{{userData.direction.roadName}}" {{/if}}>
+        </div>
+      </div>
+      <div class="address-group row">
+        <label for="number" class="col-md-3">Number</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" id="number" name="number" {{#if userData}} value="{{userData.direction.number}}" {{/if}}>
+        </div>
+      </div>
+      <div class="address-group row">
+        <label for="zipCode" class="col-md-3">Zip code</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" id="zipCode" name="zipCode" {{#if userData}} value="{{userData.direction.zipCode}}" {{/if}}>
+        </div>
+      </div>
+      <div class="address-group row">
+        <label for="city" class="col-md-3">City</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" id="city" name="city" {{#if userData}} value="{{userData.direction.city}}" {{/if}}>
+        </div>
+      </div>
+      <div class="address-group row">
+        <label for="province" class="col-md-3">Province</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" id="province" name="province" {{#if userData}} value="{{userData.direction.province}}" {{/if}}>
+        </div>
+      </div>
+      <div class="address-group row">
+        <label for="state" class="col-md-3">State</label>
+        <div class="col-md-9">
+          <input type="text" class="form-control" id="state" name="state" {{#if userData}} value="{{userData.direction.state}}" {{/if}}>
+        </div>
       </div>
     </div>
-    <div class="address-group row">
-      <label for="number" class="col-md-3">Number</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" id="number" name="number" {{#if userData}} value="{{userData.direction.number}}" {{/if}}>
+    <div class="form-group row">
+      <label for="contactTel" class="col-md-2">Contact Telephone</label>
+      <div class="col-md-10">
+        <input type="mail" class="form-control" id="contactTel" name="contactTel" {{#if userData}} value="{{userData.contactTel}}" {{/if}}>
       </div>
     </div>
-    <div class="address-group row">
-      <label for="zipCode" class="col-md-3">Zip code</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" id="zipCode" name="zipCode" {{#if userData}} value="{{userData.direction.zipCode}}" {{/if}}>
+    <div class="form-group row">
+      <label for="personalIntroducing" class="col-md-2">Introduce Yourself</label>
+      <div class="col-md-10">
+        <textarea class="form-control" id="personalIntroducing" name="personalIntroducing">{{#if userData}} {{userData.personalIntroducing}} {{/if}}</textarea>
       </div>
-    </div>
-    <div class="address-group row">
-      <label for="city" class="col-md-3">City</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" id="city" name="city" {{#if userData}} value="{{userData.direction.city}}" {{/if}}>
-      </div>
-    </div>
-    <div class="address-group row">
-      <label for="province" class="col-md-3">Province</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" id="province" name="province" {{#if userData}} value="{{userData.direction.province}}" {{/if}}>
-      </div>
-    </div>
-    <div class="address-group row">
-      <label for="state" class="col-md-3">State</label>
-      <div class="col-md-9">
-        <input type="text" class="form-control" id="state" name="state" {{#if userData}} value="{{userData.direction.state}}" {{/if}}>
-      </div>
-    </div>
-  </div>
-  <div class="form-group row">
-    <label for="contactTel" class="col-md-2">Contact Telephone</label>
-    <div class="col-md-10">
-      <input type="mail" class="form-control" id="contactTel" name="contactTel" {{#if userData}} value="{{userData.contactTel}}" {{/if}}>
-    </div>
-  </div>
-  <div class="form-group row">
-    <label for="personalIntroducing" class="col-md-2">Introduce Yourself</label>
-    <div class="col-md-10">
-      <textarea class="form-control" id="personalIntroducing" name="personalIntroducing">{{#if userData}} {{userData.personalIntroducing}} {{/if}}</textarea>
-    </div>
-  </div> --}}
+    </div> --}}
 
-  <button type="submit" class="btn-lg btn-primary">Sign up</button>
-</form>
+    <button type="submit" class="btn-lg btn-primary">Sign up</button>
+  </form>
+</div>

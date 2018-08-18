@@ -65,7 +65,6 @@ function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
-  console.log(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`);
   axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   .then((act) => {
     document.getElementById('results').innerHTML = '';
