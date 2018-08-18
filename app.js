@@ -58,6 +58,7 @@ app.use('/profile', profileRouter);
 app.use('/api', apiRouter);
 app.use('/login', indexRouter);
 app.use('/logout', indexRouter);
+app.use('/transaction', indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -19,19 +19,19 @@ html {
 
 @media (min-width: 576px) {
   /* font-size: 160%; */
-  html { font-size: 16px; }
+  html { font-size: 14px; }
 }
 @media (min-width: 768px) {
   /* font-size: 180%; */
-  html { font-size: 18px; }
+  html { font-size: 16px; }
 }
 @media (min-width: 992px) {
   /* font-size: 200%; */
-  html { font-size: 20px; }
+  html { font-size: 16px; }
 }
 @media (min-width: 1200px) {
   /* font-size: 240%; */
-  html { font-size: 24px; }
+  html { font-size: 18px; }
   
 }
 
@@ -90,8 +90,8 @@ h6 {font-size: 0.6rem;}
 }
 
 .transaction-paragraf {
-  margin: 5px 0 5px 0;
-  font-size: 0.8rem;
+  margin: 1px 0 1px 20px;
+  
 }
 
 #transaction-container {
@@ -106,4 +106,31 @@ h6 {font-size: 0.6rem;}
   width: 100%;
   text-align: right;
 }
+
+/* View .transaction */
+
+#usrName {
+  width: 400px;
+}
+
+#search-user-in-transactionManager {
+  margin: 10px 0 10px 20px;
+}
+
+.activity-in-transactionManager {
+  margin: 30px 0 10px 10px;
+}
+
+/* #getResult2 {
+  margin: 30px 0 10px 10px;
+} */
+
+#getResult2 p {
+  margin: 0 0 0 10px;
+}
+
+#getResult2 button {
+  margin: 0 0 0 10px;
+}
+
 

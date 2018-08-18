@@ -1,0 +1,40 @@
+<div class="panel panel-primary" id="search-user-in-transactionManager">
+        <div class="panel-heading">Search User Name to apply for transaction:</div>
+        <div class="panel-body">
+          <input type="text" class="form-control" id="usrName" placeholder="..."><br/>
+          <button class="btn btn-primary" onclick="performGetRequest2()">search</button>
+          <button class="btn btn-warning" onclick="clearOutput()">Clear</button>
+          <div class="panel-body" id="getResult2"></div>
+        </div>
+</div>
+
+<h2 class="transaction-paragraf"><u>List of Transactions</u></h2>
+
+ {{#each transactions}}
+            
+            <p class="transaction-paragraf"><span><b>Transaction #{{@index}} {{state}}</b></span><span class="status">Status: {{ state }}</span></p>
+            <p class="transaction-paragraf">Description: {{ idActivity.description }}</p>
+            <p class="transaction-paragraf">User Demanding: {{ demandingUserId.userName }}
+            <p class="transaction-paragraf">Sector: {{ idActivity.sector }}</p>
+            <p class="transaction-paragraf">Subsector: {{ idActivity.subsector }}</p> 
+            <p class="transaction-paragraf">Duration: {{ idActivity.duration }} hour</p>
+            <button class="btn btn-primary" onclick="seelistActivities(this)">See list Activities</button>
+            <button class="btn btn-warning" onclick="clearOutput()">Reject</button>
+            {{!-- <hr style="height:2px> --}}
+            
+          {{/each}}
+
+
+{{!-- <div id="search-user-in-transactionManager" class="form-group">
+  <form id="filterUserActivities">
+    <label for="usrName">Search User Name to apply for transaction:</label>
+    <input type="text" class="form-control d-inline" id="usrName">
+    <button id="submit" type="button" class="btn btn-primary d-inline">Search</button>
+  </form>  
+</div> --}}
+{{!-- <ul id="results-activities">
+  <li></li>
+</ul> --}}
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/javascripts/main.js"></script>

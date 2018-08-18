@@ -6,6 +6,7 @@ const Messages = require('../messages');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { error: {empty, userExist, userNotExist,errorMessage} } = require('../message');
+const Middlewares = require('../middlewares');
 
 const mongoose = require('mongoose');
 const dbName = 'timeBank';
@@ -115,6 +116,17 @@ router.get('/logout', (req, res, next) => {
   console.log('hem entrat al logout');  
   delete req.session.currentUser;
   res.redirect('/');
+})
+
+/* GET transactions. */
+router.get('/transactions', Middlewares.TransactionManager.getTransactions, (req, res, next) => {
+    const userData = res.locals.user;
+    
+    console.log('aixo es el que veiem al render');
+    console.log(userData.transactions[0]); 
+    res.render('transactions',userData);
+    
+
 })
 
 module.exports = router;

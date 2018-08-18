@@ -4,6 +4,8 @@ const Transaction = require('./models/transaction');
 const Activity = require('./models/activity');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+// var deepPopulate = require('mongoose-deep-populate')(mongoose);
+// PostSchema.plugin(deepPopulate, options /* more on options below */);
 
 module.exports = {
   signUp: {
@@ -277,5 +279,99 @@ module.exports = {
     console.log('isLogged');
     if(req.session.currentUser) next();
     else res.redirect('/');
-  }
+  },
+  TransactionManager: {
+    getTransactions: (req, res, next) => {
+      const currentUser = req.session.currentUser;
+      // User.findOne({userName: currentUser.userName})
+      // .populate('transactions')
+
+      User.findOne({userName: currentUser.userName})
+      .lean()
+      .populate({ path: 'transactions' })
+      .exec(function(err, docs) {
+
+        var options = [{
+        path: 'transactions.idActivity',
+        model: 'Activity'
+        },
+        {
+        path: 'transactions.demandingUserId',
+        model: 'User'
+        }
+      ];
+
+
+        if (err) return res.json(500);
+        User.populate(docs, options, function (err, projects) {
+        res.locals.user = projects;
+        console.log('projects', projects);
+        //  res.json(projects);
+        next();
+      // res.json(projects);
+        });
+        }) 
+
+      
+
+      // .then(user => {
+      //   console.log('user: ', user);
+      //   // res.locals.transactions = user.transactions;
+      //   // res.locals.demandedActivities = user.demandedActivities;
+      //   next();
+      // })
+      // .catch(error => {
+      //   next(error);
+      // })
+    }
+  },
+  // Aquest middleware de moment no l'utilitzem, perque ja el l'hem anidat en el de dalt. D'aquesta forma ens evitem haver de passar dades entre middlewares
+  insertNewTransaction: {
+    insertTransaction: (req, res, next) => {
+      const {offertingUserId,demandingUserId,activityId,status} = req.body;
+      console.log('hem entrat al POST per crear la transacció!!!');
+      console.log(offertingUserId,demandingUserId,activityId,status);
+      Transaction.create({
+        idActivity: activityId,
+        offertingUserId: offertingUserId,
+        demandingUserId: demandingUserId,
+        state: status,
+      })
+      .then(createdTransaction => {
+      
+        let transactionId = createdTransaction._id;
+        console.log('hem creat la transaccio. El transaction_id es:',transactionId);
+        console.log('hem creat la transaccio. El offertingUser_id es:',offertingUserId);
+        // updateUserTransactionArray(req,res,next,transactionId);
+        User.findByIdAndUpdate(offertingUserId,{$push: {transactions: transactionId}})  
+        .then(user => {
+        console.log('array de transaccions usuari:', user);
+        next();
+        })
+        .catch( (error) => {
+          console.log('No ha fet el update del transactionId dins user');
+          next(error);
+        });
+        
+        
+      })
+      .catch(error => next(error));
+      
+
+    },
+    updateUserTransactionArray: (req,res,next,transactionId) => {
+      var {offertingUserId,demandingUserId,activityId,status} = req.body;
+      console.log('vemos si pasan las variables');
+      console.log(offertingUserId,demandingUserId,activityId,status);
+      console.log('vemos si pasa el transactionId',res.locals.transactionId);
+      User.findByIdAndUpdate({offertingUserId},{$push: {transactions: transactionId}})  
+      .then(user => {
+        console.log('array de transaccions usuari:', user);
+        next();
+      })
+      .catch(error => next(error));
+
+    }
+
+  }   
 };
