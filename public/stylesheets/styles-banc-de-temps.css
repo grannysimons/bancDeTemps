@@ -147,6 +147,21 @@ margin: 20px 0 20px 20px;
   border-width: 0px;
   position: relative;
 }
+footer
+{
+  background-color: #2a3b43;
+  color: white;
+  padding: 60px;
+}
+footer #logo
+{
+  width: 20%;
+}
+footer .footer-names
+{
+  text-align: right;
+  font-size: 20px;
+}
 /* results */
 #results
 {
@@ -232,7 +247,45 @@ margin: 20px 0 20px 20px;
   font-weight: bolder;
   margin-bottom: 30px;
 }
-
+/* activity manager */
+.activityManager
+{
+  padding: 40px 200px;
+}
+.activityManager h1
+{
+  margin-bottom: 60px;
+}
+.activityManager h2
+{
+  font-size: 24px;
+  margin: 60px 0;
+}
+.activityManager .modal-body input
+{
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.activityManager ul.activityList>li
+{
+  list-style-type: none;
+  border-bottom: 3px #567383 solid;
+  padding: 40px;
+  position: relative;
+}
+.activityManager form.delete
+{
+  display: inline;
+  position: absolute;
+  top: 50px;
+  right: 20px;
+}
+.activityManager button.add
+{
+  display: block;
+  margin-left: auto;
+}
 /* Definim aquestes media-queries, per aplicar diferents tamanys de lletra */
 @media (min-width: 0px) {
   html { font-size: 14px; } 

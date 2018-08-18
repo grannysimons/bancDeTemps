@@ -39,7 +39,7 @@
             <a class="dropdown-item" href="/signup">Sign-up</a>
             <a class="dropdown-item" data-toggle="modal" href="#myModal">Login</a>
             {{/unless}} {{#if currentUser}}
-            <a class="dropdown-item" href="#search-form">Search</a>
+            <a class="dropdown-item" href="/#search-form">Search</a>
             {{/if}} {{#if currentUser}}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/profile/edit">Edit Profile</a>
@@ -88,7 +88,7 @@
                 <input type="password" class="form-control" placeholder="Password" id="password" name="password">
               </div>
 
-              <button type="button" onclick="loginFormSubmit()" class="btn btn-primary">Login</button>
+              <button type="button" onclick="loginFormSubmit()" class="btn btn-outline-info">Login</button>
             </form>
           </div>
         </div>
@@ -96,7 +96,18 @@
     </div>
   </div>
 
-  {{{body}}} {{!--
+  {{{body}}} 
+  
+  <footer class="row">
+    <div class="col-sm-4">
+      <img src="images/ironhack.png" alt="" id="logo">
+    </div>
+    <div class="col-sm-8 footer-names">
+      Albert Ferrer<br>
+      Mariona Roca
+    </div>
+  </footer>
+  {{!--
   <!-- Optional JavaScript -->--}} {{!--
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->--}}
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
