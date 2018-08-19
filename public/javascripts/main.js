@@ -1,5 +1,5 @@
 // import timetable from '../../timetable';
-
+var map;
 window.addEventListener('load', ()=>{
   filter();
   document.querySelector('#filter #submit').addEventListener('click', filter);
@@ -46,6 +46,11 @@ window.addEventListener('load', ()=>{
   return -c/2 * (t*(t-2) - 1) + b;
   };
 
+  mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
+  map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v9'
+  });
 });
 
 window.onbeforeunload = function () {
@@ -351,4 +356,4 @@ const user = document.getElementById('usrName').value;
   
 
 
- 
+    
