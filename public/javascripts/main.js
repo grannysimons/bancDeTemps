@@ -47,10 +47,19 @@ window.addEventListener('load', ()=>{
   };
 
   mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
-  map = new mapboxgl.Map({
-      container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v9'
-  });
+  
+  if(navigator.geolocation)
+  {
+    navigator.geolocation.getCurrentPosition(position => {
+      const point = [position.coords.longitude, position.coords.latitude];
+      map = new mapboxgl.Map({
+          container: 'map',
+          style: 'mapbox://styles/mapbox/streets-v10',
+          zoom: 15,
+          center: point
+      });
+    });
+  }
 });
 
 window.onbeforeunload = function () {

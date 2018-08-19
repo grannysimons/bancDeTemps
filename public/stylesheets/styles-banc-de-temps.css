@@ -162,6 +162,11 @@ footer .footer-names
   text-align: right;
   font-size: 20px;
 }
+#map
+{
+  width: 100%; 
+  height: 500px;
+}
 
 /* results */
 #results
