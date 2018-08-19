@@ -162,6 +162,7 @@ footer .footer-names
   text-align: right;
   font-size: 20px;
 }
+
 /* results */
 #results
 {
@@ -331,7 +332,18 @@ footer .footer-names
   text-align: right;
 }
 
-
+/* #text-banc h1
+{
+  margin-top: 150px;
+  font-family: 'Berkshire Swash', cursive !important;
+  font-size: 100px;
+  color: white;
+}
+#text-banc h2
+{
+  color: white;
+  font-family: 'Berkshire Swash', cursive;
+} */
 /* Definim aquestes media-queries, per aplicar diferents tamanys de lletra */
 @media (min-width: 0px) {
   html { font-size: 14px; } 

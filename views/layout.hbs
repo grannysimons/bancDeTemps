@@ -38,16 +38,20 @@
             {{#unless currentUser}}
             <a class="dropdown-item" href="/signup">Sign-up</a>
             <a class="dropdown-item" data-toggle="modal" href="#myModal">Login</a>
-            {{/unless}} {{#if currentUser}}
+            {{/unless}} 
+            {{#if currentUser}}
             <a class="dropdown-item" href="/#search-form">Search</a>
-            {{/if}} {{#if currentUser}}
+            {{/if}} 
+            {{#if currentUser}}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/profile/edit">Edit Profile</a>
             <a class="dropdown-item" href="/profile/activityManager">Activity Manager</a>
             <a class="dropdown-item" href="/transactions">Transaction Manager</a>
             {{/if}}
+            {{#if currentUser}}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/logout">Logout</a>
+            {{/if}}
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="/">Home</a>
 
