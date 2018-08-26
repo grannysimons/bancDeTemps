@@ -2,27 +2,48 @@
         <div class="panel-heading">Search User Name to apply for transaction:</div>
         <div class="panel-body">
           <input type="text" class="form-control" id="usrName" placeholder="..."><br/>
-          <button class="btn btn-primary" onclick="performGetRequest2()">search</button>
-          <button class="btn btn-warning" onclick="clearOutput()">Clear</button>
+          <button class="btn btn-outline-info" onclick="performGetRequest2()">Search</button>
+          <button class="btn btn-outline-info" onclick="clearOutput()">Clear</button>
           <div class="panel-body" id="getResult2"></div>
         </div>
 </div>
 
-<h2 class="transaction-paragraf"><u>List of Transactions</u></h2>
+<h2 class="transaction-title"><u>Status of pending Transactions</u></h2>
 
- {{#each transactions}}
-            
-            <p class="transaction-paragraf"><span><b>Transaction #{{@index}} {{state}}</b></span><span class="status">Status: {{ state }}</span></p>
-            <p class="transaction-paragraf">Description: {{ idActivity.description }}</p>
-            <p class="transaction-paragraf">User Demanding: {{ demandingUserId.userName }}
-            <p class="transaction-paragraf">Sector: {{ idActivity.sector }}</p>
-            <p class="transaction-paragraf">Subsector: {{ idActivity.subsector }}</p> 
-            <p class="transaction-paragraf">Duration: {{ idActivity.duration }} hour</p>
-            <button class="btn btn-primary" onclick="seelistActivities(this)">See list Activities</button>
-            <button class="btn btn-warning" onclick="clearOutput()">Reject</button>
-            {{!-- <hr style="height:2px> --}}
-            
-          {{/each}}
+<div class="transaction-container">
+  {{#each transactions}}
+
+    <div class="transaction-item" data-transaction="{{this._id}}" id="transaction-item-{{@index}}">
+      <p class="transaction-paragraf"><span><b>Transaction #{{@index}} {{state}}</b></span><span class="status">Status: {{ state }}</span></p>
+      <p class="transaction-paragraf">Description: {{ idActivity.description }}</p>
+      <p class="transaction-paragraf">User Demanding: {{ demandingUserId.userName }}
+      <p class="transaction-paragraf">Sector: {{ idActivity.sector }}</p>
+      <p class="transaction-paragraf">Subsector: {{ idActivity.subsector }}</p> 
+      <p class="transaction-paragraf">Duration: {{ idActivity.duration }} hour</p>
+      <button class="btn btn-outline-info transaction-paragraf" onclick="seeListActivities(this)">See list Activities of User: {{ demandingUserId.userName }} </button>
+      <button class="btn btn-outline-info transaction-paragraf" onclick="clearOutput()">Reject</button>
+      {{!-- we print the activities and hide them --}}
+      <div class="activity-container no-visible-container" id="activity-container-{{@index}}" data-index="{{@index}}">
+      {{#each demandingUserId.offertedActivities}}
+        <div id="activity-item-{{@index}}" data-activity="{{this._id}}" data-index="{{@index}}">
+          <p class="activity-paragraf">Activity #{{@index}}</p>
+          <p class="activity-paragraf">Description: {{this.description}}</p>
+          <p class="activity-paragraf">Sector: {{this.sector}}</p>
+          <p class="activity-paragraf">Subsector: {{this.subsector}}</p>
+          <p class="activity-paragraf">Duration: {{this.duration}}</p>
+          <button class="btn btn-outline-info" onclick="applyForNewTransaction(this)" data-index="{{@index}}">Apply for Activity </button>
+        </div>
+      {{/each}}
+      </div>
+
+
+      <svg width=100% height="8">
+        <line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/>
+      </svg>
+      {{!-- <hr style="height:2px> --}}
+    </div>
+  {{/each}}
+</div>
 
 
 {{!-- <div id="search-user-in-transactionManager" class="form-group">
@@ -38,3 +59,4 @@
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="/javascripts/main.js"></script>
+

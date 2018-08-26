@@ -87,6 +87,20 @@ router.get('/getUserId', (req,res,next) => {
       })
 });
 
+router.get('/acceptSecondLegTransaction', Middleware.acceptProposedTransaction.getTransactionInfo,Middleware.acceptProposedTransaction.insertSecondTransaction,Middleware.acceptProposedTransaction.updateFirstTransaction, (req,res,next) => {
+  console.log('Hem fet tots els passos per insertar la nova transacció');
+  // const transactionId = req.query.transactionId;
+  // console.log('el transactionId passat es: ',transactionId); 
+  // Transaction.findOne({_id: transactionId})
+  //     .then(transaction => {
+  //       res.json({transactionId});
+  //       next();
+  //     })
+  //     .catch(error => {
+  //       next(error);
+  //     })
+});
+
 router.post('/insertNewTransaction',Middleware.insertNewTransaction.insertTransaction, (req, res, next) => { 
   console.log('Hem fet tots els middlewares');
 

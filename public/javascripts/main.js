@@ -255,7 +255,7 @@ const user = document.getElementById('usrName').value;
     const sector = "";
     const subSector = "";
     
-        console.log('el valor de demanding user es:',demandingUserId);
+    console.log('el valor de demanding user es:',demandingUserId);
     console.log('estem dins de AXIOS');
     // we need to get the user_id in order to create the transaction later
     axios.get(`http://localhost:3000/api/getUserId?userName=${usrName}`)
@@ -306,6 +306,7 @@ const user = document.getElementById('usrName').value;
             divElement.classList.add('activity-in-transactionManager');
             let buttonElement = document.createElement('button');
             buttonElement.innerHTML = 'Apply for transaction';
+            buttonElement.classList.add('btn', 'btn-outline-info');
             buttonElement.setAttribute('id', 'applytransaction-'+i);
             buttonElement.setAttribute('numActivity',i);
             buttonElement.setAttribute('dataprofile',myJsonData);
@@ -357,8 +358,55 @@ const user = document.getElementById('usrName').value;
 
   }
 
-
+  function seeListActivities(element) {
+    // let visibleStatus = element.getAttribute('data-status');
+    let transactionElement = element.parentNode;
+    let activityContainer = transactionElement.querySelector('.activity-container');
+    // console.log('el estado de vista de actividades es',visibleStatus);
     
+    if ( $(activityContainer).hasClass('no-visible-container') )
+      { 
+        // We want to show the list of activities
+        $(activityContainer).addClass('visible-container');
+        $(activityContainer).removeClass('no-visible-container');
+      // element.setAttribute('data-status','visible');
+        element.innerHTML = "Hide list of activities";
+      } else {
+        // we want to hide the list of activities
+        $(activityContainer).addClass('no-visible-container');
+        $(activityContainer).removeClass('visible-container');
+      // element.setAttribute('data-status','visible');
+        element.innerHTML = "See list of activities";
+
+      }
+
+  }
+  
+  // we have been demanded for a service we offer, and we choose an activity offered by the user
+  function applyForNewTransaction(element) {
+    let ActivityElement = element.parentNode;
+    let ActivityContainer = ActivityElement.parentNode;
+    let transactionElement = ActivityContainer.parentNode;
+
+    // we need the _id of activity
+    let activityId = ActivityElement.getAttribute('data-activity');
+    let transactionId = transactionElement.getAttribute('data-transaction');
+    
+    console.log('el _id de activitat es:',activityId);
+    console.log('el _id de transaction es:',transactionId);
+
+    axios.get(`http://localhost:3000/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
+    .then((response) => {
+      console.log('aquesta es la resposta:',response);
+          
+    })
+    .catch((error) => {
+      console.log(error);
+      alert('there has been an error', error);
+      // resultElement.innerHTML = generateErrorHTMLOutput(error);
+    });
+    
+  }
 
     // now we have to create a new transaction into BBDD
 

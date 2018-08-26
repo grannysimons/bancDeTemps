@@ -305,31 +305,75 @@ module.exports = {
       // User.findOne({userName: currentUser.userName})
       // .populate('transactions')
 
-      User.findOne({userName: currentUser.userName})
-      .lean()
-      .populate({ path: 'transactions' })
-      .exec(function(err, docs) {
+      // User.findOne({userName: currentUser.userName})
+      // .lean()
+      // .populate({ path: 'transactions' })
+      // .exec(function(err, docs) {
 
-        var options = [{
-        path: 'transactions.idActivity',
-        model: 'Activity'
+      //   var options = [{
+      //   path: 'transactions.idActivity',
+      //   model: 'Activity'
+      //   },
+      //   {
+      //   path: 'transactions.demandingUserId',
+      //   model: 'User'
+      //   }
+      //   ];
+
+
+      //   if (err) return res.json(500);
+      //   User.populate(docs, options, function (err, projects) {
+      //   res.locals.user = projects;
+      //   console.log('projects', projects);
+      //   //  res.json(projects);
+      //   next();
+      //    // res.json(projects);
+      //   });
+      // }) 
+
+
+      // funciona be aquest
+      User.findOne({userName: currentUser.userName})
+      // .lean()
+      .populate({ 
+        path: 'transactions',
+        populate: [{
+          path: 'demandingUserId',
+          populate: {
+            path: 'offertedActivities',
+            
+          }
         },
         {
-        path: 'transactions.demandingUserId',
-        model: 'User'
-        }
-      ];
+          path: 'idActivity',
+        }]
 
-
+        
+      }).exec((err, adventure) => {
         if (err) return res.json(500);
-        User.populate(docs, options, function (err, projects) {
-        res.locals.user = projects;
-        console.log('projects', projects);
-        //  res.json(projects);
+        console.log('aquests son els valors de adventures-3', adventure.transactions[0].idActivity);
+        // console.log('aquests son els valors de adventures-2', adventure.transactions[0].demandingUserId);
+        res.locals.user = adventure;
         next();
-      // res.json(projects);
-        });
-        }) 
+
+      });
+      
+      
+
+//       Model.find()
+//       .populate({
+//         path: 'replies',
+//     populate: [{
+//       path: 'user',
+//       select: 'displayName username'
+//     }, {
+//       path: 'replies',
+//       populate: {
+//         path: 'user',
+//         select: 'displayName username'
+//       }
+//     }]
+// }).exec(...
 
       
 
@@ -392,5 +436,69 @@ module.exports = {
 
     }
 
-  }   
-};
+    },
+    // with acceptProposedTransaction we accept the transaction and we choose an activity from the user who is demanding our activity  
+    acceptProposedTransaction: {
+      getTransactionInfo: (req, res, next) => {
+        const transactionId = req.query.transactionId;
+        const activityId = req.query.activityId;
+        console.log('el transactionId passat es: ',transactionId); 
+        Transaction.findOne({_id: transactionId})
+            .then(transaction => {
+              res.locals.transactionInfo = transaction;
+              res.locals.activityId = activityId;
+              next();
+            })
+            .catch(error => {
+              next(error);
+            })
+        
+
+      },
+      insertSecondTransaction: (req, res, next) => {
+        // const transactionId = req.query.transactionId;
+        const activityId = req.query.activityId;
+        console.log('el activityId passat es: ',activityId); 
+        let dataTransaction = new Transaction ({
+          idActivity: activityId,
+          offertingUserId: res.locals.transactionInfo.demandingUserId,
+          demandingUserId: res.locals.transactionInfo.offertingUserId,
+          state: 'Accepted',
+          idTransactionInvolved: res.locals.transactionInfo._id
+        });
+
+        //we use 'save' method because we get the _id we need to inser into the other transaction
+        dataTransaction.save()
+        .then(result => {
+          res.locals.transactionIdSecondTransaction = result._id;
+          console.log(result._id);  // this will be the new created ObjectId
+          next();
+        })
+        .catch(error => {
+          next(error);
+        })
+    },
+    updateFirstTransaction: (req, res, next) => {
+      let transactionId1 = res.locals.transactionInfo._id
+      let transactionId2 = res.locals.transactionIdSecondTransaction; 
+      console.log('el transactionId2 passat es: ',transactionId2); 
+
+      //we have to update first transaction with the transaction_id of second. So, they are related
+      let conditions = { _id: transactionId1 }
+          , update = { idTransactionsInvolved: transactionId2, state: 'Accepted'}
+          , options = { multi: false };
+
+      Transaction.update(conditions, update, options)
+      .then(numAffected => {
+        console.log('el numero de files update es:', numAffected);
+        next();
+      })
+      .catch(error => {
+        next(error);
+      })
+    }
+  }
+}
+
+
+

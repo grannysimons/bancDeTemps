@@ -319,23 +319,93 @@ footer .footer-names
   margin: 0 0 0 10px;
 }
 
-.transaction-paragraf {
-  margin: 1px 0 1px 20px;
-  
-}
 
-#transaction-container {
+
+/* List of current Transactions */
+
+
+/* #transaction-container {
   position: relative;
-  margin: 10px 0 0 0;
+  margin: 20px 0 0 0;
+} */
+
+.transaction-title {
+  padding: 50px 0;
+  margin: 0 0 0 20px;
 }
 
-.status {
+
+
+.transaction-item {
+  position: relative;
+  margin: 20px 0 20px 0;
+  padding: 0 0 30px 0;
+  /* border-bottom: 3px solid #567383; */
+}
+
+.transaction-item .status {
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   text-align: right;
 }
+
+.transaction-item svg {
+  margin: 40px 0 0 0;
+}
+
+.transaction-paragraf {
+  margin: 1px 0 1px 20px;
+}
+
+/* List of user activities */
+
+/* we hide the information of the container */
+.no-visible-container {
+  display: none;
+}
+
+/* we show the information of the container */
+.visible-container {
+  display: block;
+}
+
+.activity-container {
+  width: 100%;
+  /* border: 3px solid green; */
+
+
+  /* display: none; */
+  
+}
+
+.activity-container > div {
+  position: relative;
+  width: 60%;
+  min-width: 300px;
+  margin: 20px 0 20px 100px;
+  padding: 0 0 20px 0;
+  background-color: #666699;
+  /* border: 3px solid red; */
+}
+
+.activity-container > div > button {
+  position: absolute;
+  left: 102%;
+  top: 1px;
+}
+
+.activity-paragraf {
+  margin: 1px 0 1px 20px;
+  color: white;
+}
+
+.activity-button {
+  margin: 1px 0 1px 20px;
+  
+}
+
 
 /* #text-banc h1
 {
