@@ -138,7 +138,6 @@ module.exports = {
       .then(activities => {
         res.locals.offertedActivities = [];
         res.locals.demandedActivities = [];
-        console.log('activities ', activities);
         if(activities)
         {
           for(let i=0; i<activities.length; i++)
@@ -147,23 +146,9 @@ module.exports = {
             else if(activities[i].type === 'demanded') res.locals.demandedActivities.push(activities[i]);
           }
         }
-        console.log('activitats ofertades: ', res.locals.offertedActivities);
-        console.log('activitats demandades: ', res.locals.demandedActivities);
         next();
       })
       .catch(error => next(error))
-
-      // User.findOne({userName: currentUser.userName})
-      // .populate('offertedActivities')
-      // .populate('demandedActivities')
-      // .then(user => {
-      //   res.locals.offertedActivities = user.offertedActivities;
-      //   res.locals.demandedActivities = user.demandedActivities;
-      //   next();
-      // })
-      // .catch(error => {
-      //   next(error);
-      // })
     }
   },
   filter: {
@@ -171,44 +156,25 @@ module.exports = {
       res.locals.activitiesByUserSectorSubsector = [];
       if(req.query.userName)
       {
-        User.findOne({userName: req.query.userName})
-        .populate('offertedActivities')
-        .populate('demandedActivities')
-        .then(user => {
-          if(user)
-          {
-            if(user.offertedActivities)
+        let filter = {$and: []};
+        if(req.query.sector) filter.$and.push({sector: req.query.sector});
+        else if(req.query.subsector) filter.$and.push({sector: req.query.subsector});
+        else filter = {};
+        Activity.find(filter)
+        .populate('idUser')
+        .then(activities => {
+          res.locals.activitiesByUserSectorSubsector = [];
+          activities.forEach(activity => {
+            if(activity.idUser.userName === req.query.userName)
             {
-              for(let i=0; i<user.offertedActivities.length; i++)
-              {
-                if((req.query.sector === '' && req.query.subsector === '') || 
-                ((user.offertedActivities[i].sector == req.query.sector) 
-                  && (user.offertedActivities[i].subsector == req.query.subsector)) || 
-                ((user.offertedActivities[i].sector == req.query.sector) 
-                  && req.query.subsector === '' ) ||
-                (req.query.sector === '' && (user.offertedActivities[i].subsector === req.query.subsector)))
-                {
-                  res.locals.activitiesByUserSectorSubsector.push(user.offertedActivities[i]);
-                }
-              }
+              res.locals.activitiesByUserSectorSubsector.push(activity);
             }
-            if(user.demandedActivities)
-            {
-              for(let i=0; i<user.demandedActivities.length; i++)
-              {
-                if((req.query.sector === '' && req.query.subsector === '') || 
-                (user.demandedActivities[i].sector === req.query.sector && user.demandedActivities[i].subsector === req.query.subsector) || 
-                (user.demandedActivities[i].sector === req.query.sector && req.query.subsector === '' ) ||
-                (req.query.sector === '' && user.demandedActivities[i].subsector === req.query.subsector))
-                {
-                  res.locals.activitiesByUserSectorSubsector.push(user.demandedActivities[i]);
-                }
-              }
-            }
-          }
+          })
           next();
         })
-        .catch(error => next(error));
+        .catch(error => {
+          next(error);
+        });
       }
       else
       {
@@ -230,10 +196,10 @@ module.exports = {
         Activity.find( filter )
         .populate('idUser')
         .then(activities => {
-          for(let i=0; i<activities.length; i++)
-          {
-            res.locals.activitiesBySectorSubsector.push(activities[i]);
-          }
+          console.log('acti: ',activities);
+          activities.forEach(activity => {
+            res.locals.activitiesBySectorSubsector.push(activity);
+          })
           next();
         })
       }
@@ -243,36 +209,59 @@ module.exports = {
     getInvolvedUser: (req, res, next) => {
       const idActivity = req.params.idAct;
       res.locals.idActivity = idActivity;
-      User.findOne({offertedActivities: idActivity})
-      .then((user) => {
-        if(user)
+      Activity.findOne({_id: idActivity})
+      .then(activity => {
+        if(activity)
         {
-          res.locals.users = {
-            offertingUser: user._id,
-            demandingUser: req.session.currentUser._id,
+          res.locals.users = {};
+          if(activity.type === 'offerted')
+          {
+            res.locals.users.offertingUser = activity.idUser;
+            res.locals.users.demandingUser = req.session.currentUser.id;
           }
-          next();
+          else if(activity.type === 'demanded')
+          {
+            res.locals.users.demandingUser = activity.idUser;
+            res.locals.users.offertingUser = req.session.currentUser.id;
+          }
         }
-        else
-        {
-          User.findOne({demandedActivities: idActivity})
-          .then((user) => {
-            if (user)
-            {
-              res.locals.users = {
-                offertingUser: req.session.currentUser._id,
-                demandingUser: user._id,
-              };
-              next();
-            } 
-            else
-            {
-              res.status(500);
-              res.json({ error: "this activity corresponds to no user" });
-            }
-          })
-        }
+        next();
       })
+      .catch(error => {
+        res.status(500);
+        res.json({ error: "this activity corresponds to no user" });
+      })
+
+      // User.findOne({offertedActivities: idActivity})
+      // .then((user) => {
+      //   if(user)
+      //   {
+      //     res.locals.users = {
+      //       offertingUser: user._id,
+      //       demandingUser: req.session.currentUser._id,
+      //     }
+      //     next();
+      //   }
+      //   else
+      //   {
+      //     User.findOne({demandedActivities: idActivity})
+      //     .then((user) => {
+      //       if (user)
+      //       {
+      //         res.locals.users = {
+      //           offertingUser: req.session.currentUser._id,
+      //           demandingUser: user._id,
+      //         };
+      //         next();
+      //       } 
+      //       else
+      //       {
+      //         res.status(500);
+      //         res.json({ error: "this activity corresponds to no user" });
+      //       }
+      //     })
+      //   }
+      // })
     },
     transactionExists: (req, res, next) => {
       Transaction.findOne({
