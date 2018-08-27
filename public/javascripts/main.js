@@ -138,9 +138,9 @@ function filter(){
         </div>
         <div class="modal-body">
           <ul>
-            <li>sector/subsector: ${act.data.activities[i].sector} / ${act.data.activities[i].subsector}</li>`;
-            // <li>user: ${act.data.activities[i].idUser.userName} </li>
-            modalContent.innerHTML += `<li class="description"> ${act.data.activities[i].description} </li>
+            <li>sector/subsector: ${act.data.activities[i].sector} / ${act.data.activities[i].subsector}</li>
+            <li>user: ${act.data.activities[i].idUser.userName} </li>
+            <li class="description"> ${act.data.activities[i].description} </li>
             <li>tags: ${act.data.activities[i].tags} </li>
           </ul>
         </div>`;
