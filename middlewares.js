@@ -4,6 +4,10 @@ const Transaction = require('./models/transaction');
 const Activity = require('./models/activity');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+var MapboxClient = require('mapbox');
+var mapbox = require('mapbox');
+// var mapbox = require('./mapbox-geocode.js');
+var mapBoxClient = new MapboxClient('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
 // var deepPopulate = require('mongoose-deep-populate')(mongoose);
 // PostSchema.plugin(deepPopulate, options /* more on options below */);
 
@@ -130,17 +134,36 @@ module.exports = {
   activityManager: {
     getActivities: (req, res, next) => {
       const currentUser = req.session.currentUser;
-      User.findOne({userName: currentUser.userName})
-      .populate('offertedActivities')
-      .populate('demandedActivities')
-      .then(user => {
-        res.locals.offertedActivities = user.offertedActivities;
-        res.locals.demandedActivities = user.demandedActivities;
+      Activity.find({idUser: currentUser._id})
+      .then(activities => {
+        res.locals.offertedActivities = [];
+        res.locals.demandedActivities = [];
+        console.log('activities ', activities);
+        if(activities)
+        {
+          for(let i=0; i<activities.length; i++)
+          {
+            if(activities[i].type === 'offerted') res.locals.offertedActivities.push(activities[i]);
+            else if(activities[i].type === 'demanded') res.locals.demandedActivities.push(activities[i]);
+          }
+        }
+        console.log('activitats ofertades: ', res.locals.offertedActivities);
+        console.log('activitats demandades: ', res.locals.demandedActivities);
         next();
       })
-      .catch(error => {
-        next(error);
-      })
+      .catch(error => next(error))
+
+      // User.findOne({userName: currentUser.userName})
+      // .populate('offertedActivities')
+      // .populate('demandedActivities')
+      // .then(user => {
+      //   res.locals.offertedActivities = user.offertedActivities;
+      //   res.locals.demandedActivities = user.demandedActivities;
+      //   next();
+      // })
+      // .catch(error => {
+      //   next(error);
+      // })
     }
   },
   filter: {
@@ -392,5 +415,11 @@ module.exports = {
 
     }
 
-  }   
+  },
+  geoLocation: {
+    inverseGeocoding: (req, res, next) => {
+      
+      next();
+    },
+  }, 
 };

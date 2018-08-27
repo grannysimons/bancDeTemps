@@ -19,7 +19,8 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
   User.update({userName: res.locals.userData.userName}, res.locals.userData)
   .then(user => {
     // console.log('user ' + res.locals.userData.userName + ' correctly updated: ', user);
-
+    req.session.currentUser = res.locals.userData;
+    console.log('current: ',req.session.currentUser);
     const data = {
       message: res.locals.messages,
       userData: res.locals.userData,
@@ -37,9 +38,12 @@ router.get('/activityManager', Middlewares.activityManager.getActivities, (req, 
   res.render('profile/activityManager', data);
 });
 
-router.post('/activityManager/:type', (req, res, next) => {
+router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, (req, res, next) => {
+  console.log('afegir activitat');
   const type = req.params.type;
   const { sector, subsector, description, tags, duration } = req.body;
+  const latitude = 41.617964;
+  const longitude = 2.093541;
   Activity.create({
     sector,
     subsector,
@@ -47,16 +51,23 @@ router.post('/activityManager/:type', (req, res, next) => {
     tags,
     duration,
     idUser: req.session.currentUser._id, 
+    location: {
+      type: 'Point',
+      coordinates: [longitude, latitude],
+    },
+    type,
   })
   .then(activity => {
-    const pushFilter = type === 'offerted' ? {offertedActivities: activity._id} : {demandedActivities: activity._id}
-    User.update({userName: req.session.currentUser.userName},{$push: pushFilter})
-    .then(user => {
-      res.redirect('/profile/activityManager');
-    })
-    .catch(error => {
-      next(error);
-    })
+    console.log('activitat afegida ', activity);
+    // const pushFilter = type === 'offerted' ? {offertedActivities: activity._id} : {demandedActivities: activity._id};
+    // User.update({userName: req.session.currentUser.userName},{$push: pushFilter})
+    // .then(user => {
+    //   res.redirect('/profile/activityManager');
+    // })
+    // .catch(error => {
+    //   next(error);
+    // })
+    res.redirect('/profile/activityManager');
   })
   .catch(error => {
     next(error);
@@ -70,6 +81,7 @@ router.post('/activityManager/:idAct/delete', (req, res, next) => {
   })
   .catch(error => {
     console.log(error);
+    next(error);
   })
 })
 
