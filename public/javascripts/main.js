@@ -166,7 +166,6 @@ function filter(){
           buttonApply.setAttribute('id', 'apply-'+i);
           buttonApply.addEventListener('click', apply);
           buttonApply.innerHTML = 'Apply';
-  
           divRight.appendChild(buttonApply);
         }
       }
@@ -186,6 +185,9 @@ function apply(e){
   console.log(`http://localhost:3000/api/${idActivitat}/request`);
   axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
+    const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
+    console.log('idModal: ',idModal);
+    $(idModal).modal('hide');
     if (act.data.message === 'ok')
     {
       const message = `<div class="alert alert-success" role="alert">
@@ -199,6 +201,9 @@ function apply(e){
     }
   })
   .catch(error => {
+    const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
+    console.log('idModal: ',idModal);
+    $(idModal).modal('hide');
     console.log('error: ', error.response.data);
     document.getElementById('results').innerHTML = error.response.data.error;
   })
