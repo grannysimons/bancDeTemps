@@ -23,14 +23,6 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Transaction',
   }],
-  // offertedActivities: [{
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'Activity',
-  // }],
-  // demandedActivities: [{
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'Activity',
-  // }],
 });
 
 const User = mongoose.model('User', userSchema);

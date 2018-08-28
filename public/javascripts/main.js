@@ -84,6 +84,7 @@ function filter(){
     document.getElementById('results').innerHTML = '';
     if(act.data.activities)
     {
+      console.log('act.data.activities', act.data.activities);
       for(let i=0; i<act.data.activities.length; i++)
       {
         let liElement = document.createElement('li');
@@ -186,7 +187,6 @@ function apply(e){
   axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
     const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
-    console.log('idModal: ',idModal);
     $(idModal).modal('hide');
     if (act.data.message === 'ok')
     {
@@ -202,9 +202,7 @@ function apply(e){
   })
   .catch(error => {
     const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
-    console.log('idModal: ',idModal);
     $(idModal).modal('hide');
-    console.log('error: ', error.response.data);
     document.getElementById('results').innerHTML = error.response.data.error;
   })
 }

@@ -18,9 +18,9 @@ router.get('/', function(req, res, next) {
   
 
   if (req.session.currentUser) {
-    console.log(req.session);
-    console.log(`la sessió activa de usuari es: ${req.session.currentUser.userName}`);
-    console.log(`el _id de usuari és: ${req.session.currentUser._id}`);
+    // console.log(req.session);
+    // console.log(`la sessió activa de usuari es: ${req.session.currentUser.userName}`);
+    // console.log(`el _id de usuari és: ${req.session.currentUser._id}`);
     var data2;
     var userName = req.session.currentUser.userName;
     // we get the  transactions for the current logged user
@@ -39,9 +39,9 @@ router.get('/', function(req, res, next) {
           username: userName,
           transactions : transactions
           }
-      console.log(`el valor de title es: ${data2.title}`);    
-      console.log(`el valor de username es: ${data2.username}`);  
-      console.log(`el valor de transaccions es: ${data2.transactions}`);  
+    //   console.log(`el valor de title es: ${data2.title}`);    
+    //   console.log(`el valor de username es: ${data2.username}`);  
+    //   console.log(`el valor de transaccions es: ${data2.transactions}`);  
       
       res.render('index', data2);
     })
@@ -61,9 +61,9 @@ router.get('/', function(req, res, next) {
 router.post('/login', (req,res,next) => {
     
     const {userName, password} = req.body;
-    console.log('hem entrat a la ruta del login');
-    console.log(`el username es: ${userName}`);
-    console.log(`el password es: ${password}`);
+    // console.log('hem entrat a la ruta del login');
+    // console.log(`el username es: ${userName}`);
+    // console.log(`el password es: ${password}`);
     if(!userName || !password)
     {
         console.log('no existeix el username i/o el password');
@@ -92,7 +92,8 @@ router.post('/login', (req,res,next) => {
                     res.redirect('/');
                 }
                 else
-                {    console.log('estem dins else, el password no es correcte');
+                {    
+                    // console.log('estem dins else, el password no es correcte');
                     req.flash('info', errorMessage);
                     // res.redirect('/auth/login');
                     res.redirect('/');

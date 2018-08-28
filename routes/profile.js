@@ -18,7 +18,6 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
   res.locals.messages.passwordsAreDifferent='';
   User.update({userName: res.locals.userData.userName}, res.locals.userData)
   .then(user => {
-    // console.log('user ' + res.locals.userData.userName + ' correctly updated: ', user);
     req.session.currentUser = res.locals.userData;
     console.log('current: ',req.session.currentUser);
     const data = {
@@ -39,7 +38,6 @@ router.get('/activityManager', Middlewares.activityManager.getActivities, (req, 
 });
 
 router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, (req, res, next) => {
-  console.log('afegir activitat');
   const type = req.params.type;
   const { sector, subsector, description, tags, duration } = req.body;
   const latitude = 41.617964;
@@ -58,15 +56,6 @@ router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, 
     type,
   })
   .then(activity => {
-    console.log('activitat afegida ', activity);
-    // const pushFilter = type === 'offerted' ? {offertedActivities: activity._id} : {demandedActivities: activity._id};
-    // User.update({userName: req.session.currentUser.userName},{$push: pushFilter})
-    // .then(user => {
-    //   res.redirect('/profile/activityManager');
-    // })
-    // .catch(error => {
-    //   next(error);
-    // })
     res.redirect('/profile/activityManager');
   })
   .catch(error => {

@@ -5,6 +5,7 @@ const Transaction = require('../models/transaction');
 const Middleware = require('../middlewares');
 
 router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getInvolvedUser, Middleware.startRequest.transactionExists, Middleware.startRequest.createTransaction, (req, res, next) => {
+  console.log('request');
   User.updateOne(
     { _id: res.locals.users.offertingUser }, 
     { $push: { transactions: res.locals.transactionId } } )
@@ -18,6 +19,7 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
     })
   })
   .catch(error => {
+    console.log('error!!! ', error);
     res.status(500);
     res.json({ error });
   })

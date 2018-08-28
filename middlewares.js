@@ -196,7 +196,6 @@ module.exports = {
         Activity.find( filter )
         .populate('idUser')
         .then(activities => {
-          console.log('acti: ',activities);
           activities.forEach(activity => {
             res.locals.activitiesBySectorSubsector.push(activity);
           })
@@ -207,9 +206,8 @@ module.exports = {
   },
   startRequest: {
     getInvolvedUser: (req, res, next) => {
-      const idActivity = req.params.idAct;
-      res.locals.idActivity = idActivity;
-      Activity.findOne({_id: idActivity})
+      res.locals.idActivity = req.params.idAct;
+      Activity.findOne({_id: req.params.idAct})
       .then(activity => {
         if(activity)
         {
@@ -217,51 +215,21 @@ module.exports = {
           if(activity.type === 'offerted')
           {
             res.locals.users.offertingUser = activity.idUser;
-            res.locals.users.demandingUser = req.session.currentUser.id;
+            res.locals.users.demandingUser = req.session.currentUser._id;
           }
           else if(activity.type === 'demanded')
           {
             res.locals.users.demandingUser = activity.idUser;
-            res.locals.users.offertingUser = req.session.currentUser.id;
+            res.locals.users.offertingUser = req.session.currentUser._id;
           }
         }
         next();
       })
       .catch(error => {
         res.status(500);
-        res.json({ error: "this activity corresponds to no user" });
-      })
-
-      // User.findOne({offertedActivities: idActivity})
-      // .then((user) => {
-      //   if(user)
-      //   {
-      //     res.locals.users = {
-      //       offertingUser: user._id,
-      //       demandingUser: req.session.currentUser._id,
-      //     }
-      //     next();
-      //   }
-      //   else
-      //   {
-      //     User.findOne({demandedActivities: idActivity})
-      //     .then((user) => {
-      //       if (user)
-      //       {
-      //         res.locals.users = {
-      //           offertingUser: req.session.currentUser._id,
-      //           demandingUser: user._id,
-      //         };
-      //         next();
-      //       } 
-      //       else
-      //       {
-      //         res.status(500);
-      //         res.json({ error: "this activity corresponds to no user" });
-      //       }
-      //     })
-      //   }
-      // })
+        res.locals.message = "this activity corresponds to no user";
+        res.json({ error: res.locals.message });
+      });
     },
     transactionExists: (req, res, next) => {
       Transaction.findOne({
@@ -286,11 +254,12 @@ module.exports = {
       .catch(error =>{
         // const error = new Error("fdsafass"
         // next(error)
-        res.status(500);
+          res.status(500);
         res.json({ error });
       })
     },
     createTransaction: (req, res, next) => {
+      console.log('createTransaction');
       Transaction.create({
         idActivity: res.locals.idActivity,
         offertingUserId: res.locals.users.offertingUser,
