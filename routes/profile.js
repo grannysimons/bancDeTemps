@@ -46,7 +46,6 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
       {
         res.locals.userData.location = maxCoincidence.center;
       }
-      console.log(res.locals.userData);
       res.locals.messages.passwordsAreDifferent='';
       User.update({userName: res.locals.userData.userName}, res.locals.userData)
       .then(user => {
@@ -58,19 +57,6 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
         res.render('profile/edit', data);
       })
       .catch(error => next(error));
-
-
-
-        // User.findByIdAndUpdate(req.session.currentUser._id, {location: maxCoincidence})
-        // .then(user => {
-        //   console.log('user updated!');
-        //   res.redirect('/profile/edit');
-        // })
-        // .catch(error => {
-        //   console.log(error);
-        //   next(error);
-        // })
-      // }
     }
   })
   .catch(error => {

@@ -1,7 +1,6 @@
 // import timetable from '../../timetable';
 var map;
 window.addEventListener('load', ()=>{
-  filter();
   document.querySelector('#filter #submit').addEventListener('click', filter);
 
   var viewportHeight = $(window).height();  
@@ -58,7 +57,12 @@ window.addEventListener('load', ()=>{
           zoom: 15,
           center: point
       });
+      filter();
     });
+  }
+  else
+  {
+    filter();
   }
 });
 
@@ -87,6 +91,15 @@ function filter(){
       console.log('act.data.activities', act.data.activities);
       for(let i=0; i<act.data.activities.length; i++)
       {
+        console.log('location ',act.data.activities[i].idUser.location);
+        if(act.data.activities[i].idUser.location.length === 2 )
+        {
+          //marker!
+          console.log('marker!');
+          new mapboxgl.Marker()
+          .setLngLat(act.data.activities[i].idUser.location)
+          .addTo(map);
+        }
         let liElement = document.createElement('li');
         liElement.classList.add('row');
         document.getElementById('results').appendChild(liElement);
