@@ -23,6 +23,10 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Transaction',
   }],
+  location: {
+    type: {type: String},
+    coordinates: [Number],
+  },
 });
 
 const User = mongoose.model('User', userSchema);

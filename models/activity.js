@@ -26,10 +26,10 @@ activitySchema = new Schema({
     type: String,
     enum: ['offerted', 'demanded'],
   },
-  location: {
-    type: {type: String},
-    coordinates: [Number],
-  },
+  // location: {
+  //   type: {type: String},
+  //   coordinates: [Number],
+  // },
 });
 
 activitySchema.index({ location: '2dsphere'});

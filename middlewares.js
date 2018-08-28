@@ -15,11 +15,11 @@ module.exports = {
   signUp: {
     retrieveData: (req, res, next) => {
       const {
-        name, lastName, userName, password, repeatPassword, mail, telephone, introducing, roadType, roadName, number, zipCode, city, province, state,
+        name, lastName, userName, passwordUser, repeatPassword, mail, telephone, introducing, roadType, roadName, number, zipCode, city, province, state,
       } = req.body;
     
       res.locals.userData = {
-        name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: {roadType, roadName, number, zipCode, city, province, state,},
+        name, lastName, userName, password: passwordUser, repeatPassword, mail, telephone, introducing, direction: {roadType, roadName, number, zipCode, city, province, state,},
       }
       next();
     },
@@ -79,8 +79,6 @@ module.exports = {
       .catch(error => next(error));
     },
     retrieveData: (req, res, next) => {
-      console.log('retrieveData ', req.session.currentUser);
-
       const { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, } = res.locals.user;
       res.locals.userPrevData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, }
       next();

@@ -3,6 +3,9 @@ const router = express.Router();
 const User = require('../models/user');
 const Activity = require('../models/activity');
 const Middlewares = require('../middlewares');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const geocodingClient = mbxGeocoding({ accessToken: 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw' });
+
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -15,18 +18,64 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
 });
 
 router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
-  res.locals.messages.passwordsAreDifferent='';
-  User.update({userName: res.locals.userData.userName}, res.locals.userData)
-  .then(user => {
-    req.session.currentUser = res.locals.userData;
-    console.log('current: ',req.session.currentUser);
-    const data = {
-      message: res.locals.messages,
-      userData: res.locals.userData,
-    };
-    res.render('profile/edit', data);
+  
+  const roadType = req.body.roadType;
+  const roadName = req.body.roadName;
+  const number = req.body.number;
+  const zipCode = req.body.zipCode;
+  const city = req.body.city;
+  const province = req.body.province;
+  const state = req.body.state;
+  const query = roadType + ' ' + roadName + ' ' + number + ', ' + zipCode + ' ' + city + ', ' + province + ', ' + state;
+  
+  geocodingClient.forwardGeocode({
+    query: query,
+    limit: 2
   })
-  .catch(error => next(error));
+  .send()
+  .then(response => {
+    const match = response.body;
+    if(match)
+    {
+      var maxCoincidence = undefined;
+      match.features.forEach(coincidence => {
+        if(!maxCoincidence || maxCoincidence.relevance < coincidence.relevance) maxCoincidence = coincidence;
+      });
+      
+      if(maxCoincidence)
+      {
+        res.locals.userData.location = maxCoincidence.center;
+      }
+      console.log(res.locals.userData);
+      res.locals.messages.passwordsAreDifferent='';
+      User.update({userName: res.locals.userData.userName}, res.locals.userData)
+      .then(user => {
+        req.session.currentUser = res.locals.userData;
+        const data = {
+          message: res.locals.messages,
+          userData: res.locals.userData,
+        };
+        res.render('profile/edit', data);
+      })
+      .catch(error => next(error));
+
+
+
+        // User.findByIdAndUpdate(req.session.currentUser._id, {location: maxCoincidence})
+        // .then(user => {
+        //   console.log('user updated!');
+        //   res.redirect('/profile/edit');
+        // })
+        // .catch(error => {
+        //   console.log(error);
+        //   next(error);
+        // })
+      // }
+    }
+  })
+  .catch(error => {
+    console.log(error);
+  })
 });
 
 router.get('/activityManager', Middlewares.activityManager.getActivities, (req, res, next) => {
