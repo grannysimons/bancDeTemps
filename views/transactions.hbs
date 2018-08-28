@@ -3,18 +3,28 @@
         <div class="panel-body">
           <input type="text" class="form-control" id="usrName" placeholder="..."><br/>
           <button class="btn btn-outline-info" onclick="performGetRequest2()">Search</button>
-          <button class="btn btn-outline-info" onclick="clearOutput()">Clear</button>
+          <button class="btn btn-outline-info" onclick="clearActivities()">Clear</button>
           <div class="panel-body" id="getResult2"></div>
+          <div id="panel-result-apply-transaction"></div>
         </div>
 </div>
 
-<h2 class="transaction-title"><u>Status of pending Transactions</u></h2>
+<div id="container-title-transactions">
+  <h3 class="transaction-title">PROPOSED TRANSACTIONS</h3>
+  <div id="list-of-buttons">
+    <button class="btn btn-info" id="status-proposed" data-status="Proposed" onclick="selectTransactionsStatus(this)">Proposed</button>
+    <button class="btn btn-warning" id="status-accepted" data-status="Accepted" onclick="selectTransactionsStatus(this)">Accepted</button>
+    <button class="btn btn-warning" id="status-refused" data-status="Refused" onclick="selectTransactionsStatus(this)">Refused</button>
+    <button class="btn btn-warning" id="status-finished" data-status="Finished" onclick="selectTransactionsStatus(this)">Finished</button>
+    <button class="btn btn-warning" id="status-cancelled" data-status="Cancelled" onclick="selectTransactionsStatus(this)">Cancelled</button>
+  </div>
+</div>
 
-<div class="transaction-container">
-  {{#each transactions}}
+<div class="transaction-container" id="transaction-container">
+  {{#each userData }}
 
-    <div class="transaction-item" data-transaction="{{this._id}}" id="transaction-item-{{@index}}">
-      <p class="transaction-paragraf"><span><b>Transaction #{{@index}} {{state}}</b></span><span class="status">Status: {{ state }}</span></p>
+    <div class="transaction-item" data-transaction="{{this._id}}" id="transaction-item-{{@index}}" data-status="{{state}}">
+      <p class="transaction-paragraf"><span><b>Transaction #{{@index}} {{state}}</b></span></p>
       <p class="transaction-paragraf">Description: {{ idActivity.description }}</p>
       <p class="transaction-paragraf">User Demanding: {{ demandingUserId.userName }}
       <p class="transaction-paragraf">Sector: {{ idActivity.sector }}</p>

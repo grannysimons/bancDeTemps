@@ -302,6 +302,8 @@ module.exports = {
   TransactionManager: {
     getTransactions: (req, res, next) => {
       const currentUser = req.session.currentUser;
+      const state = req.query.state;
+      console.log('mirem les transacions que tenen estat',req.query);
       // User.findOne({userName: currentUser.userName})
       // .populate('transactions')
 
@@ -330,33 +332,88 @@ module.exports = {
       //    // res.json(projects);
       //   });
       // }) 
+      // let myUserId = mongoose.Types.ObjectId(currentUser._id);
+      console.log('el user_id es XXX:', currentUser._id);
+       // Transaction.find({offertingUserId: currentUser._id})
+      // .populate([{ 
+      //   path: 'demandingUserId',
+      //   populate: {
+      //     path: 'offertedActivities',
+      //   }},
+      //   {
+      //     path: 'idActivity',
+      // }]).exec((err, adventure) => {
+      //     if (err) return res.json(500);
+      //     console.log('aquests son els valors de adventures-3', adventure.transactions[0].idActivity);
+      //     // console.log('aquests son els valors de adventures-2', adventure.transactions[0].demandingUserId);
+      //     res.locals.transactions = adventure;
+      //     next();
+      //   });
 
 
-      // funciona be aquest
-      User.findOne({userName: currentUser.userName})
-      // .lean()
-      .populate({ 
-        path: 'transactions',
-        populate: [{
+
+      Transaction.find({offertingUserId: currentUser._id, state: state})
+      .populate([{ 
           path: 'demandingUserId',
           populate: {
             path: 'offertedActivities',
+          }},
+        {path: 'idActivity'}])
+        .then(adventure => {
+        // console.log('el resultat es:', adventure);
+        res.locals.transactions = adventure;
+        console.log('hem arribat a aquest punt?');
+        next();
+        })
+        .catch(error => {
+          next(error);
+        })
+
+      // Transaction.find({offertingUserId: ObjectId(currentUser._id)})
+      // // .lean()
+      // .populate([{ 
+      //   path: 'demandingUserId',
+      //   populate: {
+      //     path: 'offertedActivities',
+          
+      //   }},
+      //   {
+      //     path: 'idActivity',
+      // }]).exec((err, adventure) => {
+      //   if (err) return res.json(500);
+      //   console.log('aquests son els valors de adventures-3', adventure.transactions[0].idActivity);
+      //   // console.log('aquests son els valors de adventures-2', adventure.transactions[0].demandingUserId);
+      //   res.locals.user = adventure;
+      //   next();
+      // });
+
+
+
+      // FUNCIONA BE AQUEST. ES EL QUE TENIEM IMPLEMENTAT PER OBTENIR LES TRANSACTIONS
+      // User.findOne({userName: currentUser.userName})
+      // // .lean()
+      // .populate({ 
+      //   path: 'transactions',
+      //   populate: [{
+      //     path: 'demandingUserId',
+      //     populate: {
+      //       path: 'offertedActivities',
             
-          }
-        },
-        {
-          path: 'idActivity',
-        }]
+      //     }
+      //   },
+      //   {
+      //     path: 'idActivity',
+      //   }]
 
         
-      }).exec((err, adventure) => {
-        if (err) return res.json(500);
-        console.log('aquests son els valors de adventures-3', adventure.transactions[0].idActivity);
-        // console.log('aquests son els valors de adventures-2', adventure.transactions[0].demandingUserId);
-        res.locals.user = adventure;
-        next();
+      // }).exec((err, adventure) => {
+      //   if (err) return res.json(500);
+      //   // console.log('aquests son els valors de adventures-3', adventure.transactions[0].idActivity);
+      //   // console.log('aquests son els valors de adventures-2', adventure.transactions[0].demandingUserId);
+      //   res.locals.transactions = adventure;
+      //   next();
 
-      });
+      // });
       
       
 
@@ -386,14 +443,32 @@ module.exports = {
       // .catch(error => {
       //   next(error);
       // })
+    },
+    getUserId: (req, res, next) => {
+      console.log('hem entrat al Middleware per obtenir el userId AAAA:');
+      const userName = req.query.userName;
+      console.log('el nom passat es BBBB: ',userName); 
+      User.findOne({userName: userName})
+      .then(user => {
+        let userid = {userid: user._id}; 
+        console.log('EL USER ID QUE PASSEM A LOCALS ES: ', userid);
+        res.locals.userid = user._id;
+        console.log('EL VALOR GUARDAT A LOCALS DEL USER ID ES',res.locals);
+        // res.json({userid});
+        next();
+      })
+      .catch(error => {
+        next(error);
+      })
+      next();
     }
   },
   // Aquest middleware de moment no l'utilitzem, perque ja el l'hem anidat en el de dalt. D'aquesta forma ens evitem haver de passar dades entre middlewares
   insertNewTransaction: {
     insertTransaction: (req, res, next) => {
       const {offertingUserId,demandingUserId,activityId,status} = req.body;
-      console.log('hem entrat al POST per crear la transacció!!!');
-      console.log(offertingUserId,demandingUserId,activityId,status);
+      // console.log('hem entrat al POST per crear la transacció!!!');
+      // console.log(offertingUserId,demandingUserId,activityId,status);
       Transaction.create({
         idActivity: activityId,
         offertingUserId: offertingUserId,
@@ -406,15 +481,19 @@ module.exports = {
         console.log('hem creat la transaccio. El transaction_id es:',transactionId);
         console.log('hem creat la transaccio. El offertingUser_id es:',offertingUserId);
         // updateUserTransactionArray(req,res,next,transactionId);
-        User.findByIdAndUpdate(offertingUserId,{$push: {transactions: transactionId}})  
-        .then(user => {
-        console.log('array de transaccions usuari:', user);
+        // User.findByIdAndUpdate(offertingUserId,{$push: {transactions: transactionId}})  
+        // .then(user => {
+        // console.log('array de transaccions usuari:', user);
+        // // res.json({transactionid});
+        // next();
+        // })
+        // .catch( (error) => {
+        //   console.log('No ha fet el update del transactionId dins user');
+        //   next(error);
+        // });
+        // NOTA IMPORTANT: SI POSEM AIXO, ENS RETORNA ERROR
+        res.json({transactionId});
         next();
-        })
-        .catch( (error) => {
-          console.log('No ha fet el update del transactionId dins user');
-          next(error);
-        });
         
         
       })

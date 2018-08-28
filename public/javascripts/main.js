@@ -245,8 +245,9 @@ const user = document.getElementById('usrName').value;
   })
 } 
 
-
-  function performGetRequest2() {
+// With the following function we create a new TRANSACTION, searching for USER'S ACTIVITIES, and then , applying to start transaction
+  
+function performGetRequest2() {
     var offertingUserId = undefined;
     var demandingUserId = undefined;
     var resultElement = document.getElementById('getResult2');
@@ -255,25 +256,45 @@ const user = document.getElementById('usrName').value;
     const sector = "";
     const subSector = "";
     
-    console.log('el valor de demanding user es:',demandingUserId);
-    console.log('estem dins de AXIOS');
+    
+    // console.log('el valor de demanding user es:',demandingUserId);
+    // console.log('estem dins de AXIOS');
     // we need to get the user_id in order to create the transaction later
-    axios.get(`http://localhost:3000/api/getUserId?userName=${usrName}`)
+    axios.get(`http://localhost:3000/obtenirUserID?userName=${usrName}`)
     .then((response) => {
-      console.log('aquesta es la resposta:',response);
-      console.log('el valor de userid es:',response.data.userid);
+      console.log('3.aquesta es la resposta de obtenir el USERID:',response);
+      console.log('4.el valor de userid es:',response.data.userid);
       if (response.data.userid) {
-        console.log('hem entrat dins el if');
+        console.log('5.hem entrat dins el if i per tant hem obtingut el offertingUserId');
         offertingUserId = response.data.userid;
-        
+        // Now that we have retrieve the OfferingUserId, we can ask for activities of this user
+        findUserActivities(usrName, offertingUserId);
+      } else {
+        //This user doesn't exist, so we place a message
+        $("#getResult2").empty(); //we empty the activities <div>
+        $("#panel-result-apply-transaction").empty();
+        $("#panel-result-apply-transaction").append("<p class='text-danger border border-danger apply-transaction'>THIS USER DOESN'T EXIST!! TRY AGAIN WITH DIFFERENT USERNAME</p>");
+        $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
       }
     })
     .catch((error) => {
       // console.log(error);
-      resultElement.innerHTML = `<p>There has been an error:  ${error}</p>`;
-      // resultElement.innerHTML = generateErrorHTMLOutput(error);
+      $("#getResult2").empty(); //we empty the activities <div>
+      $("#panel-result-apply-transaction").empty();
+      $("#panel-result-apply-transaction").append("<p class='text-danger border border-danger apply-transaction'>THIS USER DOESN'T EXIST!! TRY AGAIN WITH DIFFERENT USERNAME</p>");
+      $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
+      // resultElement.innerHTML = `<p>There has been an error:  ${error}. Try again</p>`;
+      
     });
+  }  
 
+    
+
+function findUserActivities(usrName, offertingUserId) {
+    const sector = "";
+    const subSector = "";
+    var resultElement = document.getElementById('getResult2');
+    resultElement.innerHTML = '';
 
     axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subSector}&userName=${usrName}`)
     .then((response) => {
@@ -282,13 +303,15 @@ const user = document.getElementById('usrName').value;
         demandingUserId = response.data.currentUser._id;
         // var activitiesArray = response.data.activities;
         // resultElement.innerHTML = '<p>This user has activities to offer</p>';
+        console.log('el valor de offertingUserId abans de crear el JSON es',offertingUserId);
         for(let i=0; i<response.data.activities.length; i++)
           { 
             let dataTransaction = {
               offertingUserId: offertingUserId,
               demandingUserId: demandingUserId,
               activityId: response.data.activities[i]._id,
-              status: 'Proposed'
+              status: 'Proposed',
+              // idTransactionsInvolved: ''
             };
 
 
@@ -349,14 +372,106 @@ const user = document.getElementById('usrName').value;
     let dataTransaction = JSON.parse(attributeJSON);
 
     axios.post('http://localhost:3000/api/insertNewTransaction', dataTransaction)
+    
     .then((response) => {
       console.log(response);
-      })
+      console.log('anem a borrar les activitats i imprimir el missatge');
+      $("#getResult2").empty(); //we empty the activities <div>
+      $("#panel-result-apply-transaction").empty();
+      $("#panel-result-apply-transaction").append("<p class='text-success border border-success apply-transaction'>THE NEW TRANSACTION HAS BEEN CREATED SUCCESFULLY!!</p>");
+      $("#panel-result-apply-transaction").append('<button class="btn btn-success" onclick="clearResults(this)">Accept</button>');  
+      // $(window).animate({ scrollTop: 0 }, 'slow'); //per comptes de $(window), podem posar qualsevol element i farà el scroll fins a aquell element 
+      $(window).scrollTop(0); //move the scroll at the top
+    })
     .catch( (error) => {
       console.log(error);
+      console.log('DE RETON DE AXIOS HEM TINGUT UN ERROR');
     });
+    console.log('HEM TORNAT DE AXIOS, PER VEURE QUE ENS RETORNA');
 
   }
+
+// Clear Results: clear results from the content of <div> parent
+
+function clearResults(element) {
+  let panelElement = element.parentNode;
+  $(panelElement).empty();
+}
+
+function clearActivities() {
+  // we clear all information in SEARCH USER FOR TRANSACTION section
+  // we clear: 1) input username, 2) panel message result, 3) list of activities
+  $("#getResult2").empty(); //we empty the activities <div>
+  $("#panel-result-apply-transaction").empty();
+  $("#usrName").val('');
+}
+
+function selectTransactionsStatus(element) {
+  // $(element).siblings().toggleClass('btn-info')
+  // We change the class of current BUTTON
+  $(element).addClass('btn-info');
+  $(element).removeClass('btn-warning');
+  let state = element.getAttribute('data-status');
+
+  // we setup the Classes of Siblings
+  $(element).siblings().addClass('btn-warning');
+  $(element).siblings().removeClass('btn-info');
+
+  axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
+    
+    .then((response) => {
+      console.log(response);
+      // console.log('anem a borrar les activitats i imprimir el missatge');
+      $("#transaction-container").empty(); //we empty the 'transaction-container' <div>
+      
+      // we fill the transactions of the chosen state
+      // in response.data.transactions, this is an array with all transactions
+      // Let's check in case we get 0, 1 or more
+      listTransactions = response.data.transactions;
+      
+      if (listTransactions) {
+        if (Array.isArray(listTransactions)) {
+          // Recorrem tot l'array de Transaccions i l'insertem al DOM
+          listTransactions.map((element,index) => {
+            newdiv2 = document.createElement( "div" )
+            let itemTransaction = $("#transaction-container").append( newdiv2 );
+            $(itemTransaction).addClass('transaction-item');
+            $(itemTransaction).attr('data-state',`${state}`);
+            $(itemTransaction).attr('data-transaction',`${element._id}`);
+            $(itemTransaction).append(`<p class="transaction-paragraf"><span><b>Transaction #${index} ${state}</b></span></p>`);
+            $(itemTransaction).append(`<p class="transaction-paragraf">Description: ${ element.idActivity.description }</p>`);
+            $(itemTransaction).append(`<p class="transaction-paragraf">User Demanding: ${ element.demandingUserId.userName }</p>`);
+            $(itemTransaction).append(`<p class="transaction-paragraf">Sector: ${ element.idActivity.sector }</p>`);
+            $(itemTransaction).append(`<p class="transaction-paragraf">Subsector: ${ element.idActivity.subsector }</p>`);
+            $(itemTransaction).append(`<p class="transaction-paragraf">Duration: ${ element.idActivity.duration } hour</p>`);
+            $(itemTransaction).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeListActivities(this)">See Transaction Involved</button>`);
+            $(itemTransaction).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="RejectTransaction(this)">Cancel</button>`);
+            $(itemTransaction).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
+
+          })
+        }
+
+      } else {
+        $('#panel-result-apply-transaction').append(`<p class='text-danger border border-danger apply-transaction'>THERE'S NO TRANSACTION WITH STATUS: ${state}!!</p>`);
+
+      }
+
+
+      // $(window).animate({ scrollTop: 0 }, 'slow'); //per comptes de $(window), podem posar qualsevol element i farà el scroll fins a aquell element 
+      // $(window).scrollTop(0); //move the scroll at the top
+    })
+    .catch( (error) => {
+      console.log(error);
+      console.log('DE RETON DE AXIOS HEM TINGUT UN ERROR');
+    });
+
+
+  
+}
+
+//------------------------------------------------------------------------------------------------
+
+ // 3. WE SEE THE TRANSACTIONS PROPOSED, THE ONE'S THAT OTHER USERS HAVE PROPOSED TO US, AND CHECK THE ACTIVITIES IN ORDER TO APPLY AND COMPLETE SECOND LEG TRANSACTION
 
   function seeListActivities(element) {
     // let visibleStatus = element.getAttribute('data-status');
@@ -381,6 +496,9 @@ const user = document.getElementById('usrName').value;
       }
 
   }
+
+  
+  
   
   // we have been demanded for a service we offer, and we choose an activity offered by the user
   function applyForNewTransaction(element) {
@@ -397,7 +515,7 @@ const user = document.getElementById('usrName').value;
 
     axios.get(`http://localhost:3000/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
     .then((response) => {
-      console.log('aquesta es la resposta:',response);
+      // console.log('aquesta es la resposta:',response);
           
     })
     .catch((error) => {

@@ -23,4 +23,32 @@ router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.check
   .catch(error => next(error));
 });
 
+router.get('/obtenirUserID', (req,res,next) => {
+  console.log('2.HEM POGUT ACCEDIR AL MIDDLEWARE');
+  console.log('2.1 EL USER ID PASSAT A LOCALS ES:', res.locals);
+  const userName = req.query.userName;
+      console.log('el nom passat es BBBB: ',userName); 
+      User.findOne({userName: userName})
+      .then(user => {
+        let userid = user._id; 
+        console.log('EL USER ID QUE PASSEM A LOCALS ES: ', userid);
+        res.locals.userid = user._id;
+        console.log('EL VALOR GUARDAT A LOCALS DEL USER ID ES',res.locals);
+        res.json({userid}); //amb aquest comando passem les dades que volem de resposta a AXIOS. Per agafarles, desde el main.js del browser sera: response.data.userid
+        next();
+      })
+      .catch(error => {
+        next(error);
+      })
+      
+    
+  // if (res.locals.userid) {
+  //   let userid = res.locals.userid;
+  //   res.json({userid});
+  // } else {
+  //   console.log('tenim un error, no tenim el userid');
+  // }
+  
+})
+
 module.exports = router;

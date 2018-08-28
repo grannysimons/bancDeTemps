@@ -6,7 +6,7 @@ const Messages = require('../messages');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { error: {empty, userExist, userNotExist,errorMessage} } = require('../message');
-const Middlewares = require('../middlewares');
+const Middleware = require('../middlewares');
 
 const mongoose = require('mongoose');
 const dbName = 'timeBank';
@@ -39,9 +39,9 @@ router.get('/', function(req, res, next) {
           username: userName,
           transactions : transactions
           }
-      console.log(`el valor de title es: ${data2.title}`);    
-      console.log(`el valor de username es: ${data2.username}`);  
-      console.log(`el valor de transaccions es: ${data2.transactions}`);  
+    //   console.log(`el valor de title es: ${data2.title}`);    
+    //   console.log(`el valor de username es: ${data2.username}`);  
+    //   console.log(`el valor de transaccions es: ${data2.transactions}`);  
       
       res.render('index', data2);
     })
@@ -119,12 +119,23 @@ router.get('/logout', (req, res, next) => {
 })
 
 /* GET transactions. */
-router.get('/transactions', Middlewares.TransactionManager.getTransactions, (req, res, next) => {
-    const userData = res.locals.user;
+
+router.get('/transactionstest',  (req, res, next) => {
+    const {state} = req.query;
+    console.log('mirem les transacions que tenen estat',req.query);
+})    
+
+router.get('/transactions', Middleware.TransactionManager.getTransactions, (req, res, next) => {
+    const userData = res.locals.transactions;
+    console.log('mirem les transacions que tenen estat',req.query);
     
     console.log('aixo es el que veiem al render');
-    console.log(userData.transactions[0]); 
-    res.render('transactions',userData);
+    // console.log('aquesta es estructura de les dades',userData);
+    // console.log(userData.transactions[0]); 
+    const dataTransactions = {
+        userData: userData
+    };
+    res.render('transactions',dataTransactions);
     
 
 })

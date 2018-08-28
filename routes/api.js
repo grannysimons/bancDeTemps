@@ -72,9 +72,10 @@ router.get('/filterUserActivities', Middleware.filter.filterByUsername, Middlewa
 });
 
 // Because we check for the userName in order to get user._id, we should index the User collection by userName
-router.get('/getUserId', (req,res,next) => {
+router.get('/getUserId2', (req,res,next) => {
+  console.log("hem accedit per tal d'obtenir el userId");
   const userName = req.query.userName;
-  console.log('el nom passat es: ',userName); 
+  console.log('el nom passat es BBBB: ',userName); 
   User.findOne({userName: userName})
       .then(user => {
         let userid = user._id; 
@@ -88,7 +89,9 @@ router.get('/getUserId', (req,res,next) => {
 });
 
 router.get('/acceptSecondLegTransaction', Middleware.acceptProposedTransaction.getTransactionInfo,Middleware.acceptProposedTransaction.insertSecondTransaction,Middleware.acceptProposedTransaction.updateFirstTransaction, (req,res,next) => {
-  console.log('Hem fet tots els passos per insertar la nova transacció');
+  const {state} = req.query;
+  console.log('ESTEM CONSULTANT LES TRANSACCIONS QUE TENEN ESTAT:',req.query);
+
   // const transactionId = req.query.transactionId;
   // console.log('el transactionId passat es: ',transactionId); 
   // Transaction.findOne({_id: transactionId})
@@ -148,6 +151,14 @@ router.post('/insertNewTransaction',Middleware.insertNewTransaction.insertTransa
 //     res.status(500);
 //     res.json({ error });
 //   })
+
+router.get('/getTransactionsOnState', Middleware.TransactionManager.getTransactions, (req, res, next) => {
+  console.log('Hem fet tots els passos per recuperar les dades de la transaccio');
+  let transactions = res.locals.transactions
+  res.json({ transactions });
+  
+});
+
 
 
 
