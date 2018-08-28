@@ -91,11 +91,10 @@ function filter(){
       console.log('act.data.activities', act.data.activities);
       for(let i=0; i<act.data.activities.length; i++)
       {
-        console.log('location ',act.data.activities[i].idUser.location);
         if(act.data.activities[i].idUser.location.length === 2 )
         {
           //marker!
-          console.log('marker!');
+          console.log('marker! ', act.data.activities[i].idUser.location);
           new mapboxgl.Marker()
           .setLngLat(act.data.activities[i].idUser.location)
           .addTo(map);

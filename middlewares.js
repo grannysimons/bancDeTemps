@@ -86,12 +86,14 @@ module.exports = {
   },
   editProfile_post: {
     retrieveData: (req, res, next) => {
-      const { name, lastName, userName, password, repeatPassword, mail, roadType, roadName, number, zipCode, city, province, state, telephone, introducing } = req.body;
-      res.locals.userData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
+      console.log('editPost: ');
+      const { name, lastName, userName, passwordUser, repeatPassword, mail, roadType, roadName, number, zipCode, city, province, state, telephone, introducing } = req.body;
+      res.locals.userData = { name, lastName, userName, password: passwordUser, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
       res.locals.messages = { passwordsAreDifferent: '' };
       next();
     },
     checkPassword: (req,res,next) => {
+      console.log('userData ');
       if(res.locals.userData.password || res.locals.userData.repeatedPassword)
       {
         if(res.locals.userData.password===res.locals.userData.repeatPassword)
@@ -101,7 +103,6 @@ module.exports = {
           res.locals.userData.password = hashedPassword;
           res.locals.userData.repeatedPassword = hashedPassword;
           res.locals.messages.passwordsAreDifferent='';
-          console.log('userName: ', res.locals);
           User.update({userName: res.locals.userData.userName}, res.locals.userData)
           .then(user => {
             // console.log('user ' + req.body.userName + ' correctly updated: ', user);

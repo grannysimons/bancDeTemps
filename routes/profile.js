@@ -19,6 +19,7 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
 
 router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
   
+  console.log('edit');
   const roadType = req.body.roadType;
   const roadName = req.body.roadName;
   const number = req.body.number;
@@ -27,7 +28,6 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
   const province = req.body.province;
   const state = req.body.state;
   const query = roadType + ' ' + roadName + ' ' + number + ', ' + zipCode + ' ' + city + ', ' + province + ', ' + state;
-  
   geocodingClient.forwardGeocode({
     query: query,
     limit: 2
@@ -47,6 +47,7 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
         res.locals.userData.location = maxCoincidence.center;
       }
       res.locals.messages.passwordsAreDifferent='';
+      console.log('data', res.locals.userData);
       User.update({userName: res.locals.userData.userName}, res.locals.userData)
       .then(user => {
         req.session.currentUser = res.locals.userData;
@@ -56,7 +57,10 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
         };
         res.render('profile/edit', data);
       })
-      .catch(error => next(error));
+      .catch(error => {
+        console.log(error);
+        next(error);
+      });
     }
   })
   .catch(error => {
@@ -73,10 +77,9 @@ router.get('/activityManager', Middlewares.activityManager.getActivities, (req, 
 });
 
 router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, (req, res, next) => {
+  console.log('crear activittat');
   const type = req.params.type;
   const { sector, subsector, description, tags, duration } = req.body;
-  const latitude = 41.617964;
-  const longitude = 2.093541;
   Activity.create({
     sector,
     subsector,
@@ -84,10 +87,6 @@ router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, 
     tags,
     duration,
     idUser: req.session.currentUser._id, 
-    location: {
-      type: 'Point',
-      coordinates: [longitude, latitude],
-    },
     type,
   })
   .then(activity => {
