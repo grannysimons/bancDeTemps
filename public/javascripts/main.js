@@ -398,6 +398,11 @@ function clearResults(element) {
   $(panelElement).empty();
 }
 
+function removeParentElement(element) {
+  let panelElement = element.parentNode;
+  $(panelElement).remove();
+}
+
 function clearActivities() {
   // we clear all information in SEARCH USER FOR TRANSACTION section
   // we clear: 1) input username, 2) panel message result, 3) list of activities
@@ -431,28 +436,62 @@ function selectTransactionsStatus(element) {
       
       if (listTransactions) {
         if (Array.isArray(listTransactions)) {
+          // We look if there's any element inside
+          if (listTransactions.length>0) {
           // Recorrem tot l'array de Transaccions i l'insertem al DOM
+          
           listTransactions.map((element,index) => {
-            newdiv2 = document.createElement( "div" )
-            let itemTransaction = $("#transaction-container").append( newdiv2 );
-            $(itemTransaction).addClass('transaction-item');
-            $(itemTransaction).attr('data-state',`${state}`);
-            $(itemTransaction).attr('data-transaction',`${element._id}`);
-            $(itemTransaction).append(`<p class="transaction-paragraf"><span><b>Transaction #${index} ${state}</b></span></p>`);
-            $(itemTransaction).append(`<p class="transaction-paragraf">Description: ${ element.idActivity.description }</p>`);
-            $(itemTransaction).append(`<p class="transaction-paragraf">User Demanding: ${ element.demandingUserId.userName }</p>`);
-            $(itemTransaction).append(`<p class="transaction-paragraf">Sector: ${ element.idActivity.sector }</p>`);
-            $(itemTransaction).append(`<p class="transaction-paragraf">Subsector: ${ element.idActivity.subsector }</p>`);
-            $(itemTransaction).append(`<p class="transaction-paragraf">Duration: ${ element.idActivity.duration } hour</p>`);
-            $(itemTransaction).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeListActivities(this)">See Transaction Involved</button>`);
-            $(itemTransaction).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="RejectTransaction(this)">Cancel</button>`);
-            $(itemTransaction).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
+            let newdiv2 = document.createElement( "div" )
+            // let itemTransaction = $("#transaction-container").append( newdiv2 );
+            $(newdiv2).addClass('transaction-item');
+            $(newdiv2).attr('data-state',`${state}`);
+            $(newdiv2).attr('data-transaction',`${element._id}`);
+            $(newdiv2).append(`<p class="transaction-paragraf"><span><b>Transaction #${index} ${state}</b></span></p>`);
+            $(newdiv2).append(`<p class="transaction-paragraf">Description: ${ element.idActivity.description }</p>`);
+            $(newdiv2).append(`<p class="transaction-paragraf">User Demanding: ${ element.demandingUserId.userName }</p>`);
+            $(newdiv2).append(`<p class="transaction-paragraf">Sector: ${ element.idActivity.sector }</p>`);
+            $(newdiv2).append(`<p class="transaction-paragraf">Subsector: ${ element.idActivity.subsector }</p>`);
+            $(newdiv2).append(`<p class="transaction-paragraf">Duration: ${ element.idActivity.duration } hour</p>`);
+            
+            switch (state) {
+              case 'Proposed':
+                $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeListActivities(this)">See list Activities of User: ${ element.demandingUserId.userName }</button>`);
+                $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Refused')">Reject</button>`);
+                //now we have to add all the activities, and make them invisible
+                let newdivContainerActivities = document.createElement( "div" );
+                $(newdivContainerActivities).addClass('activity-container no-visible-container');
+                for(let i=0; i<element.demandingUserId.offertedActivities.length; i++) {
+                  let newdivActivity = document.createElement( "div" );
+                  $(newdivActivity).attr('data-activity',`${element.demandingUserId.offertedActivities[i]._id}`);
+                  $(newdivActivity).append(`<p class="activity-paragraf">Activity #${i}</p>`);
+                  $(newdivActivity).append(`<p class="activity-paragraf">Description: ${element.demandingUserId.offertedActivities[i].description}</p>`);
+                  $(newdivActivity).append(`<p class="activity-paragraf">Sector: ${element.demandingUserId.offertedActivities[i].sector}</p>`);
+                  $(newdivActivity).append(`<p class="activity-paragraf">SubSector: ${element.demandingUserId.offertedActivities[i].subsector}</p>`);
+                  $(newdivActivity).append(`<p class="activity-paragraf">Duration: ${element.demandingUserId.offertedActivities[i].duration}</p>`);
+                  $(newdivActivity).append(`<button class="btn btn-outline-info" onclick="applyForNewTransaction(this)" data-index="${i}">Apply for Activity </button>`);
+                  $(newdivContainerActivities).append( newdivActivity );
+                }
+                $(newdiv2).append( newdivContainerActivities );
+                break;
+              case 'Accepted':
+                $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeTransactionInformation(this)">See Transaction Involved</button>`);
+                $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Cancelled')">Cancel</button>`);
+                $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Finished')">Finish</button>`);
+                break; 
 
+            }
+
+            
+            $(newdiv2).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
+            $("#transaction-container").append( newdiv2 );
           })
+        } else {
+          $("#transaction-container").append(`<p class='text-danger border border-danger apply-transaction'>THERE'S NO TRANSACTION WITH STATUS: ${state}</p>`);
         }
+      }  
 
       } else {
-        $('#panel-result-apply-transaction').append(`<p class='text-danger border border-danger apply-transaction'>THERE'S NO TRANSACTION WITH STATUS: ${state}!!</p>`);
+        $('#panel-result-apply-transaction').append(`<p class='text-danger border border-danger apply-transaction'>THERE HAS BEEN ERROR. TRY AGAIN, PLEASE</p>`);
 
       }
 
@@ -467,6 +506,41 @@ function selectTransactionsStatus(element) {
 
 
   
+}
+
+function ChangeStatusTransaction(element,state) {
+  let itemTransaction = element.parentNode;
+  transactionId = itemTransaction.getAttribute('data-transaction');
+
+  axios.get(`http://localhost:3000/api/updateStateTransaction?state=${state}&transactionId=${transactionId}`)
+  .then((response) => {
+    //we have successfully update the state of transaction. Let's show a message
+    $(itemTransaction).empty(); //we empty the itemTransaction <div> to play message an a button to accept
+    $(itemTransaction).append("<p class='text-success border border-success apply-transaction'>THE STATE OF THE TRANSACTION HAS CHANGED SUCCESFULLY!!</p>");
+    $(itemTransaction).append('<button class="btn btn-success" onclick="removeParentElement(this)">Accept</button>');  
+    
+    // Now, we have to check the transactions state we were looking, and update it.
+    // It's not necessary, because we have remove the transaction with state changed
+  })
+  .catch( (error) => {
+    $(itemTransaction).empty(); //we empty the itemTransaction <div> to play message an a button to accept
+    $(itemTransaction).append("<p class='text-danger border border-danger apply-transaction'>THE HAS BEEN SOME TROUBLE. THE STATE OF THE TRANSACTION HAS NOT BEEN CHANGED. TRY AGAIN, PLEASE</p>");
+    $(itemTransaction).append('<button class="btn btn-danger apply-transaction" onclick="removeParentElement(this)">Accept</button>');  
+  });
+  
+  // Let's check the status we want to update it
+
+//   switch(state) {
+//     case x:
+//         code block
+//         break;
+//     case y:
+//         code block
+//         break;
+//     default:
+//         code block
+// }
+
 }
 
 //------------------------------------------------------------------------------------------------

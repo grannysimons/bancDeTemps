@@ -79,7 +79,6 @@ router.get('/getUserId2', (req,res,next) => {
   User.findOne({userName: userName})
       .then(user => {
         let userid = user._id; 
-        console.log('user: ', user);
         res.json({userid});
         next();
       })
@@ -159,6 +158,12 @@ router.get('/getTransactionsOnState', Middleware.TransactionManager.getTransacti
   
 });
 
+router.get('/updateStateTransaction', Middleware.TransactionManager.updateStatusTransaction, (req, res, next) => {
+  console.log('Hem fet tots els passos per recuperar les dades de la transaccio');
+  let transactions = res.locals.transactions
+  res.json({ transactions });
+  
+});
 
 
 

@@ -461,6 +461,26 @@ module.exports = {
         next(error);
       })
       next();
+    },
+    updateStatusTransaction: (req, res, next) => {
+      let {state,transactionId} = req.query
+      
+      console.log('el state passat es: ',state); 
+      console.log('el transactionId passat es: ',transactionId); 
+
+      //we have to update the status
+      let conditions = { _id: transactionId }
+          , update = { state: state}
+          , options = { multi: false };
+
+      Transaction.update(conditions, update, options)
+      .then(numAffected => {
+        console.log('el numero de Transaccions fet el state update es:', numAffected);
+        next();
+      })
+      .catch(error => {
+        next(error);
+      })
     }
   },
   // Aquest middleware de moment no l'utilitzem, perque ja el l'hem anidat en el de dalt. D'aquesta forma ens evitem haver de passar dades entre middlewares
@@ -576,6 +596,7 @@ module.exports = {
         next(error);
       })
     }
+    
   }
 }
 
