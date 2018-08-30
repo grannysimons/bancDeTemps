@@ -302,7 +302,7 @@ module.exports = {
   TransactionManager: {
     getTransactions: (req, res, next) => {
       const currentUser = req.session.currentUser;
-      const state = req.query.state;
+      let state = req.query.state;
       console.log('mirem les transacions que tenen estat',req.query);
       // User.findOne({userName: currentUser.userName})
       // .populate('transactions')
@@ -349,12 +349,31 @@ module.exports = {
       //     res.locals.transactions = adventure;
       //     next();
       //   });
+      
+      var aa = 'offertingUserId',
+          bb = 'demandingUserId'
+      
+      switch (state) {
+        case 'Pending' :
+          state = 'Proposed';
+          console.log('el type of user dins de Pending es:',aa);
+          break;
+        case 'Proposed' :
+          aa = 'demandingUserId';
+          bb = 'offertingUserId';
+          console.log('el type of user dins de Proposed es:',aa);
+          break;
+        default:
+          console.log('el type of user dins de Default es:',aa);
+      }
 
+      
+      console.log('el estado que miramos es:',state);
 
-
-      Transaction.find({offertingUserId: currentUser._id, state: state})
+      // Utilizando el [] en las variables, estamos usando la propiedad de Computed Variables de Javascript
+      Transaction.find({[aa]: currentUser._id, state: state})
       .populate([{ 
-          path: 'demandingUserId',
+          path: `${bb}`,
           populate: {
             path: 'offertedActivities',
           }},
@@ -444,6 +463,40 @@ module.exports = {
       //   next(error);
       // })
     },
+    getTransactionInfoSecondLeg: (req, res, next) => {
+      const currentUser = req.session.currentUser;
+      const transactionId = req.query.transactionId;
+      Transaction.find({idTransactionsInvolved: transactionId})
+      .populate([{ 
+          path: 'demandingUserId',
+          populate: {
+            path: 'offertedActivities',
+          }},
+        {path: 'idActivity'}])
+        .then(adventure => {
+          // Nota: Ens retona un ARRAY d'objectes, per això fem adventure[0]
+          console.log('el ID de la transaccio que busquem el idActivitat es:', adventure[0]._id);
+          let transactionId2 = adventure[0]._id;
+          Transaction.find({_id: transactionId2})
+          .populate([{ 
+            path: 'offertingUserId',
+            populate: {
+              path: 'offertedActivities',
+            }},
+          {path: 'idActivity'}])
+          .then(response => {
+            // console.log('el resultat es:', adventure);
+            res.locals.transactionSecondLeg = response;
+            next();
+          })
+          .catch(error => {
+            next(error);
+          })
+        }) 
+        .catch(error => {
+          next(error);
+        })
+    },
     getUserId: (req, res, next) => {
       console.log('hem entrat al Middleware per obtenir el userId AAAA:');
       const userName = req.query.userName;
@@ -498,6 +551,7 @@ module.exports = {
       .then(createdTransaction => {
       
         let transactionId = createdTransaction._id;
+        res.locals.transactionId = transactionId;
         console.log('hem creat la transaccio. El transaction_id es:',transactionId);
         console.log('hem creat la transaccio. El offertingUser_id es:',offertingUserId);
         // updateUserTransactionArray(req,res,next,transactionId);
@@ -512,8 +566,8 @@ module.exports = {
         //   next(error);
         // });
         // NOTA IMPORTANT: SI POSEM AIXO, ENS RETORNA ERROR
-        res.json({transactionId});
-        next();
+        // res.json({transactionId});
+        next(); // Desde la API farem el retorn a AXIOS, el retorn del res.json
         
         
       })
@@ -563,10 +617,10 @@ module.exports = {
           offertingUserId: res.locals.transactionInfo.demandingUserId,
           demandingUserId: res.locals.transactionInfo.offertingUserId,
           state: 'Accepted',
-          idTransactionInvolved: res.locals.transactionInfo._id
+          idTransactionsInvolved: res.locals.transactionInfo._id
         });
 
-        //we use 'save' method because we get the _id we need to inser into the other transaction
+        //we use 'save' method because we get the _id we need to insert into the other transaction
         dataTransaction.save()
         .then(result => {
           res.locals.transactionIdSecondTransaction = result._id;
@@ -584,7 +638,7 @@ module.exports = {
 
       //we have to update first transaction with the transaction_id of second. So, they are related
       let conditions = { _id: transactionId1 }
-          , update = { idTransactionsInvolved: transactionId2, state: 'Accepted'}
+          , update = { $set: {idTransactionsInvolved: transactionId2, state: 'Accepted'}}
           , options = { multi: false };
 
       Transaction.update(conditions, update, options)

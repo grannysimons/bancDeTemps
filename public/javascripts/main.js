@@ -422,12 +422,51 @@ function selectTransactionsStatus(element) {
   $(element).siblings().addClass('btn-warning');
   $(element).siblings().removeClass('btn-info');
 
+  // switch (state) {
+  //   case 'Pending' :
+  //     state = 'Proposed';
+  //     axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
+  //     break;
+  //   case 'Proposed' :
+  //     // we get the transactions that the user has requested, has triggered, and still are pending from answer 
+  //     // we make a query: user=demandingUserId, and transactionState='Proposed'
+  //     axios.get(`http://localhost:3000/api/getTransactionsRequestedbyMe`)
+  //     break;
+  //   default:
+  //     axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
+  // }
+
   axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
     
     .then((response) => {
       console.log(response);
       // console.log('anem a borrar les activitats i imprimir el missatge');
+      $('#container-title-transactions > h3').html(`${state.toUpperCase()} TRANSACTIONS`);
       $("#transaction-container").empty(); //we empty the 'transaction-container' <div>
+      
+      // we place a specific note about what means each type of transactions
+      switch (state) {
+        case 'Proposed':
+          $("#transaction-container").append('<p id="description-state">"Proposed" status is the list of transactions that I have originated (triggered by me)</p>');
+          break;
+        case 'Pending':
+          $("#transaction-container").append('<p id="description-state">"Pending" status is the list of transactions proposed by other users, that I have to ACCEPT or REFUSE</p>');
+          break;  
+        case 'Accepted':
+          $("#transaction-container").append('<p id="description-state">"Accepted" status is the list of transactions accepted by me</p>');
+          break; 
+        case 'Refused':
+          $("#transaction-container").append('<p id="description-state">"Refused" status is the list of transactions refused by me</p>');
+          break;  
+        case 'Finished':
+          $("#transaction-container").append('<p id="description-state">"Finished" status is the list of transactions where I have received the service<br>and I consider that the activity has been done</p>');
+          break;
+        case 'Cancelled':
+          $("#transaction-container").append('<p id="description-state">"Cancelled" status is the list of transactions that were accepted by me<br>but which I cancelled before starting </p>');
+          break;              
+
+      }
+      
       
       // we fill the transactions of the chosen state
       // in response.data.transactions, this is an array with all transactions
@@ -448,13 +487,22 @@ function selectTransactionsStatus(element) {
             $(newdiv2).attr('data-transaction',`${element._id}`);
             $(newdiv2).append(`<p class="transaction-paragraf"><span><b>Transaction #${index} ${state}</b></span></p>`);
             $(newdiv2).append(`<p class="transaction-paragraf">Description: ${ element.idActivity.description }</p>`);
-            $(newdiv2).append(`<p class="transaction-paragraf">User Demanding: ${ element.demandingUserId.userName }</p>`);
+            if (state==='Proposed') {
+              $(newdiv2).append(`<p class="transaction-paragraf">User Service Requested: ${ element.offertingUserId.userName }</p>`);
+            } else {
+              $(newdiv2).append(`<p class="transaction-paragraf">User Demanding: ${ element.demandingUserId.userName }</p>`);
+            }
             $(newdiv2).append(`<p class="transaction-paragraf">Sector: ${ element.idActivity.sector }</p>`);
             $(newdiv2).append(`<p class="transaction-paragraf">Subsector: ${ element.idActivity.subsector }</p>`);
             $(newdiv2).append(`<p class="transaction-paragraf">Duration: ${ element.idActivity.duration } hour</p>`);
             
             switch (state) {
               case 'Proposed':
+                // We can CANCEL the transactions we have created.
+                $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Cancelled')">Cancel</button>`);
+                break;
+              case 'Pending':
+                
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeListActivities(this)">See list Activities of User: ${ element.demandingUserId.userName }</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Refused')">Reject</button>`);
                 //now we have to add all the activities, and make them invisible
@@ -474,23 +522,35 @@ function selectTransactionsStatus(element) {
                 $(newdiv2).append( newdivContainerActivities );
                 break;
               case 'Accepted':
+                // $('#container-title-transactions > h3').html('ACCEPTED TRANSACTIONS');
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeTransactionInformation(this)">See Transaction Involved</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Cancelled')">Cancel</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Finished')">Finish</button>`);
                 break; 
+              case 'Refused':
+                // $('#container-title-transactions > h3').html('REFUSED TRANSACTIONS');
+                break; 
+              case 'Finished':
+                // $('#container-title-transactions > h3').html('FINISHED TRANSACTIONS'); 
+                break; 
+              case 'Cancelled':
+                // $('#container-title-transactions > h3').html('CANCELLED TRANSACTIONS');
+                break;     
 
             }
-
+            
             
             $(newdiv2).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
             $("#transaction-container").append( newdiv2 );
           })
         } else {
+          $('#container-title-transactions > h3').html(`${state.toUpperCase()} TRANSACTIONS`);
           $("#transaction-container").append(`<p class='text-danger border border-danger apply-transaction'>THERE'S NO TRANSACTION WITH STATUS: ${state}</p>`);
         }
       }  
 
       } else {
+        $('#container-title-transactions > h3').html(`${state.toUpperCase()} TRANSACTIONS`);
         $('#panel-result-apply-transaction').append(`<p class='text-danger border border-danger apply-transaction'>THERE HAS BEEN ERROR. TRY AGAIN, PLEASE</p>`);
 
       }
@@ -509,6 +569,7 @@ function selectTransactionsStatus(element) {
 }
 
 function ChangeStatusTransaction(element,state) {
+  // we pass as arguments the DOM Element in order to get the TransactionId, and the state we want to change
   let itemTransaction = element.parentNode;
   transactionId = itemTransaction.getAttribute('data-transaction');
 
@@ -527,25 +588,11 @@ function ChangeStatusTransaction(element,state) {
     $(itemTransaction).append("<p class='text-danger border border-danger apply-transaction'>THE HAS BEEN SOME TROUBLE. THE STATE OF THE TRANSACTION HAS NOT BEEN CHANGED. TRY AGAIN, PLEASE</p>");
     $(itemTransaction).append('<button class="btn btn-danger apply-transaction" onclick="removeParentElement(this)">Accept</button>');  
   });
-  
-  // Let's check the status we want to update it
-
-//   switch(state) {
-//     case x:
-//         code block
-//         break;
-//     case y:
-//         code block
-//         break;
-//     default:
-//         code block
-// }
-
-}
+  }
 
 //------------------------------------------------------------------------------------------------
 
- // 3. WE SEE THE TRANSACTIONS PROPOSED, THE ONE'S THAT OTHER USERS HAVE PROPOSED TO US, AND CHECK THE ACTIVITIES IN ORDER TO APPLY AND COMPLETE SECOND LEG TRANSACTION
+ // 3. WE SEE THE TRANSACTIONS PENDING TO BE ACCEPTED FOR THE USER, THE ONE'S THAT OTHER USERS HAVE PROPOSED TO US, AND CHECK THE ACTIVITIES IN ORDER TO APPLY AND COMPLETE SECOND LEG TRANSACTION
 
   function seeListActivities(element) {
     // let visibleStatus = element.getAttribute('data-status');
@@ -589,19 +636,87 @@ function ChangeStatusTransaction(element,state) {
 
     axios.get(`http://localhost:3000/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
     .then((response) => {
-      // console.log('aquesta es la resposta:',response);
+      // The transaction has been applied and created. We show a SUCCESSFUL message.
+      
+      let myClass = $(transactionElement).attr("class"); 
+      console.log('les classes del transactionElement son:', myClass);  
+      console.log('les classes del transactionElement son:', transactionElement );    
+      $(transactionElement).empty();
+      $(transactionElement).append("<p class='text-success border border-success apply-transaction'>THE TRANSACTION HAS BEEN CREATED SUCCESFULLY!!</p>");
+      $(transactionElement).append('<button class="btn btn-success" onclick="removeParentElement(this)">Accept</button>');  
           
     })
     .catch((error) => {
-      console.log(error);
-      alert('there has been an error', error);
-      // resultElement.innerHTML = generateErrorHTMLOutput(error);
+      $(ActivityContainer).empty();
+      $(ActivityContainer).append("<p class='text-danger border border-danger apply-transaction'>THERE HAS BEEN A PROBLEM. THE TRANSACTION HAS NOT BEEN APPLIED. TRY AGAIN, PLEASE</p>");
+      $(ActivityContainer).append('<button class="btn btn-danger" onclick="removeParentElement(this)">Accept</button>');  
     });
     
   }
 
-    // now we have to create a new transaction into BBDD
+    // transaction is status ACCEPTED. We want to see the other LEG of the transaction
 
+  function seeTransactionInformation(element) {
+    // based on the TransactionId, we check for this Id into transactions.idTransactionsInvolved
+    let itemTransaction = element.parentNode;
+    transactionId = itemTransaction.getAttribute('data-transaction');
+
+    let activityContainer = itemTransaction.querySelector('.activity-container');
+    // console.log('el estado de vista de actividades es',visibleStatus);
+    
+    if (activityContainer) {
+      if ( $(activityContainer).hasClass('no-visible-container') )
+      { 
+        // We want to show the list of activities
+        $(activityContainer).addClass('visible-container');
+        $(activityContainer).removeClass('no-visible-container');
+      // element.setAttribute('data-status','visible');
+        element.innerHTML = "Hide Info transaction involved";
+      } else {
+        // we want to hide the list of activities
+        $(activityContainer).addClass('no-visible-container');
+        $(activityContainer).removeClass('visible-container');
+      // element.setAttribute('data-status','visible');
+        element.innerHTML = "See Info transaction involved";
+
+      }
+    } else {
+      // We have to recover again the information of transaction involved
+      element.innerHTML = "Hide Info transaction involved";
+      axios.get(`http://localhost:3000/api/getTransactionInfoSecondLeg?transactionId=${transactionId}`)
+      .then((response) => {
+        console.log('hem entrat al then de AXIOS. Tot correcte');
+        let infoTransaction = response.data.transactions2[0];
+        //now we have to add all the activities, and make them invisible
+        let newdivContainerActivities = document.createElement( "div" );
+        $(newdivContainerActivities).addClass('activity-container visible-container');
+        
+          let newdivActivity = document.createElement( "div" );
+          // $(newdivActivity).attr('data-activity',`${element.demandingUserId.offertedActivities[i]._id}`);
+          $(newdivActivity).append(`<p class="activity-paragraf">Activity #1</p>`);
+          $(newdivActivity).append(`<p class="activity-paragraf">Username Providing Service: ${infoTransaction.offertingUserId.userName}</p>`);
+          $(newdivActivity).append(`<p class="activity-paragraf">Description: ${infoTransaction.idActivity.description}</p>`);
+          $(newdivActivity).append(`<p class="activity-paragraf">Sector: ${infoTransaction.idActivity.sector}</p>`);
+          $(newdivActivity).append(`<p class="activity-paragraf">SubSector: ${infoTransaction.idActivity.subsector}</p>`);
+          $(newdivActivity).append(`<p class="activity-paragraf">Duration: ${infoTransaction.idActivity.duration} hours</p>`);
+          $(newdivContainerActivities).append( newdivActivity );
+          
+          let svgElement = itemTransaction.lastChild;
+          // console.log('el svg element es:',itemTransaction);
+          itemTransaction.insertBefore(newdivContainerActivities, itemTransaction.lastChild);
+          
+          
+        
+        // Now, we have to check the transactions state we were looking, and update it.
+        // It's not necessary, because we have remove the transaction with state changed
+      })
+      .catch( (error) => {
+        $(itemTransaction).empty(); //we empty the itemTransaction <div> to play message an a button to accept
+        $(itemTransaction).append("<p class='text-danger border border-danger apply-transaction'>THERE HAS BEEN SOME TROUBLE. NO TRANSACTION ASSOCIATED. TRY AGAIN, PLEASE</p>");
+        $(itemTransaction).append('<button class="btn btn-danger apply-transaction" onclick="removeParentElement(this)">Accept</button>');  
+      });
+    }
+  }
   
 
 

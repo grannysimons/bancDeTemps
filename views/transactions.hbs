@@ -12,7 +12,8 @@
 <div id="container-title-transactions">
   <h3 class="transaction-title">PROPOSED TRANSACTIONS</h3>
   <div id="list-of-buttons">
-    <button class="btn btn-info" id="status-proposed" data-status="Proposed" onclick="selectTransactionsStatus(this)">Proposed</button>
+     <button class="btn btn-info" id="status-proposed" data-status="Proposed" onclick="selectTransactionsStatus(this)">Proposed</button>
+    <button class="btn btn-warning" id="status-pending" data-status="Pending" onclick="selectTransactionsStatus(this)">Pending</button>
     <button class="btn btn-warning" id="status-accepted" data-status="Accepted" onclick="selectTransactionsStatus(this)">Accepted</button>
     <button class="btn btn-warning" id="status-refused" data-status="Refused" onclick="selectTransactionsStatus(this)">Refused</button>
     <button class="btn btn-warning" id="status-finished" data-status="Finished" onclick="selectTransactionsStatus(this)">Finished</button>
@@ -21,7 +22,9 @@
 </div>
 
 <div class="transaction-container" id="transaction-container">
-  {{#each userData }}
+  <p id="description-state">'Proposed' status is the list of transactions that I have originated (triggered by me)</p>
+  {{#if userData}}
+    {{#each userData }}
 
     <div class="transaction-item" data-transaction="{{this._id}}" id="transaction-item-{{@index}}" data-status="{{state}}">
       <p class="transaction-paragraf"><span><b>Transaction #{{@index}} {{state}}</b></span></p>
@@ -53,6 +56,10 @@
       {{!-- <hr style="height:2px> --}}
     </div>
   {{/each}}
+  {{/if}}
+  {{#unless userData}}
+    <p class='text-danger border border-danger apply-transaction'>THERE'S NO TRANSACTION WITH STATE 'PROPOSED'</p>
+  {{/unless}}
 </div>
 
 

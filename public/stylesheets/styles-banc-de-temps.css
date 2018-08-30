@@ -379,6 +379,13 @@ footer .footer-names
   margin: 0 5px;
 }
 
+#description-state {
+  margin: 0 0 0 0;
+  padding: 0 0 20px 20px;
+  color: black;
+  font-size: 1rem;
+}
+
 
 
 .transaction-item {

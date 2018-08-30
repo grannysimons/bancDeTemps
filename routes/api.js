@@ -88,8 +88,17 @@ router.get('/getUserId2', (req,res,next) => {
 });
 
 router.get('/acceptSecondLegTransaction', Middleware.acceptProposedTransaction.getTransactionInfo,Middleware.acceptProposedTransaction.insertSecondTransaction,Middleware.acceptProposedTransaction.updateFirstTransaction, (req,res,next) => {
-  const {state} = req.query;
-  console.log('ESTEM CONSULTANT LES TRANSACCIONS QUE TENEN ESTAT:',req.query);
+  // const {state} = req.query;
+  // console.log('ESTEM CONSULTANT LES TRANSACCIONS QUE TENEN ESTAT:',req.query);
+
+  if (res.locals.transactionIdSecondTransaction) {
+    const transactionId2 = res.locals.transactionIdSecondTransaction;
+    res.json({transactionId2}); // retornem a AXIOS el transactionId2. Si ho passa bé, ensenyem missatge que s'ha creat be la transacció
+  } else {
+    res.status(500);
+    res.json({ error });
+  }
+  
 
   // const transactionId = req.query.transactionId;
   // console.log('el transactionId passat es: ',transactionId); 
@@ -104,7 +113,17 @@ router.get('/acceptSecondLegTransaction', Middleware.acceptProposedTransaction.g
 });
 
 router.post('/insertNewTransaction',Middleware.insertNewTransaction.insertTransaction, (req, res, next) => { 
-  console.log('Hem fet tots els middlewares');
+  // Mirem a veure si s'ha retornat bé del ultim Middleware, i s'ha creat la segona transacció
+  if (res.locals.transactionId) {
+    const transactionId = res.locals.transactionId;
+    res.json({transactionId}); // retornem a AXIOS el transactionId2. Si ho passa bé, ensenyem missatge que s'ha creat be la transacció
+  } else {
+    res.status(500);
+    res.json({ error });
+  }
+  
+  // En l'ultim middleware hem passat ja la informació de retorn a AXIOS, res.json({})
+  
 
 });
 
@@ -164,6 +183,16 @@ router.get('/updateStateTransaction', Middleware.TransactionManager.updateStatus
   res.json({ transactions });
   
 });
+
+router.get('/getTransactionInfoSecondLeg', Middleware.TransactionManager.getTransactionInfoSecondLeg, (req, res, next) => {
+  console.log('Hem fet tots els passos per recuperar les dades del 2LEG transaccio');
+  console.log('el valor de la resposta es:', res.locals.transactionSecondLeg);
+  let transactions2 = res.locals.transactionSecondLeg;
+  res.json({ transactions2 });
+  
+});
+
+
 
 
 
