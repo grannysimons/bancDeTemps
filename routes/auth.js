@@ -18,7 +18,6 @@ router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.check
   User.create(userData)
   .then(user => {
     req.session.currentUser = user;
-    console.log('current!!!!', req.session.currentUser);
     res.redirect('/');
   })
   .catch(error => next(error));

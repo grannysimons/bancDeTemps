@@ -60,7 +60,6 @@ module.exports = {
   },
   editProfile_get: {
     checkUserExists: (req, res, next) => {
-      console.log('checkUserExists');
       // if(req.session.currentUser) next();
       // else res.render('/');
       const currentUser = req.session.currentUser;
@@ -86,7 +85,6 @@ module.exports = {
   },
   editProfile_post: {
     retrieveData: (req, res, next) => {
-      console.log('editPost: ');
       const { name, lastName, userName, passwordUser, repeatPassword, mail, roadType, roadName, number, zipCode, city, province, state, telephone, introducing } = req.body;
       res.locals.userData = { name, lastName, userName, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
       if(passwordUser) res.locals.userData.password = passwordUser;
@@ -95,7 +93,6 @@ module.exports = {
       next();
     },
     checkPassword: (req,res,next) => {
-      console.log('userData ');
       if(res.locals.userData.password || res.locals.userData.repeatedPassword)
       {
         if(res.locals.userData.password===res.locals.userData.repeatPassword)
@@ -135,8 +132,6 @@ module.exports = {
   activityManager: {
     getActivities: (req, res, next) => {
       const currentUser = req.session.currentUser;
-      console.log('getActivities_currentUser: ', currentUser);
-      console.log('currentUser.id: ', currentUser._id);
       Activity.find({idUser: currentUser._id})
       .then(activities => {
         res.locals.offertedActivities = [];

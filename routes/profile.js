@@ -20,7 +20,6 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
 
 router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
   
-  console.log('edit');
   const roadType = req.body.roadType;
   const roadName = req.body.roadName;
   const number = req.body.number;
@@ -50,10 +49,7 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
       res.locals.messages.passwordsAreDifferent='';
       User.update({userName: res.locals.userData.userName}, res.locals.userData)
       .then(user => {
-        // req.session.currentUser = res.locals.userData;
         req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
-        // req.session.currentUser = user;
-        console.log('edit_currentUser ', req.session.currentUser);
         const data = {
           message: res.locals.messages,
           userData: res.locals.userData,
@@ -92,11 +88,8 @@ router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, 
     idUser: req.session.currentUser._id, 
     type,
   };
-  console.log('user: ',req.session.currentUser);
-  console.log('crear act ',activityCreate);
   Activity.create(activityCreate)
   .then(activity => {
-    console.log('activity: ', activity);
     res.redirect('/profile/activityManager');
   })
   .catch(error => {
