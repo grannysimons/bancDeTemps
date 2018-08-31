@@ -260,17 +260,11 @@ function performGetRequest2() {
     resultElement.innerHTML = '';
     const sector = "";
     const subSector = "";
-    
-    
-    // console.log('el valor de demanding user es:',demandingUserId);
-    // console.log('estem dins de AXIOS');
+        
     // we need to get the user_id in order to create the transaction later
     axios.get(`http://localhost:3000/api/obtenirUserID2?userName=${usrName}`)
     .then((response) => {
-      console.log('3.aquesta es la resposta de obtenir el USERID:',response);
-      console.log('4.el valor de userid es:',response.data.userid);
       if (response.data.userid) {
-        console.log('5.hem entrat dins el if i per tant hem obtingut el offertingUserId');
         offertingUserId = response.data.userid;
         // Now that we have retrieve the OfferingUserId, we can ask for activities of this user
         findUserActivities(usrName, offertingUserId);
@@ -283,12 +277,11 @@ function performGetRequest2() {
       }
     })
     .catch((error) => {
-      // console.log(error);
       $("#getResult2").empty(); //we empty the activities <div>
       $("#panel-result-apply-transaction").empty();
       $("#panel-result-apply-transaction").append("<p class='text-danger border border-danger apply-transaction'>THIS USER DOESN'T EXIST!! TRY AGAIN WITH DIFFERENT USERNAME</p>");
       $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
-      // resultElement.innerHTML = `<p>There has been an error:  ${error}. Try again</p>`;
+      
       
     });
   }  
@@ -303,13 +296,11 @@ function findUserActivities(usrName, offertingUserId) {
 
     axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subSector}&userName=${usrName}`)
     .then((response) => {
-      console.log('aquesta es la resposta:',response);
+      
       $("#panel-result-apply-transaction").empty(); // We remove any previous message in the PANEL MESSAGE
       if (response.data.activities.length>0) {
         demandingUserId = response.data.currentUser._id;
-        // var activitiesArray = response.data.activities;
-        // resultElement.innerHTML = '<p>This user has activities to offer</p>';
-        console.log('el valor de offertingUserId abans de crear el JSON es',offertingUserId);
+                
         for(let i=0; i<response.data.activities.length; i++)
           { 
             let dataTransaction = {
@@ -317,15 +308,13 @@ function findUserActivities(usrName, offertingUserId) {
               demandingUserId: demandingUserId,
               activityId: response.data.activities[i]._id,
               status: 'Proposed',
-              // idTransactionsInvolved: ''
+              
             };
 
 
             // we convert it to a JSON data, and we attach to an attribute 'data-profile' in the button element
             let myJsonData = JSON.stringify(dataTransaction);
-            console.log(myJsonData);
-
-            
+                        
             let divElement = document.createElement('div');
             divElement.innerHTML = `<p><b><u>Activity # ${i+1}</u></b></p>
                                        <p><b>Description: </b>${response.data.activities[i].description} </p>
@@ -343,29 +332,16 @@ function findUserActivities(usrName, offertingUserId) {
             buttonElement.setAttribute('type','submit');
             divElement.appendChild(buttonElement);
             resultElement.appendChild(divElement);
-            // let pDescription = document.createElement('p');
-            // pDescription.innerHTML = response.data.activities[i].description;
-            // let pDuration = document.createElement('p');
-            // pDuration.innerHTML = 'Duration: ' + response.data.activities[i].duration + 'hours';
-            // let pSector = document.createElement('p');
-            // pSector.innerHTML = 'Sector: ' + response.data.activities[i].sector;
-            // let pSubSector = document.createElement('p');
-            // pSubSector.innerHTML = 'Sub Sector: ' + response.data.activities[i].subsector;
-            // resultElement.appendChild(pDescription);
-            // resultElement.appendChild(pSector);
-            // resultElement.appendChild(pSubSector);
-            // resultElement.appendChild(pDuration);
           }  
 
       } else {
         resultElement.innerHTML = '<p>This user doesnt have any activity to offer</p>';
       }
-      // resultElement.innerHTML = generateSuccessHTMLOutput(response);
+      
     })
     .catch((error) => {
-        console.log(error);
         resultElement.innerHTML = `<p>There has been an error:  ${error}</p>`;
-        // resultElement.innerHTML = generateErrorHTMLOutput(error);
+        
     });
   }
 
@@ -374,20 +350,15 @@ function findUserActivities(usrName, offertingUserId) {
    
     let numActivity = element.getAttribute('numActivity');
     let attributeJSON = element.getAttribute('dataprofile');
-    // console.log('les dades del array son:', dataActivities);
-    console.log('el elemento JSON es:', attributeJSON);
     let dataTransaction = JSON.parse(attributeJSON);
 
     axios.post('http://localhost:3000/api/insertNewTransaction', dataTransaction)
     
     .then((response) => {
-      console.log(response);
-      console.log('anem a borrar les activitats i imprimir el missatge');
       $("#getResult2").empty(); //we empty the activities <div>
       $("#panel-result-apply-transaction").empty();
       $("#panel-result-apply-transaction").append("<p class='text-success border border-success apply-transaction'>THE NEW TRANSACTION HAS BEEN CREATED SUCCESFULLY!!</p>");
       $("#panel-result-apply-transaction").append('<button class="btn btn-success" onclick="clearResults(this)">Accept</button>');  
-      // $(window).animate({ scrollTop: 0 }, 'slow'); //per comptes de $(window), podem posar qualsevol element i farà el scroll fins a aquell element 
       $(window).scrollTop(0); //move the scroll at the top
     })
     .catch( (error) => {
@@ -439,7 +410,7 @@ function selectTransactionsStatus(element) {
   axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
     
     .then((response) => {
-      console.log(response);
+      
       // console.log('anem a borrar les activitats i imprimir el missatge');
       $('#container-title-transactions > h3').html(`${state.toUpperCase()} TRANSACTIONS`);
       $("#transaction-container").empty(); //we empty the 'transaction-container' <div>
@@ -481,7 +452,6 @@ function selectTransactionsStatus(element) {
           
           listTransactions.map((element,index) => {
             let newdiv2 = document.createElement( "div" )
-            // let itemTransaction = $("#transaction-container").append( newdiv2 );
             $(newdiv2).addClass('transaction-item');
             $(newdiv2).attr('data-state',`${state}`);
             $(newdiv2).attr('data-transaction',`${element._id}`);
@@ -522,19 +492,18 @@ function selectTransactionsStatus(element) {
                 $(newdiv2).append( newdivContainerActivities );
                 break;
               case 'Accepted':
-                // $('#container-title-transactions > h3').html('ACCEPTED TRANSACTIONS');
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeTransactionInformation(this)">See Transaction Involved</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Cancelled')">Cancel</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Finished')">Finish</button>`);
                 break; 
               case 'Refused':
-                // $('#container-title-transactions > h3').html('REFUSED TRANSACTIONS');
+                
                 break; 
               case 'Finished':
-                // $('#container-title-transactions > h3').html('FINISHED TRANSACTIONS'); 
+                
                 break; 
               case 'Cancelled':
-                // $('#container-title-transactions > h3').html('CANCELLED TRANSACTIONS');
+                
                 break;     
 
             }
@@ -554,14 +523,10 @@ function selectTransactionsStatus(element) {
         $('#panel-result-apply-transaction').append(`<p class='text-danger border border-danger apply-transaction'>THERE HAS BEEN ERROR. TRY AGAIN, PLEASE</p>`);
 
       }
-
-
-      // $(window).animate({ scrollTop: 0 }, 'slow'); //per comptes de $(window), podem posar qualsevol element i farà el scroll fins a aquell element 
-      // $(window).scrollTop(0); //move the scroll at the top
+     
     })
     .catch( (error) => {
-      console.log(error);
-      console.log('DE RETON DE AXIOS HEM TINGUT UN ERROR');
+      
     });
 
 
@@ -596,23 +561,19 @@ function ChangeStatusTransaction(element,state) {
  //------------------ 3. WE SEE THE TRANSACTIONS PENDING TO BE ACCEPTED FOR THE USER, THE ONE'S THAT OTHER USERS HAVE PROPOSED TO US, AND CHECK THE ACTIVITIES IN ORDER TO APPLY AND COMPLETE SECOND LEG TRANSACTION
 
   function seeListActivities(element) {
-    // let visibleStatus = element.getAttribute('data-status');
     let transactionElement = element.parentNode;
     let activityContainer = transactionElement.querySelector('.activity-container');
-    // console.log('el estado de vista de actividades es',visibleStatus);
-    
+        
     if ( $(activityContainer).hasClass('no-visible-container') )
       { 
         // We want to show the list of activities
         $(activityContainer).addClass('visible-container');
         $(activityContainer).removeClass('no-visible-container');
-      // element.setAttribute('data-status','visible');
         element.innerHTML = "Hide list of activities";
       } else {
         // we want to hide the list of activities
         $(activityContainer).addClass('no-visible-container');
         $(activityContainer).removeClass('visible-container');
-      // element.setAttribute('data-status','visible');
         element.innerHTML = "See list of activities";
 
       }
@@ -632,16 +593,12 @@ function ChangeStatusTransaction(element,state) {
     let activityId = ActivityElement.getAttribute('data-activity');
     let transactionId = transactionElement.getAttribute('data-transaction');
     
-    console.log('el _id de activitat es:',activityId);
-    console.log('el _id de transaction es:',transactionId);
-
     axios.get(`http://localhost:3000/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
     .then((response) => {
       // The transaction has been applied and created. We show a SUCCESSFUL message.
       
       let myClass = $(transactionElement).attr("class"); 
-      console.log('les classes del transactionElement son:', myClass);  
-      console.log('les classes del transactionElement son:', transactionElement );    
+      
       $(transactionElement).empty();
       $(transactionElement).append("<p class='text-success border border-success apply-transaction'>THE TRANSACTION HAS BEEN CREATED SUCCESFULLY!!</p>");
       $(transactionElement).append('<button class="btn btn-success" onclick="removeParentElement(this)">Accept</button>');  
@@ -663,7 +620,7 @@ function ChangeStatusTransaction(element,state) {
     transactionId = itemTransaction.getAttribute('data-transaction');
 
     let activityContainer = itemTransaction.querySelector('.activity-container');
-    // console.log('el estado de vista de actividades es',visibleStatus);
+    
     
     if (activityContainer) {
       if ( $(activityContainer).hasClass('no-visible-container') )
@@ -671,13 +628,11 @@ function ChangeStatusTransaction(element,state) {
         // We want to show the list of activities
         $(activityContainer).addClass('visible-container');
         $(activityContainer).removeClass('no-visible-container');
-      // element.setAttribute('data-status','visible');
         element.innerHTML = "Hide Info transaction involved";
       } else {
         // we want to hide the list of activities
         $(activityContainer).addClass('no-visible-container');
         $(activityContainer).removeClass('visible-container');
-      // element.setAttribute('data-status','visible');
         element.innerHTML = "See Info transaction involved";
 
       }
@@ -686,14 +641,12 @@ function ChangeStatusTransaction(element,state) {
       element.innerHTML = "Hide Info transaction involved";
       axios.get(`http://localhost:3000/api/getTransactionInfoSecondLeg?transactionId=${transactionId}`)
       .then((response) => {
-        console.log('hem entrat al then de AXIOS. Tot correcte');
         let infoTransaction = response.data.transactions2[0];
         //now we have to add all the activities, and make them invisible
         let newdivContainerActivities = document.createElement( "div" );
         $(newdivContainerActivities).addClass('activity-container visible-container');
         
           let newdivActivity = document.createElement( "div" );
-          // $(newdivActivity).attr('data-activity',`${element.demandingUserId.offertedActivities[i]._id}`);
           $(newdivActivity).append(`<p class="activity-paragraf">Activity #1</p>`);
           $(newdivActivity).append(`<p class="activity-paragraf">Username Providing Service: ${infoTransaction.offertingUserId.userName}</p>`);
           $(newdivActivity).append(`<p class="activity-paragraf">Description: ${infoTransaction.idActivity.description}</p>`);
@@ -703,7 +656,6 @@ function ChangeStatusTransaction(element,state) {
           $(newdivContainerActivities).append( newdivActivity );
           
           let svgElement = itemTransaction.lastChild;
-          // console.log('el svg element es:',itemTransaction);
           itemTransaction.insertBefore(newdivContainerActivities, itemTransaction.lastChild);
           
           
