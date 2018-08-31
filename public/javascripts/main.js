@@ -57,6 +57,7 @@ window.addEventListener('load', ()=>{
           zoom: 15,
           center: point
       });
+      
       filter();
     });
   }
@@ -94,10 +95,24 @@ function filter(){
         console.log('bu!', act.data.activities[i]);
         if(act.data.activities[i].idUser.location.length === 2 )
         {
+          let description = `
+            <h1>${act.data.activities[i].description}</h1>
+            <p>duration: ${act.data.activities[i].duration} hours</p>
+            <p>by ${act.data.activities[i].idUser.userName}</p>
+            <p>sector ${act.data.activities[i].sector} / subsector ${act.data.activities[i].subsector}</p>
+            <p>${act.data.activities[i].tags}</p>
+          `;
+
+          // create the popup
+          var popup = new mapboxgl.Popup({ offset: 25 })
+          // .setText('Construction on the Washington Monument began in 1848.');
+          .setHTML(description)
+
           //marker!
           console.log('marker! ', act.data.activities[i].idUser.location);
           new mapboxgl.Marker()
           .setLngLat(act.data.activities[i].idUser.location)
+          .setPopup(popup) // sets a popup on this marker
           .addTo(map);
         }
         let liElement = document.createElement('li');
@@ -372,7 +387,6 @@ function filterUserActivities() {
     });
 
   }
-
 
     
 
