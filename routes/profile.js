@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/user');
 const Activity = require('../models/activity');
 const Middlewares = require('../middlewares');
+const Assets = require('../assets');
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const geocodingClient = mbxGeocoding({ accessToken: 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw' });
 
@@ -47,10 +48,12 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
         res.locals.userData.location = maxCoincidence.center;
       }
       res.locals.messages.passwordsAreDifferent='';
-      console.log('data', res.locals.userData);
       User.update({userName: res.locals.userData.userName}, res.locals.userData)
       .then(user => {
-        req.session.currentUser = res.locals.userData;
+        // req.session.currentUser = res.locals.userData;
+        req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
+        // req.session.currentUser = user;
+        console.log('edit_currentUser ', req.session.currentUser);
         const data = {
           message: res.locals.messages,
           userData: res.locals.userData,
@@ -80,7 +83,7 @@ router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, 
   console.log('crear activittat');
   const type = req.params.type;
   const { sector, subsector, description, tags, duration } = req.body;
-  Activity.create({
+  const activityCreate = {
     sector,
     subsector,
     description,
@@ -88,8 +91,12 @@ router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, 
     duration,
     idUser: req.session.currentUser._id, 
     type,
-  })
+  };
+  console.log('user: ',req.session.currentUser);
+  console.log('crear act ',activityCreate);
+  Activity.create(activityCreate)
   .then(activity => {
+    console.log('activity: ', activity);
     res.redirect('/profile/activityManager');
   })
   .catch(error => {

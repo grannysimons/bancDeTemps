@@ -83,14 +83,15 @@ function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
+  console.log(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   .then((act) => {
     document.getElementById('results').innerHTML = '';
     if(act.data.activities)
     {
-      console.log('act.data.activities', act.data.activities);
       for(let i=0; i<act.data.activities.length; i++)
       {
+        console.log('bu!', act.data.activities[i]);
         if(act.data.activities[i].idUser.location.length === 2 )
         {
           //marker!

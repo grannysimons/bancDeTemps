@@ -88,7 +88,9 @@ module.exports = {
     retrieveData: (req, res, next) => {
       console.log('editPost: ');
       const { name, lastName, userName, passwordUser, repeatPassword, mail, roadType, roadName, number, zipCode, city, province, state, telephone, introducing } = req.body;
-      res.locals.userData = { name, lastName, userName, password: passwordUser, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
+      res.locals.userData = { name, lastName, userName, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
+      if(passwordUser) res.locals.userData.password = passwordUser;
+      if(repeatPassword) res.locals.userData.repeatPassword = repeatPassword;
       res.locals.messages = { passwordsAreDifferent: '' };
       next();
     },
@@ -133,6 +135,8 @@ module.exports = {
   activityManager: {
     getActivities: (req, res, next) => {
       const currentUser = req.session.currentUser;
+      console.log('getActivities_currentUser: ', currentUser);
+      console.log('currentUser.id: ', currentUser._id);
       Activity.find({idUser: currentUser._id})
       .then(activities => {
         res.locals.offertedActivities = [];
