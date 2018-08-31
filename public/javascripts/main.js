@@ -245,8 +245,13 @@ const user = document.getElementById('usrName').value;
   })
 } 
 
+//---------------------TRANSACTION MANAGER---------------------------------------------------------------
+
+// ----- 1) SEARCH ACTIVITIES BY USERNAME, IN ORDER TO START TRANSACTION-----------------------------
 // With the following function we create a new TRANSACTION, searching for USER'S ACTIVITIES, and then , applying to start transaction
-  
+
+// 1.1) WHEN APPLYING SEARCH BUTTON, WE GET THE LIST OF ACTIVITIES OF THIS USER
+// 1.1.a) IN performGetRequest2, we get the user_id from the USERNAME, and call the function findUserActivities(), that will retrieve all the activities of the user
 function performGetRequest2() {
     var offertingUserId = undefined;
     var demandingUserId = undefined;
@@ -260,7 +265,7 @@ function performGetRequest2() {
     // console.log('el valor de demanding user es:',demandingUserId);
     // console.log('estem dins de AXIOS');
     // we need to get the user_id in order to create the transaction later
-    axios.get(`http://localhost:3000/obtenirUserID?userName=${usrName}`)
+    axios.get(`http://localhost:3000/api/obtenirUserID2?userName=${usrName}`)
     .then((response) => {
       console.log('3.aquesta es la resposta de obtenir el USERID:',response);
       console.log('4.el valor de userid es:',response.data.userid);
@@ -289,7 +294,7 @@ function performGetRequest2() {
   }  
 
     
-
+// 1.1.b) With this function findUserActivities(), we get all the activities of the user.
 function findUserActivities(usrName, offertingUserId) {
     const sector = "";
     const subSector = "";
@@ -299,6 +304,7 @@ function findUserActivities(usrName, offertingUserId) {
     axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subSector}&userName=${usrName}`)
     .then((response) => {
       console.log('aquesta es la resposta:',response);
+      $("#panel-result-apply-transaction").empty(); // We remove any previous message in the PANEL MESSAGE
       if (response.data.activities.length>0) {
         demandingUserId = response.data.currentUser._id;
         // var activitiesArray = response.data.activities;
@@ -363,6 +369,7 @@ function findUserActivities(usrName, offertingUserId) {
     });
   }
 
+  // 1.1.c) We apply for an activity of the user. So, we are accepting the transaction.
   function applyForTransaction(element) {
    
     let numActivity = element.getAttribute('numActivity');
@@ -384,13 +391,16 @@ function findUserActivities(usrName, offertingUserId) {
       $(window).scrollTop(0); //move the scroll at the top
     })
     .catch( (error) => {
-      console.log(error);
-      console.log('DE RETON DE AXIOS HEM TINGUT UN ERROR');
+      $("#getResult2").empty(); //we empty the activities <div>
+      $("#panel-result-apply-transaction").empty();
+      $("#panel-result-apply-transaction").append("<p class='text-danger border border-danger apply-transaction'>THERE HAS BEEN A PROBLEM. NEW TRANSACTION HAS NOT BEEN CREATED. TRY AGAIN, PLEASE</p>");
+      $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
     });
-    console.log('HEM TORNAT DE AXIOS, PER VEURE QUE ENS RETORNA');
+    
 
   }
 
+//---------------HELPER FUNCTIONS: CLEAR <div>, REMOVE <div> USED BY DIFFERENT FUNCTIONS
 // Clear Results: clear results from the content of <div> parent
 
 function clearResults(element) {
@@ -411,6 +421,10 @@ function clearActivities() {
   $("#usrName").val('');
 }
 
+// ----- 2) BUTTON BAR THAT ALLOWS US TO SELECT THE TRANSACTIONS BASED ON THEIR STATE-----------------------------
+// With the following function we get the TRANSACTION information in each STATE
+
+// 2.2.a) This function selectTransactionsStatus(), retrieves all TRANSACTIONS based on the STATE
 function selectTransactionsStatus(element) {
   // $(element).siblings().toggleClass('btn-info')
   // We change the class of current BUTTON
@@ -421,20 +435,6 @@ function selectTransactionsStatus(element) {
   // we setup the Classes of Siblings
   $(element).siblings().addClass('btn-warning');
   $(element).siblings().removeClass('btn-info');
-
-  // switch (state) {
-  //   case 'Pending' :
-  //     state = 'Proposed';
-  //     axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
-  //     break;
-  //   case 'Proposed' :
-  //     // we get the transactions that the user has requested, has triggered, and still are pending from answer 
-  //     // we make a query: user=demandingUserId, and transactionState='Proposed'
-  //     axios.get(`http://localhost:3000/api/getTransactionsRequestedbyMe`)
-  //     break;
-  //   default:
-  //     axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
-  // }
 
   axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
     
@@ -462,7 +462,7 @@ function selectTransactionsStatus(element) {
           $("#transaction-container").append('<p id="description-state">"Finished" status is the list of transactions where I have received the service<br>and I consider that the activity has been done</p>');
           break;
         case 'Cancelled':
-          $("#transaction-container").append('<p id="description-state">"Cancelled" status is the list of transactions that were accepted by me<br>but which I cancelled before starting </p>');
+          $("#transaction-container").append('<p id="description-state">"Cancelled" status is the list of transactions that were accepted by me,but which I cancelled before starting. <br>And also, transactions cancelled for demanding user requesting for my activities. </p>');
           break;              
 
       }
@@ -568,6 +568,7 @@ function selectTransactionsStatus(element) {
   
 }
 
+// 2.2.b) This function ChangeStatusTransaction(), is called when we click on buttons: CANCEL, REJECT, FINISH to change the STATE of the TRANSACTION in the DATABASE
 function ChangeStatusTransaction(element,state) {
   // we pass as arguments the DOM Element in order to get the TransactionId, and the state we want to change
   let itemTransaction = element.parentNode;
@@ -592,7 +593,7 @@ function ChangeStatusTransaction(element,state) {
 
 //------------------------------------------------------------------------------------------------
 
- // 3. WE SEE THE TRANSACTIONS PENDING TO BE ACCEPTED FOR THE USER, THE ONE'S THAT OTHER USERS HAVE PROPOSED TO US, AND CHECK THE ACTIVITIES IN ORDER TO APPLY AND COMPLETE SECOND LEG TRANSACTION
+ //------------------ 3. WE SEE THE TRANSACTIONS PENDING TO BE ACCEPTED FOR THE USER, THE ONE'S THAT OTHER USERS HAVE PROPOSED TO US, AND CHECK THE ACTIVITIES IN ORDER TO APPLY AND COMPLETE SECOND LEG TRANSACTION
 
   function seeListActivities(element) {
     // let visibleStatus = element.getAttribute('data-status');

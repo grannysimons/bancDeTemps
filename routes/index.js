@@ -120,10 +120,10 @@ router.get('/logout', (req, res, next) => {
 
 /* GET transactions. */
 
-router.get('/transactionstest',  (req, res, next) => {
-    const {state} = req.query;
-    console.log('mirem les transacions que tenen estat',req.query);
-})    
+// router.get('/transactionstest',  (req, res, next) => {
+//     const {state} = req.query;
+//     console.log('mirem les transacions que tenen estat',req.query);
+// })    
 
 router.get('/transactions', Middleware.TransactionManager.getTransactions, (req, res, next) => {
     const userData = res.locals.transactions;
