@@ -1,7 +1,6 @@
 // import timetable from '../../timetable';
 var map;
 window.addEventListener('load', ()=>{
-  filter();
   document.querySelector('#filter #submit').addEventListener('click', filter);
 
   var viewportHeight = $(window).height();  
@@ -58,7 +57,12 @@ window.addEventListener('load', ()=>{
           zoom: 15,
           center: point
       });
+      filter();
     });
+  }
+  else
+  {
+    filter();
   }
 });
 
@@ -79,6 +83,7 @@ function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
+  console.log(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   .then((act) => {
     document.getElementById('results').innerHTML = '';
@@ -86,6 +91,15 @@ function filter(){
     {
       for(let i=0; i<act.data.activities.length; i++)
       {
+        console.log('bu!', act.data.activities[i]);
+        if(act.data.activities[i].idUser.location.length === 2 )
+        {
+          //marker!
+          console.log('marker! ', act.data.activities[i].idUser.location);
+          new mapboxgl.Marker()
+          .setLngLat(act.data.activities[i].idUser.location)
+          .addTo(map);
+        }
         let liElement = document.createElement('li');
         liElement.classList.add('row');
         document.getElementById('results').appendChild(liElement);
@@ -166,7 +180,6 @@ function filter(){
           buttonApply.setAttribute('id', 'apply-'+i);
           buttonApply.addEventListener('click', apply);
           buttonApply.innerHTML = 'Apply';
-  
           divRight.appendChild(buttonApply);
         }
       }
@@ -186,6 +199,8 @@ function apply(e){
   console.log(`http://localhost:3000/api/${idActivitat}/request`);
   axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
+    const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
+    $(idModal).modal('hide');
     if (act.data.message === 'ok')
     {
       const message = `<div class="alert alert-success" role="alert">
@@ -199,7 +214,8 @@ function apply(e){
     }
   })
   .catch(error => {
-    console.log('error: ', error.response.data);
+    const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
+    $(idModal).modal('hide');
     document.getElementById('results').innerHTML = error.response.data.error;
   })
 }
@@ -209,8 +225,8 @@ function openModal(){
 } 
 
 function filterUserActivities() {
-console.log('hem entrat a AXIOS');  
-const user = document.getElementById('usrName').value;
+  console.log('hem entrat a AXIOS');  
+  const user = document.getElementById('usrName').value;
   const sector = "";
   const subsector = "";
   axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subSector}&userName=${usrName}`)
@@ -294,13 +310,12 @@ function findUserActivities(usrName, offertingUserId) {
     var resultElement = document.getElementById('getResult2');
     resultElement.innerHTML = '';
 
-    axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subSector}&userName=${usrName}`)
+    axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${offertingUserId}`)
     .then((response) => {
-      
       $("#panel-result-apply-transaction").empty(); // We remove any previous message in the PANEL MESSAGE
-      if (response.data.activities.length>0) {
-        demandingUserId = response.data.currentUser._id;
-                
+      let demandingUserId = response.data.currentUser._id;
+      
+      if (response.data.activities.length>0 && demandingUserId!=offertingUserId) {
         for(let i=0; i<response.data.activities.length; i++)
           { 
             let dataTransaction = {
@@ -335,13 +350,27 @@ function findUserActivities(usrName, offertingUserId) {
           }  
 
       } else {
-        resultElement.innerHTML = '<p>This user doesnt have any activity to offer</p>';
+        if(demandingUserId==offertingUserId) {
+          $("#getResult2").empty(); //we empty the activities <div>
+          $("#panel-result-apply-transaction").empty();
+          $("#panel-result-apply-transaction").append("<p class='text-danger border border-danger apply-transaction'>YOU CAN'T APPLY TRANSACTION YOURSELF. PLEASE, SEARCH FOR A DIFFERENT USERNAME</p>");
+          $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
+        } else {
+          $("#getResult2").empty(); //we empty the activities <div>
+          $("#panel-result-apply-transaction").empty();
+          $("#panel-result-apply-transaction").append("<p class='text-danger border border-danger apply-transaction'>THIS USER DOESN'T HAVE ANY ACTIVITY TO OFFER. PLEASE, SELECT A DIFFERENT USERNAME</p>");
+          $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
+        }
+        
+        
       }
       
     })
     .catch((error) => {
-        resultElement.innerHTML = `<p>There has been an error:  ${error}</p>`;
-        
+      $("#getResult2").empty(); //we empty the activities <div>
+      $("#panel-result-apply-transaction").empty();
+      $("#panel-result-apply-transaction").append("<p class='text-danger border border-danger apply-transaction'>THERE HAS BEEN AN ERROR. TRY AGAIN, PLEASE</p>");
+      $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
     });
   }
 
@@ -411,14 +440,14 @@ function selectTransactionsStatus(element) {
     
     .then((response) => {
       
-      // console.log('anem a borrar les activitats i imprimir el missatge');
+      console.log('el llistat de transaccions a mostrar es',response.data.transactions);
       $('#container-title-transactions > h3').html(`${state.toUpperCase()} TRANSACTIONS`);
       $("#transaction-container").empty(); //we empty the 'transaction-container' <div>
       
       // we place a specific note about what means each type of transactions
       switch (state) {
         case 'Proposed':
-          $("#transaction-container").append('<p id="description-state">"Proposed" status is the list of transactions that I have originated (triggered by me)</p>');
+          $("#transaction-container").append('<p id="description-state">"Proposed" status is the list of transactions that I have originated (triggered by me) and still pending to be accepted/rejected</p>');
           break;
         case 'Pending':
           $("#transaction-container").append('<p id="description-state">"Pending" status is the list of transactions proposed by other users, that I have to ACCEPT or REFUSE</p>');
@@ -444,15 +473,21 @@ function selectTransactionsStatus(element) {
       // Let's check in case we get 0, 1 or more
       listTransactions = response.data.transactions;
       
+      
       if (listTransactions) {
+        // console.log('comprovem si ens retorna un array:',Array.isArray(listTransactions));
         if (Array.isArray(listTransactions)) {
           // We look if there's any element inside
           if (listTransactions.length>0) {
           // Recorrem tot l'array de Transaccions i l'insertem al DOM
           
           listTransactions.map((element,index) => {
-            let newdiv2 = document.createElement( "div" )
+            
+            var newdiv2 = document.createElement( "div" )
+
+
             $(newdiv2).addClass('transaction-item');
+            $(newdiv2).attr('id',`transaction-item-${index}`);
             $(newdiv2).attr('data-state',`${state}`);
             $(newdiv2).attr('data-transaction',`${element._id}`);
             $(newdiv2).append(`<p class="transaction-paragraf"><span><b>Transaction #${index} ${state}</b></span></p>`);
@@ -465,52 +500,48 @@ function selectTransactionsStatus(element) {
             $(newdiv2).append(`<p class="transaction-paragraf">Sector: ${ element.idActivity.sector }</p>`);
             $(newdiv2).append(`<p class="transaction-paragraf">Subsector: ${ element.idActivity.subsector }</p>`);
             $(newdiv2).append(`<p class="transaction-paragraf">Duration: ${ element.idActivity.duration } hour</p>`);
-            
+            // console.log('el valor de newdiv2 abans',newdiv2);
+            // console.log('el state abans entrar al SWITCH:',state);
             switch (state) {
               case 'Proposed':
                 // We can CANCEL the transactions we have created.
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Cancelled')">Cancel</button>`);
+                $(newdiv2).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
+                $("#transaction-container").append( newdiv2 );
                 break;
               case 'Pending':
-                
+                console.log('hem entrat a dins de pending');
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeListActivities(this)">See list Activities of User: ${ element.demandingUserId.userName }</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Refused')">Reject</button>`);
                 //now we have to add all the activities, and make them invisible
-                let newdivContainerActivities = document.createElement( "div" );
-                $(newdivContainerActivities).addClass('activity-container no-visible-container');
-                for(let i=0; i<element.demandingUserId.offertedActivities.length; i++) {
-                  let newdivActivity = document.createElement( "div" );
-                  $(newdivActivity).attr('data-activity',`${element.demandingUserId.offertedActivities[i]._id}`);
-                  $(newdivActivity).append(`<p class="activity-paragraf">Activity #${i}</p>`);
-                  $(newdivActivity).append(`<p class="activity-paragraf">Description: ${element.demandingUserId.offertedActivities[i].description}</p>`);
-                  $(newdivActivity).append(`<p class="activity-paragraf">Sector: ${element.demandingUserId.offertedActivities[i].sector}</p>`);
-                  $(newdivActivity).append(`<p class="activity-paragraf">SubSector: ${element.demandingUserId.offertedActivities[i].subsector}</p>`);
-                  $(newdivActivity).append(`<p class="activity-paragraf">Duration: ${element.demandingUserId.offertedActivities[i].duration}</p>`);
-                  $(newdivActivity).append(`<button class="btn btn-outline-info" onclick="applyForNewTransaction(this)" data-index="${i}">Apply for Activity </button>`);
-                  $(newdivContainerActivities).append( newdivActivity );
-                }
-                $(newdiv2).append( newdivContainerActivities );
+                $("#transaction-container").append(newdiv2);
+                let itemTransactionId = `transaction-item-${index}`;
+                InsertActivitiesPendingTransactions(element.demandingUserId._id,itemTransactionId);
+                
+
                 break;
               case 'Accepted':
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeTransactionInformation(this)">See Transaction Involved</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Cancelled')">Cancel</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Finished')">Finish</button>`);
+                $(newdiv2).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
+                $("#transaction-container").append( newdiv2 );
                 break; 
               case 'Refused':
-                
+                $(newdiv2).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
+                $("#transaction-container").append( newdiv2 );
                 break; 
               case 'Finished':
-                
+                $(newdiv2).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
+                $("#transaction-container").append( newdiv2 );
                 break; 
               case 'Cancelled':
-                
+                $(newdiv2).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
+                $("#transaction-container").append( newdiv2 );
                 break;     
 
             }
             
-            
-            $(newdiv2).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
-            $("#transaction-container").append( newdiv2 );
           })
         } else {
           $('#container-title-transactions > h3').html(`${state.toUpperCase()} TRANSACTIONS`);
@@ -526,11 +557,46 @@ function selectTransactionsStatus(element) {
      
     })
     .catch( (error) => {
-      
+      console.log('hem arribat a un error a dins de la Consulta del ESTAT');
     });
 
 
   
+}
+
+function InsertActivitiesPendingTransactions(demandingUserId,itemTransactionId) {
+  axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${demandingUserId}`)
+  .then((resActivities) => {
+    var newdivContainerActivities = document.createElement( "div" );
+    $(newdivContainerActivities).addClass('activity-container no-visible-container');
+    
+    let activities2 = resActivities.data.activities;
+    // console.log('comprovem si es un array:',Array.isArray(activities2));
+    for(let i=0; i<activities2.length; i++) {
+      
+      let newdivActivity = document.createElement( "div" );
+      $(newdivActivity).attr('data-activity',`${activities2[i]._id}`);
+      $(newdivActivity).append(`<p class="activity-paragraf">Activity #${i}</p>`);
+      $(newdivActivity).append(`<p class="activity-paragraf">Description: ${activities2[i].description}</p>`);
+      $(newdivActivity).append(`<p class="activity-paragraf">Sector: ${activities2[i].sector}</p>`);
+      $(newdivActivity).append(`<p class="activity-paragraf">SubSector: ${activities2[i].subsector}</p>`);
+      $(newdivActivity).append(`<p class="activity-paragraf">Duration: ${activities2[i].duration}</p>`);
+      $(newdivActivity).append(`<button class="btn btn-outline-info" onclick="applyForNewTransaction(this)" data-index="${i}">Apply for Activity </button>`);
+      $(newdivContainerActivities).append( newdivActivity );
+    }
+
+    
+    $(`#${itemTransactionId}`).append(newdivContainerActivities);
+    $(`#${itemTransactionId}`).append(`<svg width=100% height="8"><line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/></svg>`);
+    
+  })
+  .catch( (error) => {
+    
+    $("#transaction-container").empty(); //we empty the itemTransaction <div> to play message an a button to accept
+    $("#transaction-container").append("<p class='text-danger border border-danger apply-transaction'>THIS USER DOESN'T HAVE ACTIVITIES</p>");
+    $("#transaction-container").append('<button class="btn btn-danger apply-transaction" onclick="removeParentElement(this)">Accept</button>');   
+    // next(error);
+  });
 }
 
 // 2.2.b) This function ChangeStatusTransaction(), is called when we click on buttons: CANCEL, REJECT, FINISH to change the STATE of the TRANSACTION in the DATABASE

@@ -22,7 +22,17 @@ activitySchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  type:{
+    type: String,
+    enum: ['offerted', 'demanded'],
+  },
+  // location: {
+  //   type: {type: String},
+  //   coordinates: [Number],
+  // },
 });
+
+activitySchema.index({ location: '2dsphere'});
 
 const Activity = mongoose.model('Activity', activitySchema);
 

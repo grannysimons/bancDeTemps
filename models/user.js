@@ -19,18 +19,10 @@ const userSchema = new Schema({
   },
   telephone: String,
   introducing: String,
-  transactions: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Transaction',
-  }],
-  offertedActivities: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Activity',
-  }],
-  demandedActivities: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Activity',
-  }],
+  location: {
+    type: {type: String},
+    coordinates: [Number],
+  },
 });
 
 const User = mongoose.model('User', userSchema);

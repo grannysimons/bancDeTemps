@@ -5,6 +5,7 @@ const Transaction = require('../models/transaction');
 const Middleware = require('../middlewares');
 
 router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getInvolvedUser, Middleware.startRequest.transactionExists, Middleware.startRequest.createTransaction, (req, res, next) => {
+  console.log('request');
   User.updateOne(
     { _id: res.locals.users.offertingUser }, 
     { $push: { transactions: res.locals.transactionId } } )
@@ -18,6 +19,7 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
     })
   })
   .catch(error => {
+    console.log('error!!! ', error);
     res.status(500);
     res.json({ error });
   })
@@ -71,20 +73,25 @@ router.get('/filterUserActivities', Middleware.filter.filterByUsername, Middlewa
   }
 });
 
-// Because we check for the userName in order to get user._id, we should index the User collection by userName
-router.get('/getUserId2', (req,res,next) => {
-  console.log("hem accedit per tal d'obtenir el userId");
-  const userName = req.query.userName;
-  console.log('el nom passat es BBBB: ',userName); 
-  User.findOne({userName: userName})
-      .then(user => {
-        let userid = user._id; 
-        res.json({userid});
-        next();
-      })
-      .catch(error => {
-        next(error);
-      })
+
+
+//-----------API ROUTES FOR TRANSACTION MANAGER----------------------------------
+
+
+router.get('/filterUserActivitiesForTransactions', Middleware.acceptProposedTransaction.getUserActivities, (req,res,next) => {
+  
+  
+  console.log('EL LLISTAT ACTIVITATS ES:',res.locals.activities);
+
+  if (res.locals.activities) {
+    const activities = res.locals.activities;
+    res.json({activities,currentUser: req.session.currentUser}); // retornem a AXIOS el transactionId2. Si ho passa bé, ensenyem missatge que s'ha creat be la transacció
+    res.status(200);
+  } else {
+    res.status(500);
+    res.json({ error });
+  }
+  
 });
 
 router.get('/acceptSecondLegTransaction', Middleware.acceptProposedTransaction.getTransactionInfo,Middleware.acceptProposedTransaction.insertSecondTransaction,Middleware.acceptProposedTransaction.updateFirstTransaction, (req,res,next) => {
@@ -99,17 +106,6 @@ router.get('/acceptSecondLegTransaction', Middleware.acceptProposedTransaction.g
     res.json({ error });
   }
   
-
-  // const transactionId = req.query.transactionId;
-  // console.log('el transactionId passat es: ',transactionId); 
-  // Transaction.findOne({_id: transactionId})
-  //     .then(transaction => {
-  //       res.json({transactionId});
-  //       next();
-  //     })
-  //     .catch(error => {
-  //       next(error);
-  //     })
 });
 
 router.post('/insertNewTransaction',Middleware.insertNewTransaction.insertTransaction, (req, res, next) => { 
@@ -127,48 +123,6 @@ router.post('/insertNewTransaction',Middleware.insertNewTransaction.insertTransa
 
 });
 
-// router.post('/insertNewTransaction',(req,res,next) => {
-//   var {offertingUserId,demandingUserId,activityId,status} = req.body;
-//   console.log('hem entrat al POST per crear la transacció!!!');
-//   console.log(offertingUserId,demandingUserId,activityId,status);
-//   Transaction.create({
-//     idActivity: activityId,
-//     offertingUserId: offertingUserId,
-//     demandingUserId: demandingUserId,
-//     state: status,
-//   })
-//   .then(createdTransaction => {
-   
-//     let transactionId = createdTransaction._id;
-//     console.log('hem creat la transaccio. El transaction_id es:',transactionId);
-//     console.log('hem creat la transaccio. El offertingUser_id es:',offertingUserId);
-    
-//     User.findById({offertingUserId})  
-//     .then(user => {
-//       var transactionsArray = user.transactions.push(transactionId);
-//       User.findByIdAndUpdate(offertingUserId, {transactions: transactionsArray})
-//       .then(user => {
-//         console.log('actualitzat be');
-//       }) 
-//       .catch(error => {next(error)});
-      
-//       }) 
-      
-    
-//     .catch(error => {next(error)});
-   
-//   })
-
-   
-      
-
-  
-    
-  
-//   .catch(error => {
-//     res.status(500);
-//     res.json({ error });
-//   })
 
 router.get('/getTransactionsOnState', Middleware.TransactionManager.getTransactions, (req, res, next) => {
   console.log('Hem fet tots els passos per recuperar les dades de la transaccio');

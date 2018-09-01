@@ -17,7 +17,7 @@ router.get('/signup', function(req, res, next) {
 
 router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.checkNewUser, Middlewares.signUp.checkValidPassword, function(req, res, next) {
   const salt = bcrypt.genSaltSync(saltRounds);
-  const hashedPassword = bcrypt.hashSync(req.body.password, salt);
+  const hashedPassword = bcrypt.hashSync(req.body.passwordUser, salt);
   
   const userData = res.locals.userData;
   userData.password = hashedPassword;

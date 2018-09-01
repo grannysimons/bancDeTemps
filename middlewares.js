@@ -4,6 +4,10 @@ const Transaction = require('./models/transaction');
 const Activity = require('./models/activity');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+var MapboxClient = require('mapbox');
+var mapbox = require('mapbox');
+// var mapbox = require('./mapbox-geocode.js');
+var mapBoxClient = new MapboxClient('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
 // var deepPopulate = require('mongoose-deep-populate')(mongoose);
 // PostSchema.plugin(deepPopulate, options /* more on options below */);
 
@@ -11,11 +15,11 @@ module.exports = {
   signUp: {
     retrieveData: (req, res, next) => {
       const {
-        name, lastName, userName, password, repeatPassword, mail, telephone, introducing, roadType, roadName, number, zipCode, city, province, state,
+        name, lastName, userName, passwordUser, repeatPassword, mail, telephone, introducing, roadType, roadName, number, zipCode, city, province, state,
       } = req.body;
     
       res.locals.userData = {
-        name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: {roadType, roadName, number, zipCode, city, province, state,},
+        name, lastName, userName, password: passwordUser, repeatPassword, mail, telephone, introducing, direction: {roadType, roadName, number, zipCode, city, province, state,},
       }
       next();
     },
@@ -56,7 +60,6 @@ module.exports = {
   },
   editProfile_get: {
     checkUserExists: (req, res, next) => {
-      console.log('checkUserExists');
       // if(req.session.currentUser) next();
       // else res.render('/');
       const currentUser = req.session.currentUser;
@@ -75,8 +78,6 @@ module.exports = {
       .catch(error => next(error));
     },
     retrieveData: (req, res, next) => {
-      console.log('retrieveData ', req.session.currentUser);
-
       const { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, } = res.locals.user;
       res.locals.userPrevData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, }
       next();
@@ -84,8 +85,10 @@ module.exports = {
   },
   editProfile_post: {
     retrieveData: (req, res, next) => {
-      const { name, lastName, userName, password, repeatPassword, mail, roadType, roadName, number, zipCode, city, province, state, telephone, introducing } = req.body;
-      res.locals.userData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
+      const { name, lastName, userName, passwordUser, repeatPassword, mail, roadType, roadName, number, zipCode, city, province, state, telephone, introducing } = req.body;
+      res.locals.userData = { name, lastName, userName, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
+      if(passwordUser) res.locals.userData.password = passwordUser;
+      if(repeatPassword) res.locals.userData.repeatPassword = repeatPassword;
       res.locals.messages = { passwordsAreDifferent: '' };
       next();
     },
@@ -99,7 +102,6 @@ module.exports = {
           res.locals.userData.password = hashedPassword;
           res.locals.userData.repeatedPassword = hashedPassword;
           res.locals.messages.passwordsAreDifferent='';
-          console.log('userName: ', res.locals);
           User.update({userName: res.locals.userData.userName}, res.locals.userData)
           .then(user => {
             // console.log('user ' + req.body.userName + ' correctly updated: ', user);
@@ -130,17 +132,21 @@ module.exports = {
   activityManager: {
     getActivities: (req, res, next) => {
       const currentUser = req.session.currentUser;
-      User.findOne({userName: currentUser.userName})
-      .populate('offertedActivities')
-      .populate('demandedActivities')
-      .then(user => {
-        res.locals.offertedActivities = user.offertedActivities;
-        res.locals.demandedActivities = user.demandedActivities;
+      Activity.find({idUser: currentUser._id})
+      .then(activities => {
+        res.locals.offertedActivities = [];
+        res.locals.demandedActivities = [];
+        if(activities)
+        {
+          for(let i=0; i<activities.length; i++)
+          {
+            if(activities[i].type === 'offerted') res.locals.offertedActivities.push(activities[i]);
+            else if(activities[i].type === 'demanded') res.locals.demandedActivities.push(activities[i]);
+          }
+        }
         next();
       })
-      .catch(error => {
-        next(error);
-      })
+      .catch(error => next(error))
     }
   },
   filter: {
@@ -148,44 +154,25 @@ module.exports = {
       res.locals.activitiesByUserSectorSubsector = [];
       if(req.query.userName)
       {
-        User.findOne({userName: req.query.userName})
-        .populate('offertedActivities')
-        .populate('demandedActivities')
-        .then(user => {
-          if(user)
-          {
-            if(user.offertedActivities)
+        let filter = {$and: []};
+        if(req.query.sector) filter.$and.push({sector: req.query.sector});
+        else if(req.query.subsector) filter.$and.push({sector: req.query.subsector});
+        else filter = {};
+        Activity.find(filter)
+        .populate('idUser')
+        .then(activities => {
+          res.locals.activitiesByUserSectorSubsector = [];
+          activities.forEach(activity => {
+            if(activity.idUser.userName === req.query.userName)
             {
-              for(let i=0; i<user.offertedActivities.length; i++)
-              {
-                if((req.query.sector === '' && req.query.subsector === '') || 
-                ((user.offertedActivities[i].sector == req.query.sector) 
-                  && (user.offertedActivities[i].subsector == req.query.subsector)) || 
-                ((user.offertedActivities[i].sector == req.query.sector) 
-                  && req.query.subsector === '' ) ||
-                (req.query.sector === '' && (user.offertedActivities[i].subsector === req.query.subsector)))
-                {
-                  res.locals.activitiesByUserSectorSubsector.push(user.offertedActivities[i]);
-                }
-              }
+              res.locals.activitiesByUserSectorSubsector.push(activity);
             }
-            if(user.demandedActivities)
-            {
-              for(let i=0; i<user.demandedActivities.length; i++)
-              {
-                if((req.query.sector === '' && req.query.subsector === '') || 
-                (user.demandedActivities[i].sector === req.query.sector && user.demandedActivities[i].subsector === req.query.subsector) || 
-                (user.demandedActivities[i].sector === req.query.sector && req.query.subsector === '' ) ||
-                (req.query.sector === '' && user.demandedActivities[i].subsector === req.query.subsector))
-                {
-                  res.locals.activitiesByUserSectorSubsector.push(user.demandedActivities[i]);
-                }
-              }
-            }
-          }
+          })
           next();
         })
-        .catch(error => next(error));
+        .catch(error => {
+          next(error);
+        });
       }
       else
       {
@@ -207,10 +194,9 @@ module.exports = {
         Activity.find( filter )
         .populate('idUser')
         .then(activities => {
-          for(let i=0; i<activities.length; i++)
-          {
-            res.locals.activitiesBySectorSubsector.push(activities[i]);
-          }
+          activities.forEach(activity => {
+            res.locals.activitiesBySectorSubsector.push(activity);
+          })
           next();
         })
       }
@@ -218,38 +204,30 @@ module.exports = {
   },
   startRequest: {
     getInvolvedUser: (req, res, next) => {
-      const idActivity = req.params.idAct;
-      res.locals.idActivity = idActivity;
-      User.findOne({offertedActivities: idActivity})
-      .then((user) => {
-        if(user)
+      res.locals.idActivity = req.params.idAct;
+      Activity.findOne({_id: req.params.idAct})
+      .then(activity => {
+        if(activity)
         {
-          res.locals.users = {
-            offertingUser: user._id,
-            demandingUser: req.session.currentUser._id,
+          res.locals.users = {};
+          if(activity.type === 'offerted')
+          {
+            res.locals.users.offertingUser = activity.idUser;
+            res.locals.users.demandingUser = req.session.currentUser._id;
           }
-          next();
+          else if(activity.type === 'demanded')
+          {
+            res.locals.users.demandingUser = activity.idUser;
+            res.locals.users.offertingUser = req.session.currentUser._id;
+          }
         }
-        else
-        {
-          User.findOne({demandedActivities: idActivity})
-          .then((user) => {
-            if (user)
-            {
-              res.locals.users = {
-                offertingUser: req.session.currentUser._id,
-                demandingUser: user._id,
-              };
-              next();
-            } 
-            else
-            {
-              res.status(500);
-              res.json({ error: "this activity corresponds to no user" });
-            }
-          })
-        }
+        next();
       })
+      .catch(error => {
+        res.status(500);
+        res.locals.message = "this activity corresponds to no user";
+        res.json({ error: res.locals.message });
+      });
     },
     transactionExists: (req, res, next) => {
       Transaction.findOne({
@@ -274,11 +252,12 @@ module.exports = {
       .catch(error =>{
         // const error = new Error("fdsafass"
         // next(error)
-        res.status(500);
+          res.status(500);
         res.json({ error });
       })
     },
     createTransaction: (req, res, next) => {
+      console.log('createTransaction');
       Transaction.create({
         idActivity: res.locals.idActivity,
         offertingUserId: res.locals.users.offertingUser,
@@ -299,76 +278,28 @@ module.exports = {
     if(req.session.currentUser) next();
     else res.redirect('/');
   },
+
+
+//-----------------------TRANSACTION MANAGER--------------------------------------------------------  
   TransactionManager: {
     getTransactions: (req, res, next) => {
       const currentUser = req.session.currentUser;
       let state = req.query.state;
       console.log('mirem les transacions que tenen estat',req.query);
-      // User.findOne({userName: currentUser.userName})
-      // .populate('transactions')
-
-      // User.findOne({userName: currentUser.userName})
-      // .lean()
-      // .populate({ path: 'transactions' })
-      // .exec(function(err, docs) {
-
-      //   var options = [{
-      //   path: 'transactions.idActivity',
-      //   model: 'Activity'
-      //   },
-      //   {
-      //   path: 'transactions.demandingUserId',
-      //   model: 'User'
-      //   }
-      //   ];
-
-
-      //   if (err) return res.json(500);
-      //   User.populate(docs, options, function (err, projects) {
-      //   res.locals.user = projects;
-      //   console.log('projects', projects);
-      //   //  res.json(projects);
-      //   next();
-      //    // res.json(projects);
-      //   });
-      // }) 
-      // let myUserId = mongoose.Types.ObjectId(currentUser._id);
-      console.log('el user_id es XXX:', currentUser._id);
-       // Transaction.find({offertingUserId: currentUser._id})
-      // .populate([{ 
-      //   path: 'demandingUserId',
-      //   populate: {
-      //     path: 'offertedActivities',
-      //   }},
-      //   {
-      //     path: 'idActivity',
-      // }]).exec((err, adventure) => {
-      //     if (err) return res.json(500);
-      //     console.log('aquests son els valors de adventures-3', adventure.transactions[0].idActivity);
-      //     // console.log('aquests son els valors de adventures-2', adventure.transactions[0].demandingUserId);
-      //     res.locals.transactions = adventure;
-      //     next();
-      //   });
-      
       var aa = 'offertingUserId',
           bb = 'demandingUserId'
       
       switch (state) {
         case 'Pending' :
           state = 'Proposed';
-          console.log('el type of user dins de Pending es:',aa);
           break;
         case 'Proposed' :
           aa = 'demandingUserId';
           bb = 'offertingUserId';
-          console.log('el type of user dins de Proposed es:',aa);
           break;
         default:
-          console.log('el type of user dins de Default es:',aa);
+          
       }
-
-      
-      console.log('el estado que miramos es:',state);
 
       // Utilizando el [] en las variables, estamos usando la propiedad de Computed Variables de Javascript
       Transaction.find({[aa]: currentUser._id, state: state})
@@ -379,90 +310,13 @@ module.exports = {
           }},
         {path: 'idActivity'}])
         .then(adventure => {
-        // console.log('el resultat es:', adventure);
         res.locals.transactions = adventure;
-        console.log('hem arribat a aquest punt?');
         next();
         })
         .catch(error => {
           next(error);
         })
-
-      // Transaction.find({offertingUserId: ObjectId(currentUser._id)})
-      // // .lean()
-      // .populate([{ 
-      //   path: 'demandingUserId',
-      //   populate: {
-      //     path: 'offertedActivities',
-          
-      //   }},
-      //   {
-      //     path: 'idActivity',
-      // }]).exec((err, adventure) => {
-      //   if (err) return res.json(500);
-      //   console.log('aquests son els valors de adventures-3', adventure.transactions[0].idActivity);
-      //   // console.log('aquests son els valors de adventures-2', adventure.transactions[0].demandingUserId);
-      //   res.locals.user = adventure;
-      //   next();
-      // });
-
-
-
-      // FUNCIONA BE AQUEST. ES EL QUE TENIEM IMPLEMENTAT PER OBTENIR LES TRANSACTIONS
-      // User.findOne({userName: currentUser.userName})
-      // // .lean()
-      // .populate({ 
-      //   path: 'transactions',
-      //   populate: [{
-      //     path: 'demandingUserId',
-      //     populate: {
-      //       path: 'offertedActivities',
-            
-      //     }
-      //   },
-      //   {
-      //     path: 'idActivity',
-      //   }]
-
-        
-      // }).exec((err, adventure) => {
-      //   if (err) return res.json(500);
-      //   // console.log('aquests son els valors de adventures-3', adventure.transactions[0].idActivity);
-      //   // console.log('aquests son els valors de adventures-2', adventure.transactions[0].demandingUserId);
-      //   res.locals.transactions = adventure;
-      //   next();
-
-      // });
-      
-      
-
-//       Model.find()
-//       .populate({
-//         path: 'replies',
-//     populate: [{
-//       path: 'user',
-//       select: 'displayName username'
-//     }, {
-//       path: 'replies',
-//       populate: {
-//         path: 'user',
-//         select: 'displayName username'
-//       }
-//     }]
-// }).exec(...
-
-      
-
-      // .then(user => {
-      //   console.log('user: ', user);
-      //   // res.locals.transactions = user.transactions;
-      //   // res.locals.demandedActivities = user.demandedActivities;
-      //   next();
-      // })
-      // .catch(error => {
-      //   next(error);
-      // })
-    },
+     },
     getTransactionInfoSecondLeg: (req, res, next) => {
       const currentUser = req.session.currentUser;
       const transactionId = req.query.transactionId;
@@ -475,7 +329,6 @@ module.exports = {
         {path: 'idActivity'}])
         .then(adventure => {
           // Nota: Ens retona un ARRAY d'objectes, per això fem adventure[0]
-          console.log('el ID de la transaccio que busquem el idActivitat es:', adventure[0]._id);
           let transactionId2 = adventure[0]._id;
           Transaction.find({_id: transactionId2})
           .populate([{ 
@@ -485,7 +338,6 @@ module.exports = {
             }},
           {path: 'idActivity'}])
           .then(response => {
-            // console.log('el resultat es:', adventure);
             res.locals.transactionSecondLeg = response;
             next();
           })
@@ -498,16 +350,11 @@ module.exports = {
         })
     },
     getUserId: (req, res, next) => {
-      console.log('hem entrat al Middleware per obtenir el userId AAAA:');
       const userName = req.query.userName;
-      console.log('el nom passat es BBBB: ',userName); 
       User.findOne({userName: userName})
       .then(user => {
         let userid = {userid: user._id}; 
-        console.log('EL USER ID QUE PASSEM A LOCALS ES: ', userid);
         res.locals.userid = user._id;
-        console.log('EL VALOR GUARDAT A LOCALS DEL USER ID ES',res.locals);
-        // res.json({userid});
         next();
       })
       .catch(error => {
@@ -517,10 +364,6 @@ module.exports = {
     },
     updateStatusTransaction: (req, res, next) => {
       let {state,transactionId} = req.query
-      
-      console.log('el state passat es: ',state); 
-      console.log('el transactionId passat es: ',transactionId); 
-
       //we have to update the status
       let conditions = { _id: transactionId }
           , update = { state: state}
@@ -528,7 +371,6 @@ module.exports = {
 
       Transaction.update(conditions, update, options)
       .then(numAffected => {
-        console.log('el numero de Transaccions fet el state update es:', numAffected);
         next();
       })
       .catch(error => {
@@ -536,7 +378,7 @@ module.exports = {
       })
     }
   },
-  // Aquest middleware de moment no l'utilitzem, perque ja el l'hem anidat en el de dalt. D'aquesta forma ens evitem haver de passar dades entre middlewares
+  // This middleware is called when searching for specific user activities from Transaction Manager search box, and we apply for transaction in specific activity
   insertNewTransaction: {
     insertTransaction: (req, res, next) => {
       const {offertingUserId,demandingUserId,activityId,status} = req.body;
@@ -549,45 +391,21 @@ module.exports = {
         state: status,
       })
       .then(createdTransaction => {
-      
         let transactionId = createdTransaction._id;
         res.locals.transactionId = transactionId;
-        console.log('hem creat la transaccio. El transaction_id es:',transactionId);
-        console.log('hem creat la transaccio. El offertingUser_id es:',offertingUserId);
-        // updateUserTransactionArray(req,res,next,transactionId);
-        // User.findByIdAndUpdate(offertingUserId,{$push: {transactions: transactionId}})  
-        // .then(user => {
-        // console.log('array de transaccions usuari:', user);
-        // // res.json({transactionid});
-        // next();
-        // })
-        // .catch( (error) => {
-        //   console.log('No ha fet el update del transactionId dins user');
-        //   next(error);
-        // });
-        // NOTA IMPORTANT: SI POSEM AIXO, ENS RETORNA ERROR
-        // res.json({transactionId});
         next(); // Desde la API farem el retorn a AXIOS, el retorn del res.json
-        
-        
       })
       .catch(error => next(error));
-      
-
-    },
-    updateUserTransactionArray: (req,res,next,transactionId) => {
-      var {offertingUserId,demandingUserId,activityId,status} = req.body;
-      console.log('vemos si pasan las variables');
-      console.log(offertingUserId,demandingUserId,activityId,status);
-      console.log('vemos si pasa el transactionId',res.locals.transactionId);
-      User.findByIdAndUpdate({offertingUserId},{$push: {transactions: transactionId}})  
-      .then(user => {
-        console.log('array de transaccions usuari:', user);
-        next();
-      })
-      .catch(error => next(error));
-
     }
+    // updateUserTransactionArray: (req,res,next,transactionId) => {
+    //   var {offertingUserId,demandingUserId,activityId,status} = req.body;
+    //   User.findByIdAndUpdate({offertingUserId},{$push: {transactions: transactionId}})  
+    //   .then(user => {
+    //     next();
+    //   })
+    //   .catch(error => next(error));
+
+    // }
 
     },
     // with acceptProposedTransaction we accept the transaction and we choose an activity from the user who is demanding our activity  
@@ -649,8 +467,24 @@ module.exports = {
       .catch(error => {
         next(error);
       })
+    },
+    getUserActivities: (req, res, next) => {
+      const userId = req.query.userId;
+      Activity.find({idUser: userId, type: 'offerted'})
+      .then(response => {
+        res.locals.activities = response;
+        next();
+      })
+      .catch(error => {
+        next(error);
+      })
+    }  
+  },
+  geoLocation: {
+    inverseGeocoding: (req, res, next) => {
+    next();
+
     }
-    
   }
 }
 

@@ -3,6 +3,10 @@ const router = express.Router();
 const User = require('../models/user');
 const Activity = require('../models/activity');
 const Middlewares = require('../middlewares');
+const Assets = require('../assets');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const geocodingClient = mbxGeocoding({ accessToken: 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw' });
+
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -15,18 +19,52 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
 });
 
 router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
-  res.locals.messages.passwordsAreDifferent='';
-  User.update({userName: res.locals.userData.userName}, res.locals.userData)
-  .then(user => {
-    // console.log('user ' + res.locals.userData.userName + ' correctly updated: ', user);
-
-    const data = {
-      message: res.locals.messages,
-      userData: res.locals.userData,
-    };
-    res.render('profile/edit', data);
+  
+  const roadType = req.body.roadType;
+  const roadName = req.body.roadName;
+  const number = req.body.number;
+  const zipCode = req.body.zipCode;
+  const city = req.body.city;
+  const province = req.body.province;
+  const state = req.body.state;
+  const query = roadType + ' ' + roadName + ' ' + number + ', ' + zipCode + ' ' + city + ', ' + province + ', ' + state;
+  geocodingClient.forwardGeocode({
+    query: query,
+    limit: 2
   })
-  .catch(error => next(error));
+  .send()
+  .then(response => {
+    const match = response.body;
+    if(match)
+    {
+      var maxCoincidence = undefined;
+      match.features.forEach(coincidence => {
+        if(!maxCoincidence || maxCoincidence.relevance < coincidence.relevance) maxCoincidence = coincidence;
+      });
+      
+      if(maxCoincidence)
+      {
+        res.locals.userData.location = maxCoincidence.center;
+      }
+      res.locals.messages.passwordsAreDifferent='';
+      User.update({userName: res.locals.userData.userName}, res.locals.userData)
+      .then(user => {
+        req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
+        const data = {
+          message: res.locals.messages,
+          userData: res.locals.userData,
+        };
+        res.render('profile/edit', data);
+      })
+      .catch(error => {
+        console.log(error);
+        next(error);
+      });
+    }
+  })
+  .catch(error => {
+    console.log(error);
+  })
 });
 
 router.get('/activityManager', Middlewares.activityManager.getActivities, (req, res, next) => {
@@ -37,26 +75,22 @@ router.get('/activityManager', Middlewares.activityManager.getActivities, (req, 
   res.render('profile/activityManager', data);
 });
 
-router.post('/activityManager/:type', (req, res, next) => {
+router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, (req, res, next) => {
+  console.log('crear activittat');
   const type = req.params.type;
   const { sector, subsector, description, tags, duration } = req.body;
-  Activity.create({
+  const activityCreate = {
     sector,
     subsector,
     description,
     tags,
     duration,
     idUser: req.session.currentUser._id, 
-  })
+    type,
+  };
+  Activity.create(activityCreate)
   .then(activity => {
-    const pushFilter = type === 'offerted' ? {offertedActivities: activity._id} : {demandedActivities: activity._id}
-    User.update({userName: req.session.currentUser.userName},{$push: pushFilter})
-    .then(user => {
-      res.redirect('/profile/activityManager');
-    })
-    .catch(error => {
-      next(error);
-    })
+    res.redirect('/profile/activityManager');
   })
   .catch(error => {
     next(error);
@@ -70,6 +104,7 @@ router.post('/activityManager/:idAct/delete', (req, res, next) => {
   })
   .catch(error => {
     console.log(error);
+    next(error);
   })
 })
 
