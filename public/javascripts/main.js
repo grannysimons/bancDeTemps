@@ -95,6 +95,7 @@ function filter(){
         if(act.data.activities[i].idUser.location.length === 2 )
         {
           var divPopup = document.createElement('div');
+          divPopup.setAttribute('id','activity-'+i);
           let h1Popup = document.createElement('h1');
           h1Popup.classList.add('title');
           h1Popup.innerHTML = act.data.activities[i].description;
@@ -126,6 +127,8 @@ function filter(){
             buttonPopup.innerHTML = 'Apply';
             divPopup.appendChild(buttonPopup);
           }
+          divPopup.addEventListener('mouseover', shadowActivity);
+          divPopup.addEventListener('mouseout', stopShadowActivity);
 
           // let popupHTML = `
           // <div>
@@ -175,7 +178,7 @@ function filter(){
   
         let buttonMoreInfo = document.createElement('button');
         buttonMoreInfo.setAttribute('type', 'button');
-        buttonMoreInfo.classList.add('btn', 'btn-outline-info');
+        buttonMoreInfo.classList.add('btn', 'btn-outline-info' ,'moreInfo'+i);
         buttonMoreInfo.setAttribute('data-toggle', 'modal');
         buttonMoreInfo.setAttribute('data-target', '#activity'+i);
         buttonMoreInfo.innerHTML = 'More info';
@@ -291,6 +294,18 @@ function apply(e){
     $(idModal).modal('hide');
     document.getElementById('results').innerHTML = error.response.data.error;
   })
+}
+
+function shadowActivity(e){
+  let activityNumber = e.target.getAttribute('id').substring(9);
+  console.log(activityNumber);
+  document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.backgroundColor = '#efefef';
+  document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.transition = 'background-color 1s';
+}
+function stopShadowActivity(e){
+  let activityNumber = e.target.getAttribute('id').substring(9);
+  document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.backgroundColor = 'transparent';
+  document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.transition = 'background-color 1s';
 }
 
 function openModal(){
