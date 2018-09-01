@@ -337,6 +337,21 @@ footer .footer-names
   text-align: right;
 }
 
+/* popups */
+.mapboxgl-popup {
+  max-width: 400px;
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+/* .mapboxgl-popup-content{
+  padding: 20px;
+} */
+.mapboxgl-popup-content h1{
+  font-size: 20px;
+}
+.mapboxgl-popup-content p{
+  margin-bottom: 0;
+}
+
 /* #text-banc h1
 {
   margin-top: 150px;
