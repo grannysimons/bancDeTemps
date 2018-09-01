@@ -94,32 +94,64 @@ function filter(){
       {
         if(act.data.activities[i].idUser.location.length === 2 )
         {
-          var dynamicClass = 'apply-'+act.data.activities[i]._id;
-          let popupHTML = `
-          <div>
-            <h1 class="title">${act.data.activities[i].description}</h1>
-            <p class="duration">${act.data.activities[i].duration} hours</p>
-            <p class="userName">by ${act.data.activities[i].idUser.userName}</p>
-            <br/>
-            <p class="sector">sector ${act.data.activities[i].sector} / subsector ${act.data.activities[i].subsector}</p>
-            <p class="tags">${act.data.activities[i].tags}</p>
-            <br/>
-            `;
-          if(act.data.currentUser) popupHTML+= `<button type="button" class="btn btn-outline-info apply ${dynamicClass}">Apply</button>`;
-          popupHTML+= `</div>`;
+          var divPopup = document.createElement('div');
+          let h1Popup = document.createElement('h1');
+          h1Popup.classList.add('title');
+          h1Popup.innerHTML = act.data.activities[i].description;
+          let pDurationPopup = document.createElement('p');
+          pDurationPopup.classList.add('duration');
+          pDurationPopup.innerHTML = act.data.activities[i].duration;
+          let pUserNamePopup = document.createElement('p');
+          pUserNamePopup.classList.add('userName');
+          pUserNamePopup.innerHTML = act.data.activities[i].idUser.userName;
+          let pSectorPopup = document.createElement('p');
+          pSectorPopup.classList.add('sector');
+          pSectorPopup.innerHTML = `sector ${act.data.activities[i].sector} / subsector ${act.data.activities[i].subsector}`;
+          let pTagsPopup = document.createElement('p');
+          pTagsPopup.classList.add('tags');
+          pTagsPopup.innerHTML = act.data.activities[i].tags;
+          divPopup.appendChild(h1Popup);
+          divPopup.appendChild(pDurationPopup);
+          divPopup.appendChild(pUserNamePopup);
+          divPopup.appendChild(pSectorPopup);
+          divPopup.appendChild(pTagsPopup);
+          if(act.data.currentUser)
+          {
+            var dynamicClass = 'apply-'+act.data.activities[i]._id;
+            let buttonPopup = document.createElement('button');
+            buttonPopup.setAttribute('type', 'button');
+            buttonPopup.classList.add('btn', 'btn-outline-info', dynamicClass);
+            buttonPopup.setAttribute('id', 'apply-'+i);
+            buttonPopup.addEventListener('click', apply);
+            buttonPopup.innerHTML = 'Apply';
+            divPopup.appendChild(buttonPopup);
+          }
+
+          // let popupHTML = `
+          // <div>
+          //   <h1 class="title">${act.data.activities[i].description}</h1>
+          //   <p class="duration">${act.data.activities[i].duration} hours</p>
+          //   <p class="userName">by ${act.data.activities[i].idUser.userName}</p>
+          //   <br/>
+          //   <p class="sector">sector ${act.data.activities[i].sector} / subsector ${act.data.activities[i].subsector}</p>
+          //   <p class="tags">${act.data.activities[i].tags}</p>
+          //   <br/>
+          //   `;
+          // if(act.data.currentUser) popupHTML+= `<button type="button" class="btn btn-outline-info apply ${dynamicClass}">Apply</button>`;
+          // popupHTML+= `</div>`;
 
           var markerCreated = false;
           markers.forEach(marker => {
             if(marker.location[0] === act.data.activities[i].idUser.location[0] && marker.location[1] === act.data.activities[i].idUser.location[1])
             {
               markerCreated = true;
-              marker.popupHTML += popupHTML;
+              marker.popupHTML.push(divPopup);
             }
           });
 
           if(markerCreated === false)
           {
-            markers.push({location: act.data.activities[i].idUser.location, popupHTML});
+            markers.push({location: act.data.activities[i].idUser.location, popupHTML: [divPopup]});
           }
         }
 
@@ -209,8 +241,12 @@ function filter(){
 
       markers.forEach(markerElement => {
         // create the popup
+        let mainDiv = document.createElement('div');
+        markerElement.popupHTML.forEach(element => {
+          mainDiv.appendChild(element);
+        });
         var popup = new mapboxgl.Popup({ offset: 25 })
-        .setHTML(markerElement.popupHTML)
+        .setDOMContent(mainDiv)
 
         //marker!
         var marker = new mapboxgl.Marker()
