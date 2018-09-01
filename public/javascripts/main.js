@@ -95,27 +95,34 @@ function filter(){
         if(act.data.activities[i].idUser.location.length === 2 )
         {
           var divPopup = document.createElement('div');
+          var divPopupLeft = document.createElement('div');
+          divPopupLeft.classList.add('col-7');
+          var divPopupRight = document.createElement('div');
+          divPopupRight.classList.add('col-5', 'text-right');
           divPopup.setAttribute('id','activity-'+i);
+          divPopup.classList.add('divPopup','row');
           let h1Popup = document.createElement('h1');
           h1Popup.classList.add('title');
           h1Popup.innerHTML = act.data.activities[i].description;
           let pDurationPopup = document.createElement('p');
           pDurationPopup.classList.add('duration');
-          pDurationPopup.innerHTML = act.data.activities[i].duration;
+          pDurationPopup.innerHTML = act.data.activities[i].duration + ' hours';
           let pUserNamePopup = document.createElement('p');
           pUserNamePopup.classList.add('userName');
-          pUserNamePopup.innerHTML = act.data.activities[i].idUser.userName;
+          pUserNamePopup.innerHTML = 'user: ' + act.data.activities[i].idUser.userName;
           let pSectorPopup = document.createElement('p');
           pSectorPopup.classList.add('sector');
-          pSectorPopup.innerHTML = `sector ${act.data.activities[i].sector} / subsector ${act.data.activities[i].subsector}`;
+          pSectorPopup.innerHTML = `sector: ${act.data.activities[i].sector} / ${act.data.activities[i].subsector}`;
           let pTagsPopup = document.createElement('p');
           pTagsPopup.classList.add('tags');
-          pTagsPopup.innerHTML = act.data.activities[i].tags;
-          divPopup.appendChild(h1Popup);
-          divPopup.appendChild(pDurationPopup);
-          divPopup.appendChild(pUserNamePopup);
-          divPopup.appendChild(pSectorPopup);
-          divPopup.appendChild(pTagsPopup);
+          pTagsPopup.innerHTML = 'tags: ' + act.data.activities[i].tags;
+          divPopupLeft.appendChild(pSectorPopup);
+          divPopupLeft.appendChild(pUserNamePopup);
+          divPopupRight.appendChild(pDurationPopup);
+          divPopupRight.appendChild(pTagsPopup);
+          divPopupLeft.appendChild(h1Popup);
+          divPopup.appendChild(divPopupLeft);
+          divPopup.appendChild(divPopupRight);
           if(act.data.currentUser)
           {
             var dynamicClass = 'apply-'+act.data.activities[i]._id;
@@ -125,7 +132,7 @@ function filter(){
             buttonPopup.setAttribute('id', 'apply-'+i);
             buttonPopup.addEventListener('click', apply);
             buttonPopup.innerHTML = 'Apply';
-            divPopup.appendChild(buttonPopup);
+            divPopupRight.appendChild(buttonPopup);
           }
           divPopup.addEventListener('mouseover', shadowActivity);
           divPopup.addEventListener('mouseout', stopShadowActivity);
@@ -210,7 +217,7 @@ function filter(){
         </div>
         <div class="modal-body">
           <ul>
-            <li>sector/subsector: ${act.data.activities[i].sector} / ${act.data.activities[i].subsector}</li>
+            <li>sector: ${act.data.activities[i].sector} / ${act.data.activities[i].subsector}</li>
             <li>user: ${act.data.activities[i].idUser.userName} </li>
             <li class="description"> ${act.data.activities[i].description} </li>
             <li>tags: ${act.data.activities[i].tags} </li>

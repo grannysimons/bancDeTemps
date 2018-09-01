@@ -345,12 +345,25 @@ footer .footer-names
 /* .mapboxgl-popup-content{
   padding: 20px;
 } */
+.mapboxgl-popup-content .divPopup{
+  border-bottom: 1px solid #eeeeee;
+  padding: 20px 10px;
+}
+.mapboxgl-popup-content .divPopup:last-child{
+  border-bottom: 1px solid transparent;
+}
 .mapboxgl-popup-content h1{
   font-size: 20px;
+  margin-bottom: 0;
 }
 .mapboxgl-popup-content p{
   margin-bottom: 0;
-  display: inline-block;
+  /* display: inline-block; */
+}
+.mapboxgl-popup-content button{
+  font-size: 20px;
+  padding: 3px 10px;
+  margin-top: 15px;
 }
 .mapboxgl-map{
   /* overflow: inherit; */
