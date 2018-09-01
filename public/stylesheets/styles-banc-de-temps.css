@@ -350,7 +350,15 @@ footer .footer-names
 }
 .mapboxgl-popup-content p{
   margin-bottom: 0;
+  display: inline-block;
 }
+.mapboxgl-map{
+  /* overflow: inherit; */
+}
+.mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right{
+  display: none;
+}
+
 
 /* #text-banc h1
 {

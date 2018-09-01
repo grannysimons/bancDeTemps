@@ -94,15 +94,19 @@ function filter(){
       {
         if(act.data.activities[i].idUser.location.length === 2 )
         {
+          var dynamicClass = 'apply-'+act.data.activities[i]._id;
           let popupHTML = `
           <div>
-            <h1>${act.data.activities[i].description}</h1>
-            <p>duration: ${act.data.activities[i].duration} hours</p>
-            <p>by ${act.data.activities[i].idUser.userName}</p>
-            <p>sector ${act.data.activities[i].sector} / subsector ${act.data.activities[i].subsector}</p>
-            <p>${act.data.activities[i].tags}</p>
-          </div>
-          `;
+            <h1 class="title">${act.data.activities[i].description}</h1>
+            <p class="duration">${act.data.activities[i].duration} hours</p>
+            <p class="userName">by ${act.data.activities[i].idUser.userName}</p>
+            <br/>
+            <p class="sector">sector ${act.data.activities[i].sector} / subsector ${act.data.activities[i].subsector}</p>
+            <p class="tags">${act.data.activities[i].tags}</p>
+            <br/>
+            `;
+          if(act.data.currentUser) popupHTML+= `<button type="button" class="btn btn-outline-info apply ${dynamicClass}">Apply</button>`;
+          popupHTML+= `</div>`;
 
           var markerCreated = false;
           markers.forEach(marker => {
@@ -213,6 +217,8 @@ function filter(){
         .setLngLat(markerElement.location)
         .setPopup(popup) // sets a popup on this marker
         .addTo(map);
+
+        // document.getElementsByClassName('apply')[0].addEventListener('click', apply);
       })
     }
     else
