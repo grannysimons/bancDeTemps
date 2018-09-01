@@ -6,9 +6,3 @@ module.exports = {
     return obj;
   }
 };
-
-// example
-// var a = { foo: true }, b = { bar: false };
-// var c = extend(a, b);
-
-// console.log(c);

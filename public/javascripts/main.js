@@ -57,6 +57,7 @@ window.addEventListener('load', ()=>{
           zoom: 15,
           center: point
       });
+      
       filter();
     });
   }
@@ -83,23 +84,74 @@ function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
-  console.log(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
   .then((act) => {
     document.getElementById('results').innerHTML = '';
     if(act.data.activities)
     {
+      var markers = [];
       for(let i=0; i<act.data.activities.length; i++)
       {
-        console.log('bu!', act.data.activities[i]);
         if(act.data.activities[i].idUser.location.length === 2 )
         {
-          //marker!
-          console.log('marker! ', act.data.activities[i].idUser.location);
-          new mapboxgl.Marker()
-          .setLngLat(act.data.activities[i].idUser.location)
-          .addTo(map);
+          var divPopup = document.createElement('div');
+          var divPopupLeft = document.createElement('div');
+          divPopupLeft.classList.add('col-sm-7');
+          var divPopupRight = document.createElement('div');
+          divPopupRight.classList.add('col-sm-5', 'text-right');
+          divPopup.setAttribute('id','activity-'+i);
+          divPopup.classList.add('divPopup','row');
+          let h1Popup = document.createElement('h1');
+          h1Popup.classList.add('title');
+          h1Popup.innerHTML = act.data.activities[i].description;
+          let pDurationPopup = document.createElement('p');
+          pDurationPopup.classList.add('duration');
+          pDurationPopup.innerHTML = act.data.activities[i].duration + ' hours';
+          let pUserNamePopup = document.createElement('p');
+          pUserNamePopup.classList.add('userName');
+          pUserNamePopup.innerHTML = 'user: ' + act.data.activities[i].idUser.userName;
+          let pSectorPopup = document.createElement('p');
+          pSectorPopup.classList.add('sector');
+          pSectorPopup.innerHTML = `sector: ${act.data.activities[i].sector} / ${act.data.activities[i].subsector}`;
+          let pTagsPopup = document.createElement('p');
+          pTagsPopup.classList.add('tags');
+          pTagsPopup.innerHTML = 'tags: ' + act.data.activities[i].tags;
+          divPopupLeft.appendChild(pSectorPopup);
+          divPopupLeft.appendChild(pUserNamePopup);
+          divPopupRight.appendChild(pDurationPopup);
+          divPopupRight.appendChild(pTagsPopup);
+          divPopupLeft.appendChild(h1Popup);
+          divPopup.appendChild(divPopupLeft);
+          divPopup.appendChild(divPopupRight);
+          if(act.data.currentUser)
+          {
+            var dynamicClass = 'apply-'+act.data.activities[i]._id;
+            let buttonPopup = document.createElement('button');
+            buttonPopup.setAttribute('type', 'button');
+            buttonPopup.classList.add('btn', 'btn-outline-info', dynamicClass, 'popupButton');
+            buttonPopup.setAttribute('id', 'apply-'+i);
+            buttonPopup.addEventListener('click', apply);
+            buttonPopup.innerHTML = 'Apply';
+            divPopupRight.appendChild(buttonPopup);
+          }
+          divPopup.addEventListener('mouseover', shadowActivity);
+          divPopup.addEventListener('mouseout', stopShadowActivity);
+
+          var markerCreated = false;
+          markers.forEach(marker => {
+            if(marker.location[0] === act.data.activities[i].idUser.location[0] && marker.location[1] === act.data.activities[i].idUser.location[1])
+            {
+              markerCreated = true;
+              marker.popupHTML.push(divPopup);
+            }
+          });
+
+          if(markerCreated === false)
+          {
+            markers.push({location: act.data.activities[i].idUser.location, popupHTML: [divPopup]});
+          }
         }
+
         let liElement = document.createElement('li');
         liElement.classList.add('row');
         document.getElementById('results').appendChild(liElement);
@@ -120,7 +172,7 @@ function filter(){
   
         let buttonMoreInfo = document.createElement('button');
         buttonMoreInfo.setAttribute('type', 'button');
-        buttonMoreInfo.classList.add('btn', 'btn-outline-info');
+        buttonMoreInfo.classList.add('btn', 'btn-outline-info' ,'moreInfo'+i);
         buttonMoreInfo.setAttribute('data-toggle', 'modal');
         buttonMoreInfo.setAttribute('data-target', '#activity'+i);
         buttonMoreInfo.innerHTML = 'More info';
@@ -152,7 +204,7 @@ function filter(){
         </div>
         <div class="modal-body">
           <ul>
-            <li>sector/subsector: ${act.data.activities[i].sector} / ${act.data.activities[i].subsector}</li>
+            <li>sector: ${act.data.activities[i].sector} / ${act.data.activities[i].subsector}</li>
             <li>user: ${act.data.activities[i].idUser.userName} </li>
             <li class="description"> ${act.data.activities[i].description} </li>
             <li>tags: ${act.data.activities[i].tags} </li>
@@ -183,6 +235,24 @@ function filter(){
           divRight.appendChild(buttonApply);
         }
       }
+
+      markers.forEach(markerElement => {
+        // create the popup
+        let mainDiv = document.createElement('div');
+        markerElement.popupHTML.forEach(element => {
+          mainDiv.appendChild(element);
+        });
+        var popup = new mapboxgl.Popup({ offset: 25 })
+        .setDOMContent(mainDiv)
+
+        //marker!
+        var marker = new mapboxgl.Marker()
+        .setLngLat(markerElement.location)
+        .setPopup(popup) // sets a popup on this marker
+        .addTo(map);
+
+        // document.getElementsByClassName('apply')[0].addEventListener('click', apply);
+      })
     }
     else
     {
@@ -203,21 +273,62 @@ function apply(e){
     $(idModal).modal('hide');
     if (act.data.message === 'ok')
     {
-      const message = `<div class="alert alert-success" role="alert">
+      const message = 
+      `<div class="alert alert-success" role="alert">
         Correctly started transation. You must wait until the other user accepts
       </div>`;
       document.getElementById('results').innerHTML = message;
+      const divButton = document.createElement('dev');
+      const button = document.createElement('button');
+      button.setAttribute('type', 'button');
+      button.classList.add('buttonShowResults', 'btn', 'btn-outline-info');
+      button.innerHTML = 'Show Results';
+      divButton.appendChild(button);
+      divButton.addEventListener('click', filter);
+      document.getElementById('results').appendChild(divButton);
     }
     else
     {
       document.getElementById('results').innerHTML = "Error " + act.data.message;
+      document.getElementById('results').innerHTML = message;
+      const divButton = document.createElement('dev');
+      const button = document.createElement('button');
+      button.setAttribute('type', 'button');
+      button.classList.add('buttonShowResults', 'btn', 'btn-outline-info');
+      button.innerHTML = 'Show Results';
+      divButton.appendChild(button);
+      divButton.addEventListener('click', filter);
+      document.getElementById('results').appendChild(divButton);
     }
   })
   .catch(error => {
     const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
     $(idModal).modal('hide');
     document.getElementById('results').innerHTML = error.response.data.error;
+    // document.getElementById('results').innerHTML = message;
+    //REVISAR!!!
+    console.log('revisaaaar');
+    const divButton = document.createElement('dev');
+    const button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.classList.add('buttonShowResults', 'btn', 'btn-outline-info');
+    button.innerHTML = 'Show Results';
+    divButton.appendChild(button);
+    divButton.addEventListener('click', filter);
+    document.getElementById('results').appendChild(divButton);
   })
+}
+
+function shadowActivity(e){
+  let activityNumber = e.target.getAttribute('id').substring(9);
+  console.log(activityNumber);
+  document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.backgroundColor = '#efefef';
+  document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.transition = 'background-color 1s';
+}
+function stopShadowActivity(e){
+  let activityNumber = e.target.getAttribute('id').substring(9);
+  document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.backgroundColor = 'transparent';
+  document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.transition = 'background-color 1s';
 }
 
 function openModal(){

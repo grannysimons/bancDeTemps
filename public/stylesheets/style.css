@@ -52,14 +52,3 @@ button.btn-lg
   margin-left: auto;
   margin-top: 100px;
 }
-/* prova */
-#filtreProva input,
-#aplicarActivitat input
-{
-  border: 1px solid gray;
-}
-#filtreProva button,
-#aplicarActivitat button
-{
-  border: 1px solid gray;
-}
