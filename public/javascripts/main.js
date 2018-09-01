@@ -96,9 +96,9 @@ function filter(){
         {
           var divPopup = document.createElement('div');
           var divPopupLeft = document.createElement('div');
-          divPopupLeft.classList.add('col-7');
+          divPopupLeft.classList.add('col-sm-7');
           var divPopupRight = document.createElement('div');
-          divPopupRight.classList.add('col-5', 'text-right');
+          divPopupRight.classList.add('col-sm-5', 'text-right');
           divPopup.setAttribute('id','activity-'+i);
           divPopup.classList.add('divPopup','row');
           let h1Popup = document.createElement('h1');
@@ -128,7 +128,7 @@ function filter(){
             var dynamicClass = 'apply-'+act.data.activities[i]._id;
             let buttonPopup = document.createElement('button');
             buttonPopup.setAttribute('type', 'button');
-            buttonPopup.classList.add('btn', 'btn-outline-info', dynamicClass);
+            buttonPopup.classList.add('btn', 'btn-outline-info', dynamicClass, 'popupButton');
             buttonPopup.setAttribute('id', 'apply-'+i);
             buttonPopup.addEventListener('click', apply);
             buttonPopup.innerHTML = 'Apply';
@@ -136,19 +136,6 @@ function filter(){
           }
           divPopup.addEventListener('mouseover', shadowActivity);
           divPopup.addEventListener('mouseout', stopShadowActivity);
-
-          // let popupHTML = `
-          // <div>
-          //   <h1 class="title">${act.data.activities[i].description}</h1>
-          //   <p class="duration">${act.data.activities[i].duration} hours</p>
-          //   <p class="userName">by ${act.data.activities[i].idUser.userName}</p>
-          //   <br/>
-          //   <p class="sector">sector ${act.data.activities[i].sector} / subsector ${act.data.activities[i].subsector}</p>
-          //   <p class="tags">${act.data.activities[i].tags}</p>
-          //   <br/>
-          //   `;
-          // if(act.data.currentUser) popupHTML+= `<button type="button" class="btn btn-outline-info apply ${dynamicClass}">Apply</button>`;
-          // popupHTML+= `</div>`;
 
           var markerCreated = false;
           markers.forEach(marker => {
@@ -286,20 +273,49 @@ function apply(e){
     $(idModal).modal('hide');
     if (act.data.message === 'ok')
     {
-      const message = `<div class="alert alert-success" role="alert">
+      const message = 
+      `<div class="alert alert-success" role="alert">
         Correctly started transation. You must wait until the other user accepts
       </div>`;
       document.getElementById('results').innerHTML = message;
+      const divButton = document.createElement('dev');
+      const button = document.createElement('button');
+      button.setAttribute('type', 'button');
+      button.classList.add('buttonShowResults', 'btn', 'btn-outline-info');
+      button.innerHTML = 'Show Results';
+      divButton.appendChild(button);
+      divButton.addEventListener('click', filter);
+      document.getElementById('results').appendChild(divButton);
     }
     else
     {
       document.getElementById('results').innerHTML = "Error " + act.data.message;
+      document.getElementById('results').innerHTML = message;
+      const divButton = document.createElement('dev');
+      const button = document.createElement('button');
+      button.setAttribute('type', 'button');
+      button.classList.add('buttonShowResults', 'btn', 'btn-outline-info');
+      button.innerHTML = 'Show Results';
+      divButton.appendChild(button);
+      divButton.addEventListener('click', filter);
+      document.getElementById('results').appendChild(divButton);
     }
   })
   .catch(error => {
     const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
     $(idModal).modal('hide');
     document.getElementById('results').innerHTML = error.response.data.error;
+    // document.getElementById('results').innerHTML = message;
+    //REVISAR!!!
+    console.log('revisaaaar');
+    const divButton = document.createElement('dev');
+    const button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.classList.add('buttonShowResults', 'btn', 'btn-outline-info');
+    button.innerHTML = 'Show Results';
+    divButton.appendChild(button);
+    divButton.addEventListener('click', filter);
+    document.getElementById('results').appendChild(divButton);
   })
 }
 
