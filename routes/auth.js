@@ -7,9 +7,17 @@ const saltRounds = 10;
 
 const Transaction = require('../models/transaction');
 const { error: {empty, userExist, userNotExist,errorMessage} } = require('../message');
+// const mongoose = require('./database');
+
+//------------------To connect to localhost mongoDB----------------------------------
+// const mongoose = require('mongoose');
+// const dbName = 'timeBank';
+// mongoose.connect(`mongodb://localhost/${dbName}`);
+
+// ------------------To connect to remote mongoDB in mlab----------------------------------
 const mongoose = require('mongoose');
-const dbName = 'timeBank';
-mongoose.connect(`mongodb://localhost/${dbName}`);
+const dbName2 = 'timebank';
+mongoose.connect(`mongodb://administrator:timebank2018@ds145412.mlab.com:45412/${dbName2}`);
 
 router.get('/signup', function(req, res, next) {
   res.render('signup');

@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 
-const dbName = 'timeBank';
-mongoose.connect(`mongodb://localhost/${dbName}`)
+// const dbName = 'timeBank';
+// mongoose.connect(`mongodb://localhost/${dbName}`)
+const dbName2 = 'timebank';
+mongoose.connect(`mongodb://administrator:timebank2018@ds145412.mlab.com:45412/${dbName2}`)
   .then(() => {
     console.log('😀');
   })
