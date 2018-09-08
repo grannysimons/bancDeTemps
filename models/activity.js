@@ -32,7 +32,7 @@ activitySchema = new Schema({
   // },
 });
 
-activitySchema.index({ location: '2dsphere'});
+// activitySchema.index({ location: '2dsphere'});
 
 const Activity = mongoose.model('Activity', activitySchema);
 

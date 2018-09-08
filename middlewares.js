@@ -150,56 +150,57 @@ module.exports = {
     }
   },
   filter: {
-    filterByUsername: (req, res, next) => {
-      res.locals.activitiesByUserSectorSubsector = [];
-      if(req.query.userName)
+    getUsers: (req, res, next) => {
+      console.log('getUsers');
+      res.locals.activities = [];
+      let filter = {};
+      if(req.query.long && req.query.lat)
       {
-        let filter = {$and: []};
-        if(req.query.sector) filter.$and.push({sector: req.query.sector});
-        else if(req.query.subsector) filter.$and.push({sector: req.query.subsector});
-        else filter = {};
-        Activity.find(filter)
-        .populate('idUser')
-        .then(activities => {
-          res.locals.activitiesByUserSectorSubsector = [];
-          activities.forEach(activity => {
-            if(activity.idUser.userName === req.query.userName)
-            {
-              res.locals.activitiesByUserSectorSubsector.push(activity);
-            }
-          })
-          next();
-        })
-        .catch(error => {
-          next(error);
+        filter.location = {
+          $nearSphere: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [req.query.long, req.query.lat],
+            },
+            $maxDistance: req.query.distance,
+          },
+        };
+      };
+      if(req.query.userName) filter.userName = req.query.userName;
+      console.log('filter: ',filter);
+      User.find(filter)
+      .then(users => {
+        var idUsers = [];
+        users.forEach(user => {
+          idUsers.push(user._id);
         });
-      }
-      else
-      {
+        res.locals.idUsers = idUsers;
         next();
-      }
+      })
+      .catch(error => {
+        console.log('filterByUserName. Error: ', error);
+        next(error);
+      });
     },
-    filterBySectorSubsector: (req, res, next) => {
-      if(res.locals.activitiesByUserSectorSubsector && res.locals.activitiesByUserSectorSubsector.length > 0) next();
-      else if(req.query.userName)
-      {
+    getActivities: (req, res, next) => {
+      console.log('getActivities');
+      var filter = {$and: []};
+      if(res.locals.idUsers && res.locals.idUsers.length > 0) filter.$and.push({idUser: {$in: res.locals.idUsers}});
+      if(req.query.sector) filter.$and.push({sector: req.query.sector});
+      else if(req.query.subsector) filter.$and.push({subsector: req.query.subsector});
+      
+      if(filter.$and.length === 0) filter = {}; 
+      
+      Activity.find(filter)
+      .populate('idUser')
+      .then(activities => {
+        res.locals.activities = activities;
         next();
-      }
-      else
-      {
-        res.locals.activitiesBySectorSubsector = [];
-        const filter = {};
-        if (req.query.sector) filter.sector = req.query.sector;
-        if (req.query.subsector) filter.subsector = req.query.subsector;
-        Activity.find( filter )
-        .populate('idUser')
-        .then(activities => {
-          activities.forEach(activity => {
-            res.locals.activitiesBySectorSubsector.push(activity);
-          })
-          next();
-        })
-      }
+      })
+      .catch(error => {
+        console.log('getActivities Error: ', error);
+        next(error);
+      })
     },
   },
   startRequest: {

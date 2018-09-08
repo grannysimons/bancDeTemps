@@ -112,8 +112,13 @@ margin: 20px 0 20px 20px;
 #search-form
 {
   background-color: #567383;
-  padding: 70px 0;
+  padding: 70px 100px;
   color: white;
+  font-size: 20px;
+}
+#search-form h2, #search-form input
+{
+  font-size: 1em;
 }
 #search-form i
 {

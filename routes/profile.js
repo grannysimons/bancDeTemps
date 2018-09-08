@@ -44,7 +44,7 @@ router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.edit
       
       if(maxCoincidence)
       {
-        res.locals.userData.location = maxCoincidence.center;
+        res.locals.userData.location = {type: "Point", coordinates: maxCoincidence.center};
       }
       res.locals.messages.passwordsAreDifferent='';
       User.update({userName: res.locals.userData.userName}, res.locals.userData)

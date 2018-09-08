@@ -1,5 +1,5 @@
 // import timetable from '../../timetable';
-var map;
+var map, globalMarkers=[];
 window.addEventListener('load', ()=>{
   document.querySelector('#filter #submit').addEventListener('click', filter);
 
@@ -52,10 +52,10 @@ window.addEventListener('load', ()=>{
     navigator.geolocation.getCurrentPosition(position => {
       const point = [position.coords.longitude, position.coords.latitude];
       map = new mapboxgl.Map({
-          container: 'map',
-          style: 'mapbox://styles/mapbox/streets-v10',
-          zoom: 15,
-          center: point
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v10',
+        zoom: 15,
+        center: point
       });
       
       filter();
@@ -63,6 +63,7 @@ window.addEventListener('load', ()=>{
   }
   else
   {
+    console.log('no navigator.geolocation');
     filter();
   }
 });
@@ -84,15 +85,39 @@ function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
-  axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
+  const distance = (document.getElementById('distance').value ? document.getElementById('distance').value : 30)*1000;
+  if(distance < 1000) distance = 1000;
+  console.log('filter! ', sector,' ', subSector,' ', user, ' ', distance);
+  var long, lat;
+  var url=`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
+  if(distance && distance!='' && navigator.geolocation)
+  {
+    navigator.geolocation.getCurrentPosition(position => {
+      long = position.coords.longitude;
+      lat = position.coords.latitude;
+      url += `&long=${long}&lat=${lat}&distance=${distance}`;
+      console.log(url);
+      addSearchResults(url);
+    });
+  }
+  else
+  {
+    console.log(url);
+    addSearchResults(url);
+  }
+} 
+
+function addSearchResults(url){
+  axios.get(url)
   .then((act) => {
     document.getElementById('results').innerHTML = '';
+    var markers = [];
     if(act.data.activities)
     {
-      var markers = [];
+      console.log('activities: ', act.data.activities);
       for(let i=0; i<act.data.activities.length; i++)
       {
-        if(act.data.activities[i].idUser.location.length === 2 )
+        if(act.data.activities[i].idUser.location.coordinates.length === 2 )
         {
           var divPopup = document.createElement('div');
           var divPopupLeft = document.createElement('div');
@@ -139,7 +164,7 @@ function filter(){
 
           var markerCreated = false;
           markers.forEach(marker => {
-            if(marker.location[0] === act.data.activities[i].idUser.location[0] && marker.location[1] === act.data.activities[i].idUser.location[1])
+            if(marker.location.coordinates[0] === act.data.activities[i].idUser.location.coordinates[0] && marker.location.coordinates[1] === act.data.activities[i].idUser.location.coordinates[1])
             {
               markerCreated = true;
               marker.popupHTML.push(divPopup);
@@ -236,6 +261,13 @@ function filter(){
         }
       }
 
+      if(globalMarkers && globalMarkers.length > 0)
+      {
+        globalMarkers.forEach(marker => {
+          marker.remove();
+        });
+        globalMarkers = [];
+      }
       markers.forEach(markerElement => {
         // create the popup
         let mainDiv = document.createElement('div');
@@ -247,12 +279,16 @@ function filter(){
 
         //marker!
         var marker = new mapboxgl.Marker()
-        .setLngLat(markerElement.location)
+        .setLngLat(markerElement.location.coordinates)
         .setPopup(popup) // sets a popup on this marker
         .addTo(map);
 
+        console.log('globalMarkers-2: ',globalMarkers);
+
+        globalMarkers.push(marker);
         // document.getElementsByClassName('apply')[0].addEventListener('click', apply);
       })
+      markers = [];
     }
     else
     {
@@ -262,7 +298,7 @@ function filter(){
   .catch(error => {
     document.getElementById('results').innerHTML = "Error " + error;
   })
-} 
+}
 
 function apply(e){
   const idActivitat = e.target.classList[2].substring(6);
@@ -335,136 +371,135 @@ function openModal(){
   $('#ModalLogin').modal('show');
 } 
 
-function filterUserActivities() {
-  console.log('hem entrat a AXIOS');  
-  const user = document.getElementById('usrName').value;
-  const sector = "";
-  const subsector = "";
-  axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subSector}&userName=${usrName}`)
-  .then((act) => {
-    // console.log(act.data);
-    document.getElementById('results-activities').innerHTML = '';
-    for(let i=0; i<act.data.activities.length; i++)
-    {
-      let divDescription = document.createElement('div');
-      divDescription.innerHTML = act.data.activities[i].description;
-      let divDuration = document.createElement('div');
-      divDuration.innerHTML = 'duration: ' + act.data.activities[i].duration + 'hours';
-      document.getElementById('results-activities').appendChild(divDescription);
-      document.getElementById('results-activities').appendChild(divDuration);
+// function filterUserActivities() {
+//   const user = document.getElementById('usrName').value;
+//   const sector = "";
+//   const subsector = "";
+//   axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subsector}&userName=${user}`)
+//   .then((act) => {
+//     // console.log(act.data);
+//     document.getElementById('results-activities').innerHTML = '';
+//     for(let i=0; i<act.data.activities.length; i++)
+//     {
+//       let divDescription = document.createElement('div');
+//       divDescription.innerHTML = act.data.activities[i].description;
+//       let divDuration = document.createElement('div');
+//       divDuration.innerHTML = 'duration: ' + act.data.activities[i].duration + 'hours';
+//       document.getElementById('results-activities').appendChild(divDescription);
+//       document.getElementById('results-activities').appendChild(divDuration);
       
-      if(act.data.currentUser) 
-      {
-        let dynamicClass = 'apply-'+act.data.activities[i]._id;
-        let buttonApply = document.createElement('button');
-        buttonApply.classList.add('btn', 'btn-info', dynamicClass);
-        buttonApply.setAttribute('id', 'apply-'+i);
-        buttonApply.addEventListener('click', apply);
-        buttonApply.innerHTML = 'Apply';
+//       if(act.data.currentUser) 
+//       {
+//         let dynamicClass = 'apply-'+act.data.activities[i]._id;
+//         let buttonApply = document.createElement('button');
+//         buttonApply.classList.add('btn', 'btn-info', dynamicClass);
+//         buttonApply.setAttribute('id', 'apply-'+i);
+//         buttonApply.addEventListener('click', apply);
+//         buttonApply.innerHTML = 'Apply';
 
-        document.getElementById('results-activities').appendChild(buttonApply);
-      }
+//         document.getElementById('results-activities').appendChild(buttonApply);
+//       }
 
-    }
-  })
-  .catch(error => {
-    document.getElementById('results-activities').innerHTML = "erroooor!" + error;
-  })
-} 
+//     }
+//   })
+//   .catch(error => {
+//     document.getElementById('results-activities').innerHTML = "erroooor!" + error;
+//   })
+// } 
 
 
-  function performGetRequest2() {
-    var offertingUserId = undefined;
-    var demandingUserId = undefined;
-    var resultElement = document.getElementById('getResult2');
-    var usrName = document.getElementById('usrName').value;
-    resultElement.innerHTML = '';
-    const sector = "";
-    const subSector = "";
+  // function performGetRequest2() {
+  //   var offertingUserId = undefined;
+  //   var demandingUserId = undefined;
+  //   var resultElement = document.getElementById('getResult2');
+  //   var usrName = document.getElementById('usrName').value;
+  //   resultElement.innerHTML = '';
+  //   const sector = "";
+  //   const subSector = "";
     
-        console.log('el valor de demanding user es:',demandingUserId);
-    console.log('estem dins de AXIOS');
-    // we need to get the user_id in order to create the transaction later
-    axios.get(`http://localhost:3000/api/getUserId?userName=${usrName}`)
-    .then((response) => {
-      console.log('aquesta es la resposta:',response);
-      console.log('el valor de userid es:',response.data.userid);
-      if (response.data.userid) {
-        console.log('hem entrat dins el if');
-        offertingUserId = response.data.userid;
+  //       console.log('el valor de demanding user es:',demandingUserId);
+  //   console.log('estem dins de AXIOS');
+  //   // we need to get the user_id in order to create the transaction later
+  //   axios.get(`http://localhost:3000/api/getUserId?userName=${usrName}`)
+  //   .then((response) => {
+  //     console.log('aquesta es la resposta:',response);
+  //     console.log('el valor de userid es:',response.data.userid);
+  //     if (response.data.userid) {
+  //       console.log('hem entrat dins el if');
+  //       offertingUserId = response.data.userid;
         
-      }
-    })
-    .catch((error) => {
-      // console.log(error);
-      resultElement.innerHTML = `<p>There has been an error:  ${error}</p>`;
-      // resultElement.innerHTML = generateErrorHTMLOutput(error);
-    });
+  //     }
+  //   })
+  //   .catch((error) => {
+  //     // console.log(error);
+  //     resultElement.innerHTML = `<p>There has been an error:  ${error}</p>`;
+  //     // resultElement.innerHTML = generateErrorHTMLOutput(error);
+  //   });
 
 
-    axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subSector}&userName=${usrName}`)
-    .then((response) => {
-      console.log('aquesta es la resposta:',response);
-      if (response.data.activities.length>0) {
-        demandingUserId = response.data.currentUser._id;
-        // var activitiesArray = response.data.activities;
-        // resultElement.innerHTML = '<p>This user has activities to offer</p>';
-        for(let i=0; i<response.data.activities.length; i++)
-          { 
-            let dataTransaction = {
-              offertingUserId: offertingUserId,
-              demandingUserId: demandingUserId,
-              activityId: response.data.activities[i]._id,
-              status: 'Proposed'
-            };
+  //   axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subSector}&userName=${usrName}`)
+  //   .then((response) => {
+  //     console.log('aquesta es la resposta:',response);
+  //     if (response.data.activities.length>0) {
+  //       demandingUserId = response.data.currentUser._id;
+  //       // var activitiesArray = response.data.activities;
+  //       // resultElement.innerHTML = '<p>This user has activities to offer</p>';
+  //       for(let i=0; i<response.data.activities.length; i++)
+  //         { 
+  //           let dataTransaction = {
+  //             offertingUserId: offertingUserId,
+  //             demandingUserId: demandingUserId,
+  //             activityId: response.data.activities[i]._id,
+  //             status: 'Proposed'
+  //           };
 
 
-            // we convert it to a JSON data, and we attach to an attribute 'data-profile' in the button element
-            let myJsonData = JSON.stringify(dataTransaction);
-            console.log(myJsonData);
+  //           // we convert it to a JSON data, and we attach to an attribute 'data-profile' in the button element
+  //           let myJsonData = JSON.stringify(dataTransaction);
+  //           console.log(myJsonData);
 
             
-            let divElement = document.createElement('div');
-            divElement.innerHTML = `<p><b><u>Activity # ${i+1}</u></b></p>
-                                       <p><b>Description: </b>${response.data.activities[i].description} </p>
-                                       <p><b>Sector: </b>${response.data.activities[i].sector} </p>
-                                       <p><b>Sub Sector: </b>${response.data.activities[i].subsector} </p>
-                                       <p><b>Duration: </b>${response.data.activities[i].duration} hours</p>`
-            divElement.classList.add('activity-in-transactionManager');
-            let buttonElement = document.createElement('button');
-            buttonElement.innerHTML = 'Apply for transaction';
-            buttonElement.setAttribute('id', 'applytransaction-'+i);
-            buttonElement.setAttribute('numActivity',i);
-            buttonElement.setAttribute('dataprofile',myJsonData);
-            buttonElement.setAttribute('onclick',`applyForTransaction(this)`);
-            buttonElement.setAttribute('type','submit');
-            divElement.appendChild(buttonElement);
-            resultElement.appendChild(divElement);
-            // let pDescription = document.createElement('p');
-            // pDescription.innerHTML = response.data.activities[i].description;
-            // let pDuration = document.createElement('p');
-            // pDuration.innerHTML = 'Duration: ' + response.data.activities[i].duration + 'hours';
-            // let pSector = document.createElement('p');
-            // pSector.innerHTML = 'Sector: ' + response.data.activities[i].sector;
-            // let pSubSector = document.createElement('p');
-            // pSubSector.innerHTML = 'Sub Sector: ' + response.data.activities[i].subsector;
-            // resultElement.appendChild(pDescription);
-            // resultElement.appendChild(pSector);
-            // resultElement.appendChild(pSubSector);
-            // resultElement.appendChild(pDuration);
-          }  
+  //           let divElement = document.createElement('div');
+  //           divElement.innerHTML = `<p><b><u>Activity # ${i+1}</u></b></p>
+  //                                      <p><b>Description: </b>${response.data.activities[i].description} </p>
+  //                                      <p><b>Sector: </b>${response.data.activities[i].sector} </p>
+  //                                      <p><b>Sub Sector: </b>${response.data.activities[i].subsector} </p>
+  //                                      <p><b>Duration: </b>${response.data.activities[i].duration} hours</p>`
+  //           divElement.classList.add('activity-in-transactionManager');
+  //           let buttonElement = document.createElement('button');
+  //           buttonElement.innerHTML = 'Apply for transaction';
+  //           buttonElement.setAttribute('id', 'applytransaction-'+i);
+  //           buttonElement.setAttribute('numActivity',i);
+  //           buttonElement.setAttribute('dataprofile',myJsonData);
+  //           buttonElement.setAttribute('onclick',`applyForTransaction(this)`);
+  //           buttonElement.setAttribute('type','submit');
+  //           divElement.appendChild(buttonElement);
+  //           resultElement.appendChild(divElement);
+  //           // let pDescription = document.createElement('p');
+  //           // pDescription.innerHTML = response.data.activities[i].description;
+  //           // let pDuration = document.createElement('p');
+  //           // pDuration.innerHTML = 'Duration: ' + response.data.activities[i].duration + 'hours';
+  //           // let pSector = document.createElement('p');
+  //           // pSector.innerHTML = 'Sector: ' + response.data.activities[i].sector;
+  //           // let pSubSector = document.createElement('p');
+  //           // pSubSector.innerHTML = 'Sub Sector: ' + response.data.activities[i].subsector;
+  //           // resultElement.appendChild(pDescription);
+  //           // resultElement.appendChild(pSector);
+  //           // resultElement.appendChild(pSubSector);
+  //           // resultElement.appendChild(pDuration);
+  //         }  
 
-      } else {
-        resultElement.innerHTML = '<p>This user doesnt have any activity to offer</p>';
-      }
-      // resultElement.innerHTML = generateSuccessHTMLOutput(response);
-    })
-    .catch((error) => {
-        console.log(error);
-        resultElement.innerHTML = `<p>There has been an error:  ${error}</p>`;
-        // resultElement.innerHTML = generateErrorHTMLOutput(error);
-    });
-  }
+  //     } else {
+  //       resultElement.innerHTML = '<p>This user doesnt have any activity to offer</p>';
+  //     }
+  //     // resultElement.innerHTML = generateSuccessHTMLOutput(response);
+  //   })
+  //   .catch((error) => {
+  //       console.log(error);
+  //       resultElement.innerHTML = `<p>There has been an error:  ${error}</p>`;
+  //       // resultElement.innerHTML = generateErrorHTMLOutput(error);
+  //   });
+  // }
 
   function applyForTransaction(element) {
    
