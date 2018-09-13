@@ -66,7 +66,19 @@ window.addEventListener('load', ()=>{
     console.log('no navigator.geolocation');
     filter();
   }
+  document.getElementById("profileImage").addEventListener("click", uploadProfileFile);
+   
 });
+
+function uploadProfileFile(){
+  $("#profileImage").uploadFile({
+    url:"uploadFile.js",
+    multiple:false,
+    dragDrop:true,
+    maxFileCount:1,
+    fileName:"profile-" + $("#userName").value,
+    });
+}
 
 window.onbeforeunload = function () {
   window.scrollTo(0, 0);
@@ -87,7 +99,6 @@ function filter(){
   const user = document.getElementById('user').value;
   const distance = (document.getElementById('distance').value ? document.getElementById('distance').value : 30)*1000;
   if(distance < 1000) distance = 1000;
-  console.log('filter! ', sector,' ', subSector,' ', user, ' ', distance);
   var long, lat;
   var url=`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
   if(distance && distance!='' && navigator.geolocation)
@@ -96,13 +107,11 @@ function filter(){
       long = position.coords.longitude;
       lat = position.coords.latitude;
       url += `&long=${long}&lat=${lat}&distance=${distance}`;
-      console.log(url);
       addSearchResults(url);
     });
   }
   else
   {
-    console.log(url);
     addSearchResults(url);
   }
 } 
@@ -114,7 +123,6 @@ function addSearchResults(url){
     var markers = [];
     if(act.data.activities)
     {
-      console.log('activities: ', act.data.activities);
       for(let i=0; i<act.data.activities.length; i++)
       {
         if(act.data.activities[i].idUser.location.coordinates.length === 2 )
@@ -283,7 +291,6 @@ function addSearchResults(url){
         .setPopup(popup) // sets a popup on this marker
         .addTo(map);
 
-        console.log('globalMarkers-2: ',globalMarkers);
 
         globalMarkers.push(marker);
         // document.getElementsByClassName('apply')[0].addEventListener('click', apply);

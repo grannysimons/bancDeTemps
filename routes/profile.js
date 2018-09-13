@@ -6,7 +6,22 @@ const Middlewares = require('../middlewares');
 const Assets = require('../assets');
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const geocodingClient = mbxGeocoding({ accessToken: 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw' });
+const multer  = require('multer');
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploadImages/avatars/');
+  },
+  filename: function (req, file, cb) {
+    let extension = '.jpg';
+    if(file.mimetype === 'image/png') extension = '.png';
+
+    cb(null, req.body.userName + extension);
+  }
+})
+
+// const upload = multer({ dest: storage, fileFilter: Assets.avatarFilter });
+const upload = multer({ storage });
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -18,8 +33,10 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
   res.render('profile/edit', { userPrevData });
 });
 
-router.post('/edit', Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
-  
+router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
+  console.log("req.fields: ", req.fields);
+  console.log("req.file: ", req.file);
+
   const roadType = req.body.roadType;
   const roadName = req.body.roadName;
   const number = req.body.number;

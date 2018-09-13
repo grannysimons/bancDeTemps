@@ -239,6 +239,18 @@ footer .footer-names
   font-weight: bolder;
   margin-bottom: 30px;
 }
+.avatar
+{
+  margin: 60px 0;
+}
+#avatarImage
+{
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin-left: auto;
+  border-radius: 50%;
+}
 /* signup */
 #signUp
 {
@@ -297,7 +309,6 @@ footer .footer-names
   display: block;
   margin-left: auto;
 }
-
 /* View .transaction */
 
 #usrName {
