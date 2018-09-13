@@ -7,6 +7,7 @@ const Assets = require('../assets');
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const geocodingClient = mbxGeocoding({ accessToken: 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw' });
 const multer  = require('multer');
+const IsThere = require("is-there");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -70,17 +71,17 @@ router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retri
         const data = {
           message: res.locals.messages,
           userData: res.locals.userData,
+          avatarURL: '/images/avatar.png',
         };
         res.render('profile/edit', data);
       })
       .catch(error => {
-        console.log(error);
         next(error);
       });
     }
   })
   .catch(error => {
-    console.log(error);
+    console.log('editProfile error: ',error);
   })
 });
 

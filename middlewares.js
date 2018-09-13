@@ -21,6 +21,7 @@ module.exports = {
       res.locals.userData = {
         name, lastName, userName, password: passwordUser, repeatPassword, mail, telephone, introducing, direction: {roadType, roadName, number, zipCode, city, province, state,},
       }
+      console.log('res.locals.userData: ', res.locals.userData);
       next();
     },
     checkNewUser: (req, res, next) => {

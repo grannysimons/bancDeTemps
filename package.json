@@ -18,6 +18,7 @@
     "flash": "^1.1.0",
     "hbs": "~4.0.1",
     "http-errors": "~1.6.2",
+    "is-there": "^4.4.3",
     "mapbox": "^1.0.0-beta10",
     "mongoose": "^5.2.6",
     "mongoose-deep-populate": "^3.1.1",
