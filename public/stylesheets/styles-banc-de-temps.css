@@ -508,7 +508,11 @@ footer .footer-names
 .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right{
   display: none;
 }
-
+/* error pages */
+.error
+{
+  padding: 30pz 50px;
+}
 
 /* #text-banc h1
 {
