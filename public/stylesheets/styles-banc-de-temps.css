@@ -335,22 +335,142 @@ footer .footer-names
   margin: 0 0 0 10px;
 }
 
-.transaction-paragraf {
-  margin: 1px 0 1px 20px;
+/* We define the style of information presented when giving the status of apply transaction: success, refused, etc.. */
+
+#panel-result-apply-transaction button {
+  margin: 0 0 0 20px;
+}
+
+.apply-transaction {
+  display: inline-block;
+  width: max-content;
+  margin: 20px 20px 20px 20px;
+  padding: 10px;
+  /* border: 2px solid green; */
+  border-radius: 8px;
+}
+
+/* List of current Transactions */
+
+
+/* #transaction-container {
+  position: relative;
+  margin: 20px 0 0 0;
+} */
+
+#container-title-transactions {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  align-items: center;
+  margin: 50px 0 30px 0;
+  /* font-size: 0.6rem; */
+  background-color: #004080;
+  /* border: 2px solid red; */
+  width: 100%;
+  /* height: 200px; */
+}
+
+.transaction-title {
+  /* width: 100%; */
+  padding: 30px 0;
+  /* font-size: 0.5rem; */
+  margin: 0 0 0 20px;
+  color: white;
+  /* border: 2px solid green; */
   
 }
 
-#transaction-container {
-  position: relative;
-  /* margin: 10px 0 0 0; */
+#list-of-buttons {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  align-items: center;
+  /* border: 2px solid red; */
+  /* width: 100%; */
 }
 
-.status {
+#container-title-transactions button {
+  font-size: 0.8rem;
+  margin: 0 5px;
+}
+
+#description-state {
+  margin: 0 0 0 0;
+  padding: 0 0 20px 20px;
+  color: black;
+  font-size: 1rem;
+}
+
+.transaction-item {
+  position: relative;
+  /* margin: 10px 0 0 0; */
+  /* margin: 20px 0 20px 0; */
+  /* padding: 0 0 30px 0; */
+  /* border-bottom: 3px solid #567383; */
+}
+
+.transaction-item .status {
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   text-align: right;
+}
+
+.transaction-item svg {
+  margin: 40px 0 0 0;
+}
+
+.transaction-paragraf {
+  margin: 1px 0 1px 20px;
+}
+
+/* List of user activities */
+
+/* we hide the information of the container */
+.no-visible-container {
+  display: none;
+}
+
+/* we show the information of the container */
+.visible-container {
+  display: block;
+}
+
+.activity-container {
+  width: 100%;
+  /* border: 3px solid green; */
+
+
+  /* display: none; */
+  
+}
+
+.activity-container > div {
+  position: relative;
+  width: 60%;
+  min-width: 300px;
+  margin: 20px 0 20px 100px;
+  padding: 0 0 20px 0;
+  background-color: #666699;
+  /* border: 3px solid red; */
+}
+
+.activity-container > div > button {
+  position: absolute;
+  left: 102%;
+  top: 1px;
+}
+
+.activity-paragraf {
+  margin: 1px 0 1px 20px;
+  color: white;
+}
+
+.activity-button {
+  margin: 1px 0 1px 20px;
+  
 }
 
 /* popups */

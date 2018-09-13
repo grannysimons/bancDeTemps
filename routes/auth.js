@@ -5,6 +5,12 @@ const Middlewares = require('../middlewares');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+const Transaction = require('../models/transaction');
+const { error: {empty, userExist, userNotExist,errorMessage} } = require('../message');
+const mongoose = require('mongoose');
+const dbName = 'timeBank';
+mongoose.connect(`mongodb://localhost/${dbName}`);
+
 router.get('/signup', function(req, res, next) {
   res.render('signup');
 });
@@ -30,5 +36,53 @@ router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.check
       next(error)
     });
 });
+
+
+/* POST login credentials. */
+router.post('/login', (req,res,next) => {
+    
+  const {userName, password} = req.body;
+  
+  if(!userName || !password)
+  {
+      req.flash('info', empty);
+      res.redirect('/');
+  }
+  else
+  {   
+      //Nota: Important, al fer el metode find sobre un objecte Schema de Mongoose, ens retorna un array d'objectes
+      // Per tant, si existeix l'objecte, llavors agafem la primera posició de l'array
+      User.findOne({ userName })
+      .then((user) => {
+          if(user)
+          {   
+              if(bcrypt.compareSync(password, user.password))
+              {
+                  req.session.currentUser = user;
+                  res.redirect('/');
+              }
+              else
+              {    
+                  req.flash('info', errorMessage);
+                  res.redirect('/');
+              }
+          }
+          else
+          {
+              req.flash('info', usernotExist);
+              res.redirect('/');
+          }
+      })
+      .catch((error => {
+          next(error);
+      }))
+  }
+})
+
+router.get('/logout', (req, res, next) => {
+  delete req.session.currentUser;
+  res.redirect('/');
+})
+
 
 module.exports = router;

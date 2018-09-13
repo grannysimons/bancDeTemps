@@ -280,57 +280,112 @@ module.exports = {
     if(req.session.currentUser) next();
     else res.redirect('/');
   },
+
+
+//-----------------------TRANSACTION MANAGER--------------------------------------------------------  
   TransactionManager: {
     getTransactions: (req, res, next) => {
       const currentUser = req.session.currentUser;
-      // User.findOne({userName: currentUser.userName})
-      // .populate('transactions')
-
-      User.findOne({userName: currentUser.userName})
-      .lean()
-      .populate({ path: 'transactions' })
-      .exec(function(err, docs) {
-
-        var options = [{
-        path: 'transactions.idActivity',
-        model: 'Activity'
-        },
-        {
-        path: 'transactions.demandingUserId',
-        model: 'User'
-        }
-      ];
-
-
-        if (err) return res.json(500);
-        User.populate(docs, options, function (err, projects) {
-        res.locals.user = projects;
-        console.log('projects', projects);
-        //  res.json(projects);
-        next();
-      // res.json(projects);
-        });
-        }) 
-
+      let state = req.query.state;
+      console.log('mirem les transacions que tenen estat',req.query);
+      var aa = 'offertingUserId',
+          bb = 'demandingUserId'
       
+      switch (state) {
+        case 'Pending' :
+          state = 'Proposed';
+          break;
+        case 'Proposed' :
+          aa = 'demandingUserId';
+          bb = 'offertingUserId';
+          break;
+        default:
+          
+      }
 
-      // .then(user => {
-      //   console.log('user: ', user);
-      //   // res.locals.transactions = user.transactions;
-      //   // res.locals.demandedActivities = user.demandedActivities;
-      //   next();
-      // })
-      // .catch(error => {
-      //   next(error);
-      // })
+      // Utilizando el [] en las variables, estamos usando la propiedad de Computed Variables de Javascript
+      Transaction.find({[aa]: currentUser._id, state: state})
+      .populate([{ 
+          path: `${bb}`,
+          populate: {
+            path: 'offertedActivities',
+          }},
+        {path: 'idActivity'}])
+        .then(adventure => {
+        res.locals.transactions = adventure;
+        next();
+        })
+        .catch(error => {
+          next(error);
+        })
+     },
+    getTransactionInfoSecondLeg: (req, res, next) => {
+      const currentUser = req.session.currentUser;
+      const transactionId = req.query.transactionId;
+      Transaction.find({idTransactionsInvolved: transactionId})
+      .populate([{ 
+          path: 'demandingUserId',
+          populate: {
+            path: 'offertedActivities',
+          }},
+        {path: 'idActivity'}])
+        .then(adventure => {
+          // Nota: Ens retona un ARRAY d'objectes, per això fem adventure[0]
+          let transactionId2 = adventure[0]._id;
+          Transaction.find({_id: transactionId2})
+          .populate([{ 
+            path: 'offertingUserId',
+            populate: {
+              path: 'offertedActivities',
+            }},
+          {path: 'idActivity'}])
+          .then(response => {
+            res.locals.transactionSecondLeg = response;
+            next();
+          })
+          .catch(error => {
+            next(error);
+          })
+        }) 
+        .catch(error => {
+          next(error);
+        })
+    },
+    getUserId: (req, res, next) => {
+      const userName = req.query.userName;
+      User.findOne({userName: userName})
+      .then(user => {
+        let userid = {userid: user._id}; 
+        res.locals.userid = user._id;
+        next();
+      })
+      .catch(error => {
+        next(error);
+      })
+      next();
+    },
+    updateStatusTransaction: (req, res, next) => {
+      let {state,transactionId} = req.query
+      //we have to update the status
+      let conditions = { _id: transactionId }
+          , update = { state: state}
+          , options = { multi: false };
+
+      Transaction.update(conditions, update, options)
+      .then(numAffected => {
+        next();
+      })
+      .catch(error => {
+        next(error);
+      })
     }
   },
-  // Aquest middleware de moment no l'utilitzem, perque ja el l'hem anidat en el de dalt. D'aquesta forma ens evitem haver de passar dades entre middlewares
+  // This middleware is called when searching for specific user activities from Transaction Manager search box, and we apply for transaction in specific activity
   insertNewTransaction: {
     insertTransaction: (req, res, next) => {
       const {offertingUserId,demandingUserId,activityId,status} = req.body;
-      console.log('hem entrat al POST per crear la transacció!!!');
-      console.log(offertingUserId,demandingUserId,activityId,status);
+      // console.log('hem entrat al POST per crear la transacció!!!');
+      // console.log(offertingUserId,demandingUserId,activityId,status);
       Transaction.create({
         idActivity: activityId,
         offertingUserId: offertingUserId,
@@ -338,46 +393,102 @@ module.exports = {
         state: status,
       })
       .then(createdTransaction => {
-      
         let transactionId = createdTransaction._id;
-        console.log('hem creat la transaccio. El transaction_id es:',transactionId);
-        console.log('hem creat la transaccio. El offertingUser_id es:',offertingUserId);
-        // updateUserTransactionArray(req,res,next,transactionId);
-        User.findByIdAndUpdate(offertingUserId,{$push: {transactions: transactionId}})  
-        .then(user => {
-        console.log('array de transaccions usuari:', user);
-        next();
-        })
-        .catch( (error) => {
-          console.log('No ha fet el update del transactionId dins user');
-          next(error);
-        });
-        
-        
+        res.locals.transactionId = transactionId;
+        next(); // Desde la API farem el retorn a AXIOS, el retorn del res.json
       })
       .catch(error => next(error));
-      
+    }
+    // updateUserTransactionArray: (req,res,next,transactionId) => {
+    //   var {offertingUserId,demandingUserId,activityId,status} = req.body;
+    //   User.findByIdAndUpdate({offertingUserId},{$push: {transactions: transactionId}})  
+    //   .then(user => {
+    //     next();
+    //   })
+    //   .catch(error => next(error));
+
+    // }
 
     },
-    updateUserTransactionArray: (req,res,next,transactionId) => {
-      var {offertingUserId,demandingUserId,activityId,status} = req.body;
-      console.log('vemos si pasan las variables');
-      console.log(offertingUserId,demandingUserId,activityId,status);
-      console.log('vemos si pasa el transactionId',res.locals.transactionId);
-      User.findByIdAndUpdate({offertingUserId},{$push: {transactions: transactionId}})  
-      .then(user => {
-        console.log('array de transaccions usuari:', user);
+    // with acceptProposedTransaction we accept the transaction and we choose an activity from the user who is demanding our activity  
+    acceptProposedTransaction: {
+      getTransactionInfo: (req, res, next) => {
+        const transactionId = req.query.transactionId;
+        const activityId = req.query.activityId;
+        console.log('el transactionId passat es: ',transactionId); 
+        Transaction.findOne({_id: transactionId})
+            .then(transaction => {
+              res.locals.transactionInfo = transaction;
+              res.locals.activityId = activityId;
+              next();
+            })
+            .catch(error => {
+              next(error);
+            })
+        
+
+      },
+      insertSecondTransaction: (req, res, next) => {
+        // const transactionId = req.query.transactionId;
+        const activityId = req.query.activityId;
+        console.log('el activityId passat es: ',activityId); 
+        let dataTransaction = new Transaction ({
+          idActivity: activityId,
+          offertingUserId: res.locals.transactionInfo.demandingUserId,
+          demandingUserId: res.locals.transactionInfo.offertingUserId,
+          state: 'Accepted',
+          idTransactionsInvolved: res.locals.transactionInfo._id
+        });
+
+        //we use 'save' method because we get the _id we need to insert into the other transaction
+        dataTransaction.save()
+        .then(result => {
+          res.locals.transactionIdSecondTransaction = result._id;
+          console.log(result._id);  // this will be the new created ObjectId
+          next();
+        })
+        .catch(error => {
+          next(error);
+        })
+    },
+    updateFirstTransaction: (req, res, next) => {
+      let transactionId1 = res.locals.transactionInfo._id
+      let transactionId2 = res.locals.transactionIdSecondTransaction; 
+      console.log('el transactionId2 passat es: ',transactionId2); 
+
+      //we have to update first transaction with the transaction_id of second. So, they are related
+      let conditions = { _id: transactionId1 }
+          , update = { $set: {idTransactionsInvolved: transactionId2, state: 'Accepted'}}
+          , options = { multi: false };
+
+      Transaction.update(conditions, update, options)
+      .then(numAffected => {
+        console.log('el numero de files update es:', numAffected);
         next();
       })
-      .catch(error => next(error));
-
-    }
-
+      .catch(error => {
+        next(error);
+      })
+    },
+    getUserActivities: (req, res, next) => {
+      const userId = req.query.userId;
+      Activity.find({idUser: userId, type: 'offerted'})
+      .then(response => {
+        res.locals.activities = response;
+        next();
+      })
+      .catch(error => {
+        next(error);
+      })
+    }  
   },
   geoLocation: {
     inverseGeocoding: (req, res, next) => {
-      
-      next();
-    },
-  }, 
-};
+    next();
+
+    }
+  }
+}
+
+
+

@@ -19,10 +19,6 @@ const userSchema = new Schema({
   },
   telephone: String,
   introducing: String,
-  transactions: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Transaction',
-  }],
   location: {
     type: {type: String},
     coordinates: [Number],

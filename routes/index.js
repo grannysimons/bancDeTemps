@@ -6,7 +6,7 @@ const Messages = require('../messages');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const { error: {empty, userExist, userNotExist,errorMessage} } = require('../message');
-const Middlewares = require('../middlewares');
+const Middleware = require('../middlewares');
 
 const mongoose = require('mongoose');
 const dbName = 'timeBank';
@@ -55,77 +55,12 @@ router.get('/', function(req, res, next) {
   
 });
 
-
-
-/* POST login credentials. */
-router.post('/login', (req,res,next) => {
-    
-    const {userName, password} = req.body;
-    // console.log('hem entrat a la ruta del login');
-    // console.log(`el username es: ${userName}`);
-    // console.log(`el password es: ${password}`);
-    if(!userName || !password)
-    {
-        console.log('no existeix el username i/o el password');
-        req.flash('info', empty);
-        // res.redirect('/auth/login');
-        res.redirect('/');
-    }
-    else
-    {   
-        //Nota: Important, al fer el metode find sobre un objecte Schema de Mongoose, ens retorna un array d'objectes
-        // Per tant, si existeix l'objecte, llavors agafem la primera posició de l'array
-        User.findOne({ userName })
-        .then((user) => {
-            if(user)
-            {   
-                // console.log('user: ',user); 
-                // console.log(user.lastName);
-                // console.log(user.userName);
-                // console.log(user.mail);
-                // console.log('hem passat user.find'); 
-                // console.log(`el password entrat per usuari és: ${password}`);
-                // console.log(`el password de la BBDD és: ${user.password}`);
-                if(bcrypt.compareSync(password, user.password))
-                {
-                    req.session.currentUser = user;
-                    res.redirect('/');
-                }
-                else
-                {    
-                    // console.log('estem dins else, el password no es correcte');
-                    req.flash('info', errorMessage);
-                    // res.redirect('/auth/login');
-                    res.redirect('/');
-                }
-            }
-            else
-            {
-                console.log(`usuari ${userName} no existeix`);
-                req.flash('info', usernotExist);
-                // res.redirect('/auth/login');
-                res.redirect('/');
-            }
-        })
-        .catch((error => {
-            next(error);
-        }))
-    }
-})
-
-router.get('/logout', (req, res, next) => {
-  console.log('hem entrat al logout');  
-  delete req.session.currentUser;
-  res.redirect('/');
-})
-
-/* GET transactions. */
-router.get('/transactions', Middlewares.TransactionManager.getTransactions, (req, res, next) => {
-    const userData = res.locals.user;
-    
-    console.log('aixo es el que veiem al render');
-    console.log(userData.transactions[0]); 
-    res.render('transactions',userData);
+router.get('/transactions', Middleware.TransactionManager.getTransactions, (req, res, next) => {
+    const userData = res.locals.transactions;
+    const dataTransactions = {
+        userData: userData
+    };
+    res.render('transactions',dataTransactions);
     
 
 })
