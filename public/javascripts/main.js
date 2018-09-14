@@ -391,6 +391,7 @@ function performGetRequest2() {
     // we need to get the user_id in order to create the transaction later
     axios.get(`http://localhost:3000/api/obtenirUserID2?userName=${usrName}`)
     .then((response) => {
+      console.log('el valor devuelto',response);
       if (response.data.userid) {
         offertingUserId = response.data.userid;
         // Now that we have retrieve the OfferingUserId, we can ask for activities of this user
