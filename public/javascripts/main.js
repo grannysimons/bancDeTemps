@@ -1,4 +1,28 @@
 // import timetable from '../../timetable';
+var socket = io();
+socket.connect();
+socket.on('chat message', (msg) => {
+  // Let's check if user is registered. We have to check only if id #currentuser-logged exist
+  console.log('hem entrat a socket-on');
+  if ($( "#currentuser-logged" ).length) {
+    
+    // element exists. Let's get the current_id
+    const currentUserId = $( "#currentuser-logged" ).attr('data-userid');
+    if (msg.my == currentUserId) {
+      console.log('ha coincidit el username. ensenyem missatge nova transaccio');
+      // $('#currentuser-logged').text('New Pending Transaction to Accept!!');
+      $('#currentuser-logged').append('<p id="pendingmsg" class="pending-transaction-msg blink">New Pending Transaction to Accept!!</p>');
+      for (let i=0;i<10;i++) {
+        $('#pendingmsg').fadeOut(500).fadeIn(500);
+        // $('.blink').fadeOut(500).fadeIn(500);
+      }
+    
+    }
+  }
+  // $('#messages').append($('<li>').text(msg));
+});
+
+
 var map, globalMarkers=[];
 window.addEventListener('load', ()=>{
   document.querySelector('#filter #submit').addEventListener('click', filter);
@@ -374,9 +398,7 @@ function stopShadowActivity(e){
   document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.transition = 'background-color 1s';
 }
 
-function openModal(){
-  $('#ModalLogin').modal('show');
-} 
+
 
 // function filterUserActivities() {
 //   const user = document.getElementById('usrName').value;
@@ -413,6 +435,68 @@ function openModal(){
 //     document.getElementById('results-activities').innerHTML = "erroooor!" + error;
 //   })
 // } 
+
+//---------------------LOGIN----------------------------------------------------
+
+function openModal(){
+  $('#ModalLogin').modal('show');
+} 
+
+function loginFormSubmit() {
+  // document.getElementById("auth-form").submit();
+  const usrName = document.getElementById('usr').value;
+  const password = document.getElementById('password').value;
+
+  console.log('el username es:', usrName);
+
+  $("#login-messages").empty();
+  //we check for user and password
+  if (!usrName && password) {
+    $("#login-messages").empty(); //we empty the activities <div>
+    $("#login-messages").append("<p class='text-danger border border-danger rounded'>Username is empty!</p>");
+    // $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
+  } 
+  
+  if (usrName && !password) {
+    $("#login-messages").empty(); //we empty the activities <div>
+    $("#login-messages").append("<p class='text-danger border border-danger rounded'>Password is empty!</p>");
+    // $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
+  }
+
+  if (!usrName && !password) {
+    $("#login-messages").empty(); //we empty the activities <div>
+    $("#login-messages").append("<p class='text-danger border border-danger rounded'>Username and Password are empty!</p>");
+    // $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
+  }
+
+  // Si estan els dos, ho enviem per AXIOS per verificar
+  if (usrName && password) {
+    const authData = {
+      userName : usrName,
+      password : password
+    }
+    axios.post('http://localhost:3000/login', authData)
+    .then((response) => {
+      console.log('el valor devuelto',response);
+      if (response.data.userid) {
+        offertingUserId = response.data.userid;
+        // Now that we have retrieve the OfferingUserId, we can ask for activities of this user
+        
+      } else {
+        //This user doesn't exist, so we place a message
+        $("#getResult2").empty(); //we empty the activities <div>
+        $("#panel-result-apply-transaction").empty();
+        $("#panel-result-apply-transaction").append("<p class='text-danger border border-danger apply-transaction'>THIS USER DOESN'T EXIST!! TRY AGAIN WITH DIFFERENT USERNAME</p>");
+        $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
+      }
+    })
+    .catch((error) => {
+      $("#login-messages").empty(); //we empty the activities <div>
+      $("#login-messages").append("<p class='text-danger border border-danger rounded'>This user doesn't exist!</p>");
+    });
+
+  }
+}  
 
 //---------------------TRANSACTION MANAGER---------------------------------------------------------------
 
@@ -534,6 +618,7 @@ function findUserActivities(usrName, offertingUserId) {
     let numActivity = element.getAttribute('numActivity');
     let attributeJSON = element.getAttribute('dataprofile');
     let dataTransaction = JSON.parse(attributeJSON);
+    console.log('dataTransaction.offertingUserId:', dataTransaction.offertingUserId);
 
     axios.post('http://localhost:3000/api/insertNewTransaction', dataTransaction)
     
@@ -543,6 +628,7 @@ function findUserActivities(usrName, offertingUserId) {
       $("#panel-result-apply-transaction").append("<p class='text-success border border-success apply-transaction'>THE NEW TRANSACTION HAS BEEN CREATED SUCCESFULLY!!</p>");
       $("#panel-result-apply-transaction").append('<button class="btn btn-success" onclick="clearResults(this)">Accept</button>');  
       $(window).scrollTop(0); //move the scroll at the top
+      socket.emit('chat message', { my: dataTransaction.offertingUserId });
     })
     .catch( (error) => {
       $("#getResult2").empty(); //we empty the activities <div>

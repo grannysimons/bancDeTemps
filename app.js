@@ -34,6 +34,8 @@ app.use(session({
     maxAge: 24 * 60 * 60 * 1000
   }
 }));
+
+
 app.use(flash());
 
 app.use(logger('dev'));
@@ -49,12 +51,14 @@ app.use((req, res, next) => {
   next();
 })
 
-app.use('/', authRouter);
+// app.use('/', authRouter);
 app.use('/', indexRouter)
+// app.use('/', authRouter)
 app.use('/profile', profileRouter);
 app.use('/api', apiRouter);
-app.use('/login', indexRouter);
-app.use('/logout', indexRouter);
+app.use('/login', authRouter);
+app.use('/logout', authRouter);
+app.use('/signup', authRouter);
 app.use('/transaction', indexRouter);
 
 // catch 404 and forward to error handler
@@ -86,5 +90,7 @@ app.use(function(err, req, res, next) {
     res.render('errors/500', { err });
   }
 });
+
+
 
 module.exports = app;

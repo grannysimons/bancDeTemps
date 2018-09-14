@@ -8,6 +8,7 @@ const saltRounds = 10;
 const { error: {empty, userExist, userNotExist,errorMessage} } = require('../message');
 const Middleware = require('../middlewares');
 
+
 // const mongoose = require('./database');
 
 //------------------To connect to localhost mongoDB----------------------------------
@@ -73,6 +74,62 @@ router.get('/transactions', Middleware.TransactionManager.getTransactions, (req,
     res.render('transactions',dataTransactions);
     
 
+})
+
+/* POST login credentials. */
+router.post('/login', (req,res,next) => {
+    
+  const {userName, password} = req.body;
+  console.log('el username es',userName);
+  console.log('el password es',password);
+  
+  if(!userName || !password)
+  {
+      req.flash('info', empty);  //Nota: el flash te sentit per passar missatges entre rutes. Entre middlewares passem la informació a través de res.locals, o posant un quart argument a la funció
+      res.redirect('/');
+  }
+  else
+  {   
+      //Nota: Important, al fer el metode find sobre un objecte Schema de Mongoose, ens retorna un array d'objectes
+      // Per tant, si existeix l'objecte, llavors agafem la primera posició de l'array
+      User.findOne({ userName })
+      .then((user) => {
+          if(user)
+          {   
+              if(bcrypt.compareSync(password, user.password))
+              {
+                console.log('estem a 1');  
+                req.session.currentUser = user;
+                // res.redirect('/');
+              }
+              else
+              {    
+                const message = {info: 'Password is not correct'};
+                res.json({message});    
+                // req.flash('info', errorMessage);
+                // res.redirect('/');
+              }
+          }
+          else
+          {
+            const message = {info: 'This user doesnt exist'};
+            res.json({message});    
+            // req.flash('info', usernotExist);
+            //   res.redirect('/');
+          }
+      })
+      .catch((error => {
+        const message = {info: '500 error in server. Try again'};
+        res.json({message});  
+        // next(error);
+      }))
+  }
+})
+
+router.get('/logout', (req, res, next) => {
+  console.log('no hem entrat al logout');
+  delete req.session.currentUser;
+  res.redirect('/');
 })
 
 module.exports = router;

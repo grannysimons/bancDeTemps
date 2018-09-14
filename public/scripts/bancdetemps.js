@@ -34,9 +34,9 @@ var linkLogin = document.getElementById("my-login");
 // }
 
 // with this funtion we force the modal in Bootstrap to submit the form. Otherwise, is not done
-function loginFormSubmit() {
-  document.getElementById("auth-form").submit();
-}  
+// function loginFormSubmit() {
+//   document.getElementById("auth-form").submit();
+// }  
 
 
 function openModal(){

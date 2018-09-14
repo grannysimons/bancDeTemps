@@ -50,10 +50,12 @@ router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.check
 router.post('/login', (req,res,next) => {
     
   const {userName, password} = req.body;
+  console.log('el username es',userName);
+  console.log('el password es',password);
   
   if(!userName || !password)
   {
-      req.flash('info', empty);
+      req.flash('info', empty);  //Nota: el flash te sentit per passar missatges entre rutes. Entre middlewares passem la informació a través de res.locals, o posant un quart argument a la funció
       res.redirect('/');
   }
   else
@@ -71,23 +73,30 @@ router.post('/login', (req,res,next) => {
               }
               else
               {    
-                  req.flash('info', errorMessage);
-                  res.redirect('/');
+                const message = {info: 'Password is not correct'};
+                res.json({message});    
+                // req.flash('info', errorMessage);
+                // res.redirect('/');
               }
           }
           else
           {
-              req.flash('info', usernotExist);
-              res.redirect('/');
+            const message = {info: 'This user doesnt exist'};
+            res.json({message});    
+            // req.flash('info', usernotExist);
+            //   res.redirect('/');
           }
       })
       .catch((error => {
-          next(error);
+        const message = {info: '500 error in server. Try again'};
+        res.json({message});  
+        // next(error);
       }))
   }
 })
 
 router.get('/logout', (req, res, next) => {
+  console.log('no hem entrat al logout');
   delete req.session.currentUser;
   res.redirect('/');
 })
