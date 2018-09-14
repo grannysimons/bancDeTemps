@@ -1,5 +1,5 @@
 // import timetable from '../../timetable';
-var map;
+var map, globalMarkers=[];
 window.addEventListener('load', ()=>{
   document.querySelector('#filter #submit').addEventListener('click', filter);
 
@@ -52,10 +52,10 @@ window.addEventListener('load', ()=>{
     navigator.geolocation.getCurrentPosition(position => {
       const point = [position.coords.longitude, position.coords.latitude];
       map = new mapboxgl.Map({
-          container: 'map',
-          style: 'mapbox://styles/mapbox/streets-v10',
-          zoom: 15,
-          center: point
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v10',
+        zoom: 15,
+        center: point
       });
       
       filter();
@@ -63,9 +63,22 @@ window.addEventListener('load', ()=>{
   }
   else
   {
+    console.log('no navigator.geolocation');
     filter();
   }
+  document.getElementById("profileImage").addEventListener("click", uploadProfileFile);
+   
 });
+
+function uploadProfileFile(){
+  $("#profileImage").uploadFile({
+    url:"uploadFile.js",
+    multiple:false,
+    dragDrop:true,
+    maxFileCount:1,
+    fileName:"profile-" + $("#userName").value,
+    });
+}
 
 window.onbeforeunload = function () {
   window.scrollTo(0, 0);
@@ -84,15 +97,35 @@ function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
-  axios.get(`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`)
+  const distance = (document.getElementById('distance').value ? document.getElementById('distance').value : 30)*1000;
+  if(distance < 1000) distance = 1000;
+  var long, lat;
+  var url=`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
+  if(distance && distance!='' && navigator.geolocation)
+  {
+    navigator.geolocation.getCurrentPosition(position => {
+      long = position.coords.longitude;
+      lat = position.coords.latitude;
+      url += `&long=${long}&lat=${lat}&distance=${distance}`;
+      addSearchResults(url);
+    });
+  }
+  else
+  {
+    addSearchResults(url);
+  }
+} 
+
+function addSearchResults(url){
+  axios.get(url)
   .then((act) => {
     document.getElementById('results').innerHTML = '';
+    var markers = [];
     if(act.data.activities)
     {
-      var markers = [];
       for(let i=0; i<act.data.activities.length; i++)
       {
-        if(act.data.activities[i].idUser.location.length === 2 )
+        if(act.data.activities[i].idUser.location.coordinates.length === 2 )
         {
           var divPopup = document.createElement('div');
           var divPopupLeft = document.createElement('div');
@@ -139,7 +172,7 @@ function filter(){
 
           var markerCreated = false;
           markers.forEach(marker => {
-            if(marker.location[0] === act.data.activities[i].idUser.location[0] && marker.location[1] === act.data.activities[i].idUser.location[1])
+            if(marker.location.coordinates[0] === act.data.activities[i].idUser.location.coordinates[0] && marker.location.coordinates[1] === act.data.activities[i].idUser.location.coordinates[1])
             {
               markerCreated = true;
               marker.popupHTML.push(divPopup);
@@ -236,6 +269,13 @@ function filter(){
         }
       }
 
+      if(globalMarkers && globalMarkers.length > 0)
+      {
+        globalMarkers.forEach(marker => {
+          marker.remove();
+        });
+        globalMarkers = [];
+      }
       markers.forEach(markerElement => {
         // create the popup
         let mainDiv = document.createElement('div');
@@ -247,12 +287,15 @@ function filter(){
 
         //marker!
         var marker = new mapboxgl.Marker()
-        .setLngLat(markerElement.location)
+        .setLngLat(markerElement.location.coordinates)
         .setPopup(popup) // sets a popup on this marker
         .addTo(map);
 
+
+        globalMarkers.push(marker);
         // document.getElementsByClassName('apply')[0].addEventListener('click', apply);
       })
+      markers = [];
     }
     else
     {
@@ -262,7 +305,7 @@ function filter(){
   .catch(error => {
     document.getElementById('results').innerHTML = "Error " + error;
   })
-} 
+}
 
 function apply(e){
   const idActivitat = e.target.classList[2].substring(6);
@@ -335,42 +378,41 @@ function openModal(){
   $('#ModalLogin').modal('show');
 } 
 
-function filterUserActivities() {
-  console.log('hem entrat a AXIOS');  
-  const user = document.getElementById('usrName').value;
-  const sector = "";
-  const subsector = "";
-  axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subSector}&userName=${usrName}`)
-  .then((act) => {
-    // console.log(act.data);
-    document.getElementById('results-activities').innerHTML = '';
-    for(let i=0; i<act.data.activities.length; i++)
-    {
-      let divDescription = document.createElement('div');
-      divDescription.innerHTML = act.data.activities[i].description;
-      let divDuration = document.createElement('div');
-      divDuration.innerHTML = 'duration: ' + act.data.activities[i].duration + 'hours';
-      document.getElementById('results-activities').appendChild(divDescription);
-      document.getElementById('results-activities').appendChild(divDuration);
+// function filterUserActivities() {
+//   const user = document.getElementById('usrName').value;
+//   const sector = "";
+//   const subsector = "";
+//   axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subsector}&userName=${user}`)
+//   .then((act) => {
+//     // console.log(act.data);
+//     document.getElementById('results-activities').innerHTML = '';
+//     for(let i=0; i<act.data.activities.length; i++)
+//     {
+//       let divDescription = document.createElement('div');
+//       divDescription.innerHTML = act.data.activities[i].description;
+//       let divDuration = document.createElement('div');
+//       divDuration.innerHTML = 'duration: ' + act.data.activities[i].duration + 'hours';
+//       document.getElementById('results-activities').appendChild(divDescription);
+//       document.getElementById('results-activities').appendChild(divDuration);
       
-      if(act.data.currentUser) 
-      {
-        let dynamicClass = 'apply-'+act.data.activities[i]._id;
-        let buttonApply = document.createElement('button');
-        buttonApply.classList.add('btn', 'btn-info', dynamicClass);
-        buttonApply.setAttribute('id', 'apply-'+i);
-        buttonApply.addEventListener('click', apply);
-        buttonApply.innerHTML = 'Apply';
+//       if(act.data.currentUser) 
+//       {
+//         let dynamicClass = 'apply-'+act.data.activities[i]._id;
+//         let buttonApply = document.createElement('button');
+//         buttonApply.classList.add('btn', 'btn-info', dynamicClass);
+//         buttonApply.setAttribute('id', 'apply-'+i);
+//         buttonApply.addEventListener('click', apply);
+//         buttonApply.innerHTML = 'Apply';
 
-        document.getElementById('results-activities').appendChild(buttonApply);
-      }
+//         document.getElementById('results-activities').appendChild(buttonApply);
+//       }
 
-    }
-  })
-  .catch(error => {
-    document.getElementById('results-activities').innerHTML = "erroooor!" + error;
-  })
-} 
+//     }
+//   })
+//   .catch(error => {
+//     document.getElementById('results-activities').innerHTML = "erroooor!" + error;
+//   })
+// } 
 
 //---------------------TRANSACTION MANAGER---------------------------------------------------------------
 

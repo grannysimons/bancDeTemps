@@ -112,8 +112,13 @@ margin: 20px 0 20px 20px;
 #search-form
 {
   background-color: #567383;
-  padding: 70px 0;
+  padding: 70px 100px;
   color: white;
+  font-size: 20px;
+}
+#search-form h2, #search-form input
+{
+  font-size: 1em;
 }
 #search-form i
 {
@@ -234,6 +239,18 @@ footer .footer-names
   font-weight: bolder;
   margin-bottom: 30px;
 }
+.avatar
+{
+  margin: 60px 0;
+}
+#avatarImage
+{
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin-left: auto;
+  border-radius: 50%;
+}
 /* signup */
 #signUp
 {
@@ -292,7 +309,6 @@ footer .footer-names
   display: block;
   margin-left: auto;
 }
-
 /* View .transaction */
 
 #usrName {
@@ -386,12 +402,11 @@ footer .footer-names
   font-size: 1rem;
 }
 
-
-
 .transaction-item {
   position: relative;
-  margin: 20px 0 20px 0;
-  padding: 0 0 30px 0;
+  /* margin: 10px 0 0 0; */
+  /* margin: 20px 0 20px 0; */
+  /* padding: 0 0 30px 0; */
   /* border-bottom: 3px solid #567383; */
 }
 
@@ -493,7 +508,11 @@ footer .footer-names
 .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right{
   display: none;
 }
-
+/* error pages */
+.error
+{
+  padding: 30pz 50px;
+}
 
 /* #text-banc h1
 {

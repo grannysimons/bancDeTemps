@@ -1,10 +1,11 @@
  <div class="container-fluid header" {{#if username}} id="transaction-container"{{/if}} >
     <div id="text-banc" class="row align-items-center" >
       <div class="col-12 align-items-start" >
-        {{#unless username}}
+        {{!-- {{#unless username}} --}}
         <h1 class="text-center">Time bank</h1>
         <h2 class="subtitle text-center">Share time, share life</h2>
-        {{/unless}} {{!-- if session is active, we show the finish and proposed transactions pending to be accepted --}} 
+        {{!-- {{/unless}}  --}}
+        {{!-- if session is active, we show the finish and proposed transactions pending to be accepted  --}}
         
        </div>
     </div>
@@ -20,7 +21,7 @@
 
 <div id="search-form" class="container-fluid align-items-center">
   <form id="filter">
-    <h2>Get activities:</h2>
+    <h2>Search:</h2>
     <div class="form-group">
       {{!-- <label for="UserInput">Username:</label> --}}
       <input type="text" class="form-control" id="user" name="user" placeholder="Username">
@@ -32,6 +33,10 @@
     <div class="form-group">
       {{!-- <label for="UserSubSector">Subsector:</label> --}}
       <input type="text" class="form-control" id="subsector" name="subsector" placeholder="Subsector of Activity">
+    </div>
+    <div class="form-group">
+      {{!-- <label for="UserSubSector">Subsector:</label> --}}
+      <input type="text" class="form-control" id="distance" name="distance" placeholder="Distance in km">
     </div>
     <button type="button" id="submit"><i class="fas fa-search"></i></button>
   </form>

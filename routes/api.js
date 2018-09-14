@@ -26,23 +26,14 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
 
 });
 
-router.get('/filter', Middleware.filter.filterByUsername, Middleware.filter.filterBySectorSubsector, (req, res, next) => {
-  const activitiesByUserSectorSubsector = res.locals.activitiesByUserSectorSubsector;
-  const activitiesBySectorSubsector = res.locals.activitiesBySectorSubsector;
-
-  if(activitiesByUserSectorSubsector && activitiesByUserSectorSubsector.length > 0)
+router.get('/filter', Middleware.filter.getUsers, Middleware.filter.getActivities, (req, res, next) => {
+  const activities = res.locals.activities;
+  if(activities && activities.length > 0)
   {
-    activities = activitiesByUserSectorSubsector;
     res.status(200);
     res.json({ activities, currentUser: req.session.currentUser });
   }
-  else if (activitiesBySectorSubsector && activitiesBySectorSubsector.length > 0)
-  {
-    activities = activitiesBySectorSubsector;
-    res.status(200);
-    res.json({ activities, currentUser: req.session.currentUser });
-  }
-  else if(activitiesByUserSectorSubsector || activitiesBySectorSubsector)
+  else if(activities.length === 0)
   {
     res.status(200);
     res.json({ message: "no results to show" });
@@ -54,24 +45,24 @@ router.get('/filter', Middleware.filter.filterByUsername, Middleware.filter.filt
   }
 });
 
-router.get('/filterUserActivities', Middleware.filter.filterByUsername, Middleware.filter.filterBySectorSubsector, (req, res, next) => {
-  const activitiesByUserSectorSubsector = res.locals.activitiesByUserSectorSubsector;
-  const activitiesBySectorSubsector = res.locals.activitiesBySectorSubsector;
-  console.log('el valor de activities es:', activitiesByUserSectorSubsector);
+// router.get('/filterUserActivities', Middleware.filter.filterByUsername, Middleware.filter.filterBySectorSubsector, (req, res, next) => {
+//   const activitiesByUserSectorSubsector = res.locals.activitiesByUserSectorSubsector;
+//   const activitiesBySectorSubsector = res.locals.activitiesBySectorSubsector;
+//   console.log('el valor de activities es:', activitiesByUserSectorSubsector);
 
-  if(activitiesByUserSectorSubsector)
-  {
-    activities = activitiesByUserSectorSubsector;
-    res.status(200);
-    res.json({ activities, currentUser: req.session.currentUser });
-  }
+//   if(activitiesByUserSectorSubsector)
+//   {
+//     activities = activitiesByUserSectorSubsector;
+//     res.status(200);
+//     res.json({ activities, currentUser: req.session.currentUser });
+//   }
   
-  else
-  {
-    res.status(500);
-    res.json({ error });
-  }
-});
+//   else
+//   {
+//     res.status(500);
+//     res.json({ error });
+//   }
+// });
 
 
 

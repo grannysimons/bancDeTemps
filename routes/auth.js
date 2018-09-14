@@ -29,12 +29,20 @@ router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.check
   
   const userData = res.locals.userData;
   userData.password = hashedPassword;
+  delete userData.repeatPassword;
+  userData.location = {type: 'Point', coordinates: [0,0]};
+  console.log('userData: ', userData);
   User.create(userData)
   .then(user => {
+    console.log('user creat ok!');
     req.session.currentUser = user;
     res.redirect('/');
   })
-  .catch(error => next(error));
+  .catch(error => 
+    {
+      console.log('user creat ko!');
+      next(error)
+    });
 });
 
 
