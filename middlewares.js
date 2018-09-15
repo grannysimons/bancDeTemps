@@ -6,8 +6,10 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 var MapboxClient = require('mapbox');
 var mapbox = require('mapbox');
+var geo = require('mapbox-geocoding');
 // var mapbox = require('./mapbox-geocode.js');
 var mapBoxClient = new MapboxClient('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
+geo.setAccessToken('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
 // var deepPopulate = require('mongoose-deep-populate')(mongoose);
 // PostSchema.plugin(deepPopulate, options /* more on options below */);
 
@@ -103,6 +105,33 @@ module.exports = {
           res.locals.userData.password = hashedPassword;
           res.locals.userData.repeatedPassword = hashedPassword;
           res.locals.messages.passwordsAreDifferent='';
+          //-------------------------CODI INTRODUIT PER ALBERT-----------------------------------
+          // anem a posar les coordenades a la propietat LOCATION , fent el forward geocoding
+          const { roadName, number, zipCode, city, province, state } = res.locals.userData.direction;
+          const query = roadName + ' ' + address + ' ' + number + ',' + zipCode + ' ' + city + ',' + province + ',' + state; 
+          geo.geocode('mapbox.places', query, (err, geoData) => {
+          console.log('a punt per entrar a geoData');
+          
+          if (geoData) {
+              console.log('hem entrat a dins de geoData per obtenir les coordenades');
+              console.log('el valor de geodata es:', geoData);
+              let longitude = geoData.features[0].geometry.coordinates[0];
+              let latitude = geoData.features[0].geometry.coordinates[1];
+              const location = {
+                type: 'Point',
+                coordinates: [longitude,latitude]
+              };
+              res.locals.userData.location = location;
+              console.log('les coordenades de la ubicacio del client son:', location);
+              
+            } else {
+              console.log('hi ha hagut un error:',err);
+            }
+          });
+
+          //-----------------------------------------------------------------------------------------
+
+
           User.update({userName: res.locals.userData.userName}, res.locals.userData)
           .then(user => {
             // console.log('user ' + req.body.userName + ' correctly updated: ', user);
@@ -157,15 +186,19 @@ module.exports = {
       let filter = {};
       if(req.query.long && req.query.lat)
       {
-        filter.location = {
-          $nearSphere: {
-            $geometry: {
-              type: 'Point',
-              coordinates: [req.query.long, req.query.lat],
-            },
-            $maxDistance: req.query.distance,
-          },
-        };
+
+        filter.location = { $geoWithin:
+          { $centerSphere: [ [ req.query.long, req.query.lat ], req.query.distance / 3963.2 ] } }; 
+
+        // filter.location = {
+        //   $nearSphere: {
+        //     $geometry: {
+        //       type: 'Point',
+        //       coordinates: [req.query.long, req.query.lat],
+        //     },
+        //     $maxDistance: req.query.distance,
+        //   },
+        // };
       };
       if(req.query.userName) filter.userName = req.query.userName;
       console.log('filter: ',filter);
@@ -486,7 +519,70 @@ module.exports = {
     inverseGeocoding: (req, res, next) => {
     next();
 
-    }
+    },
+    updateCoordinatesAllUsers: (req, res, next) => {
+      User.find({location: { $exists: true }}).select({ 'direction': 1, 'location': 1, '_id': 1})
+      // Buildings.find({ref_inmueble: refInmueble}).select({ 'latitude': 1, 'longitude': 1, '_id': 0})
+      .then(response => {
+        // console.log('la response de la consulta es',response);
+        for (let i=0; i<response.length; i++ ) {
+          const id = response[i]._id;
+          // console.log ('el primer user dades de direction es',response[i].direction);
+          const { roadType, roadName, number, zipCode, city, province, state } = response[i].direction;
+          // const roadName = response[i].direction.roadName
+          //       ,number = response[i].direction.number
+          //       ,zipCode = response[i].direction.zipCode
+          //       ,city = response[i].direction.city
+          //       ,province = response[i].direction.province
+          //       ,state = response[i].direction.state;
+
+          const query = roadName + ' ' + number + ',' + zipCode + ' ' + city + ',' + province + ',' + state; 
+          
+          if (roadName != undefined) {
+            geo.geocode('mapbox.places', query, (err, geoData) => {
+              // console.log('a punt per entrar a geoData. La query es:',query);
+           
+          
+          
+          if (geoData) {
+              // console.log('hem entrat a dins de geoData per obtenir les coordenades');
+              // console.log('el valor de geodata es:', geoData);
+              let longitude = geoData.features[0].geometry.coordinates[0];
+              let latitude = geoData.features[0].geometry.coordinates[1];
+              const location = {
+                type: 'Point',
+                coordinates: [longitude,latitude]
+              };
+              console.log('les coordenades de la ubicacio del client son:', location);
+              let conditions = { _id: id }
+                , update = { $set: {location: location}}
+                , options = { multi: false };
+  
+              // Buildings.update(conditions, update, options)
+              User.findOneAndUpdate(conditions, update, options)
+              .then(numAffected => {
+                console.log('el numero de files update es:', numAffected);
+                
+              })
+              .catch(error => {
+                next(error);
+              })
+              
+            } else {
+              console.log('hi ha hagut un error:',err);
+            }
+          });
+         
+        }
+      }
+        next();
+      })
+    
+      .catch(error => {
+        next(error);
+      })  
+      
+    }  
   }
 }
 

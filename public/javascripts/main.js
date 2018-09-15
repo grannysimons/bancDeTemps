@@ -90,8 +90,11 @@ window.addEventListener('load', ()=>{
     console.log('no navigator.geolocation');
     filter();
   }
-  document.getElementById("profileImage").addEventListener("click", uploadProfileFile);
-   
+
+  if (document.getElementById("profileImage")) {
+    document.getElementById("profileImage").addEventListener("click", uploadProfileFile);
+  }
+    
 });
 
 function uploadProfileFile(){
@@ -127,6 +130,7 @@ function filter(){
   var url=`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
   if(distance && distance!='' && navigator.geolocation)
   {
+    console.log('estic agafant la posicio actual');
     navigator.geolocation.getCurrentPosition(position => {
       long = position.coords.longitude;
       lat = position.coords.latitude;
@@ -475,20 +479,34 @@ function loginFormSubmit() {
       userName : usrName,
       password : password
     }
-    axios.post('http://localhost:3000/login', authData)
+    axios.post('http://localhost:3000/auth/login', authData)
     .then((response) => {
-      console.log('el valor devuelto',response);
-      if (response.data.userid) {
-        offertingUserId = response.data.userid;
-        // Now that we have retrieve the OfferingUserId, we can ask for activities of this user
-        
-      } else {
-        //This user doesn't exist, so we place a message
-        $("#getResult2").empty(); //we empty the activities <div>
-        $("#panel-result-apply-transaction").empty();
-        $("#panel-result-apply-transaction").append("<p class='text-danger border border-danger apply-transaction'>THIS USER DOESN'T EXIST!! TRY AGAIN WITH DIFFERENT USERNAME</p>");
-        $("#panel-result-apply-transaction").append('<button class="btn btn-danger" onclick="clearResults(this)">Accept</button>');  
+      if (response.data.message.state == 'success') {
+        $("#login-messages").empty(); //we empty the activities <div>
+        $("#login-messages").append("<p class='text-success border border-success rounded'>Login succeed!</p>");
+        setTimeout(() => { location.reload(); }, 1000);
       }
+      // console.log('el valor devuelto',response);
+      // $.get('http://localhost:3000');
+      
+      // $.ajax({
+      //   url: 'http://localhost:3000',
+      //   data: null,
+      //   success: null,
+      //   dataType: null
+      // });
+      // $('html').load( '/' );
+      // axios.get('http://localhost:3000')
+      // .then((response) => {
+      //   console.log('hem tornat');
+      //   location.reload();
+      // })
+      
+      // .catch((error) => {
+
+      // })
+
+      
     })
     .catch((error) => {
       $("#login-messages").empty(); //we empty the activities <div>

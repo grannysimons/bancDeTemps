@@ -68,12 +68,21 @@ router.post('/login', (req,res,next) => {
           {   
               if(bcrypt.compareSync(password, user.password))
               {
-                  req.session.currentUser = user;
-                  res.redirect('/');
+                console.log('estem a 1');  
+                req.session.currentUser = user;
+                const message = {
+                  state: 'success',
+                  info: 'Login correct!!'
+                };
+                res.json({message});   
+                // res.redirect('/');
               }
               else
               {    
-                const message = {info: 'Password is not correct'};
+                const message = {
+                  state: 'error',
+                  info: 'Password is not correct'
+                };
                 res.json({message});    
                 // req.flash('info', errorMessage);
                 // res.redirect('/');
@@ -81,14 +90,20 @@ router.post('/login', (req,res,next) => {
           }
           else
           {
-            const message = {info: 'This user doesnt exist'};
+            const message = {
+              state: 'error',
+              info: 'This user doesnt exist'
+            };
             res.json({message});    
             // req.flash('info', usernotExist);
             //   res.redirect('/');
           }
       })
       .catch((error => {
-        const message = {info: '500 error in server. Try again'};
+        const message = {
+          state: 'error',
+          info: '500 error in server. Try again'
+        };
         res.json({message});  
         // next(error);
       }))

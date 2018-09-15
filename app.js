@@ -52,14 +52,17 @@ app.use((req, res, next) => {
 })
 
 // app.use('/', authRouter);
-app.use('/', indexRouter)
+
 // app.use('/', authRouter)
+app.use('/', indexRouter);
+app.use('/', authRouter)
 app.use('/profile', profileRouter);
 app.use('/api', apiRouter);
-app.use('/login', authRouter);
-app.use('/logout', authRouter);
-app.use('/signup', authRouter);
+// app.use('/login', authRouter);
+// app.use('/logout', authRouter);
+app.use('/auth', authRouter);
 app.use('/transaction', indexRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
