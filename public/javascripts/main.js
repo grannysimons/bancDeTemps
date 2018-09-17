@@ -12,10 +12,11 @@ socket.on('chat message', (msg) => {
       console.log('ha coincidit el username. ensenyem missatge nova transaccio');
       // $('#currentuser-logged').text('New Pending Transaction to Accept!!');
       $('#currentuser-logged').append('<p id="pendingmsg" class="pending-transaction-msg blink">New Pending Transaction to Accept!!</p>');
-      for (let i=0;i<10;i++) {
-        $('#pendingmsg').fadeOut(500).fadeIn(500);
-        // $('.blink').fadeOut(500).fadeIn(500);
-      }
+      setTimeout(() => { $('#pendingmsg').removeClass('blink'); }, 10000);
+      // for (let i=0;i<10;i++) {
+      //   $('#pendingmsg').fadeOut(500).fadeIn(500);
+      //   // $('.blink').fadeOut(500).fadeIn(500);
+      // }
     
     }
   }
