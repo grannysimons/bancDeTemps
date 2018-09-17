@@ -1,0 +1,107 @@
+<div class="activityManager">
+  <h1>Activity Manager</h1>
+  <h2>Offerted activities</h2>
+  <ul class="activityList">
+    {{#each offertedActivities}}
+      <li>
+        <div>Category: {{this.sector}} / {{this.subsector}}</div>
+        <div>Description: {{this.description}}</div>
+        <div>Tags: {{this.tags}}</div>
+        {{!-- <div>
+          Timetable:
+          <ul>
+        {{#each this.timetable}}
+            <li>{{this.day}} - {{this.timeSlot}}</li>
+        {{/each}}
+          </ul>
+        </div> --}}
+        <div>Duration: {{this.duration}} hours</div>
+        <form action="/profile/activityManager/{{this._id}}/delete" method="post" class="delete">
+          <button type="submit" class="btn btn-info"><i class="fas fa-trash-alt"></i></button>
+        </form>
+      </li>
+    {{/each}}
+    </ul>
+    <button type="button" class="btn btn-outline-info add" data-toggle="modal" data-target="#addOffertedActivity">
+    Offer new activity
+  </button>
+  </ul>
+  <h2>Demanded activities</h2>
+  <ul class="activityList">
+    {{#each demandedActivities}}
+      <li>
+        <div>Category: {{this.sector}} / {{this.subsector}}</div>
+        <div>Description: {{this.description}}</div>
+        <div>Tags: {{this.tags}}</div>
+        {{!-- <div>
+          Timetable:
+          <ul>
+        {{#each this.timetable}}
+            <li>{{this.day}} - {{this.timeSlot}}</li>
+        {{/each}}
+          </ul>
+        </div> --}}
+        <div>Duration: {{this.duration}} hours</div>
+        <form action="/profile/activityManager/{{this._id}}/delete" method="post" class="delete">
+          <button type="submit" class="btn btn-info"><i class="fas fa-trash-alt"></i></button>
+        </form>
+      </li>
+    {{/each}}
+        </ul>
+    <button type="button" class="btn btn-outline-info add" data-toggle="modal" data-target="#addDemandedActivity">
+    Demand new activity
+  </button>
+  </ul>
+
+
+  <!-- Modal -->
+  <div class="modal fade" id="addOffertedActivity" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Offer new activity</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="/profile/activityManager/offerted" method="post">
+          <div class="modal-body">
+              <input type="text" name="sector" id="sector" placeholder="sector">
+              <input type="text" name="subsector" id="subsector" placeholder="subsector">
+              <input type="text" name="description" id="description" placeholder="description">
+              <input type="text" name="tags" id="tags" placeholder="tags separated by comma">
+              <input type="text" name="duration" id="duration" placeholder="duration">
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-outline-info">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addDemandedActivity" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Demand new activity</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="/profile/activityManager/demanded" method="post">
+          <div class="modal-body">
+              <input type="text" name="sector" id="sector" placeholder="sector">
+              <input type="text" name="subsector" id="subsector" placeholder="subsector">
+              <input type="text" name="description" id="description" placeholder="description">
+              <input type="text" name="tags" id="tags" placeholder="tags separated by comma">
+              <input type="text" name="duration" id="duration" placeholder="duration">
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-outline-info">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

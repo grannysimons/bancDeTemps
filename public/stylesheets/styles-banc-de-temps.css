@@ -1,0 +1,646 @@
+html {
+  /* font-size: 1rem; */
+  /* line-height: 1.25; */
+  /* amb aixo desactivem el scroll horitzontal*/
+  overflow-x: hidden; 
+  width: 100%;
+  height: 100%;
+  /* font-size: 62.5%; tots els browsers tenen per defecte un font-size de 16px. Posant 62.5%, ho estem passant a 10px, i per tant els rem units seran multiples de 10 */
+  
+  /* margin: 0;
+  font-family: "Montserrat-Light","Montserrat-Medium";
+  letter-spacing: 2.2px; */
+  background-color: white;
+}
+
+/* Estem posant el tamany de referencia en funció del media query */
+
+h1 {font-size: 1.6rem;}
+h2 {font-size: 1.4rem;}
+h3 {font-size: 1.2rem;}
+h4 {font-size: 1rem;}
+h5 {font-size: 0.8rem;}
+h6 {font-size: 0.6rem;}
+
+#icon-menu {
+    color: white;
+}
+
+.menu-text {
+font-size: 0.8rem;
+font-family: Arial, Helvetica, sans-serif;
+color: blue;
+padding: 20px 0 20px 20px;
+margin: 20px 0 20px 20px;
+}
+
+#footer-search-page {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.dropdown-toggle::after
+{
+  content: none;
+}
+
+.dropdown
+{
+  padding: 20px 0 20px 40px;
+}
+.login
+{
+  padding: 20px 40px;
+  text-align: right;
+  align-self: flex-end;
+  color: white;
+}
+
+/* index */
+#navbar-main
+{
+  background-color: #2a3b43;
+}
+#text-banc
+{
+  background-image: url("/images/background2.jpg");
+  background-position: center;
+  background-size: cover;
+  height: 100vh;
+}
+.header.container-fluid
+{
+  position: relative;
+}
+.header.container-fluid h1
+{
+  /* font-family: 'Alegreya Sans SC', sans-serif; */
+  font-family: 'Berkshire Swash', cursive;
+  /* font-family: 'Aclonica', sans-serif; */
+  /* font-family: 'Meddon', cursive; */
+  /* font-family: 'Rubik Mono One', sans-serif;  */
+  font-size: 100px;
+  color: white;
+}
+#text-banc h2
+{
+  color: white;
+  /* font-family: 'Alegreya Sans SC', sans-serif; */
+  font-family: 'Berkshire Swash', cursive;
+  /* font-family: 'Aclonica', sans-serif; */
+  /* font-family: 'Meddon', cursive; */
+  /* font-family: 'Rubik Mono One', sans-serif;  */
+}
+#footer-main-page
+{
+  background-color: transparent;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+#footer-main-page button
+{
+  color: white;
+  background-color: transparent;
+  width: 100%;
+  text-align: center;
+}
+#search-form
+{
+  background-color: #567383;
+  padding: 70px 100px;
+  color: white;
+  font-size: 20px;
+}
+#search-form h2, #search-form input
+{
+  font-size: 1em;
+}
+#search-form i
+{
+  color: white;
+}
+
+#filter
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0;
+}
+.form-group
+{
+  margin: 0 20px;
+  width: 20%;
+}
+.form-group input
+{
+}
+.form-group label
+{
+  position: relative;
+  top: 10px;
+}
+#submit
+{
+  -webkit-appearance:none;
+  background-color: transparent;
+  border-width: 0px;
+  position: relative;
+}
+footer
+{
+  background-color: #2a3b43;
+  color: white;
+  padding: 60px;
+}
+footer #logo
+{
+  width: 20%;
+}
+footer .footer-names
+{
+  text-align: right;
+  font-size: 20px;
+}
+#map
+{
+  width: 100%; 
+  height: 500px;
+}
+
+/* results */
+#results
+{
+  list-style-type: none;
+  padding: 50px 200px; 
+}
+#results li
+{
+  border-bottom: 3px #567383 solid;
+  padding: 50px;
+  margin-bottom: 10px;
+}
+#results li .btn-outline-info
+{
+  margin-right: 20px;
+}
+/* modal login */
+.user-login-box .form-group
+{
+  width: auto;
+  margin-bottom: 20px;
+}
+.user-login-box form button
+{
+  display: block;
+  margin-left: auto;
+}
+
+#login-messages {
+  margin: 20px 0 0 2px;
+  text-align: center;
+}
+
+/* modal results */
+#results .modal-content .modal-body ul
+{
+  list-style-type: none;
+}
+#results .modal-content .modal-body ul li
+{
+  padding: 0;
+  margin: 0 0 0 0;
+  border-bottom: 0px solid transparent;
+}
+#results .modal-content .modal-body ul li.description
+{
+  font-weight: bolder;
+  font-size: 26px;
+}
+.right-container
+{
+  text-align: right;
+}
+/* edit profile */
+#editProfile
+{
+  padding: 40px 200px;
+}
+#editProfile h1
+{
+  margin-bottom: 60px;
+}
+.editProfile .form-group, #editProfile .address-group
+{
+  width: auto;
+  margin-bottom: 20px;
+}
+.editProfile .label-address
+{
+  font-weight: bolder;
+  margin-bottom: 30px;
+}
+.avatar
+{
+  margin: 60px 0;
+}
+#avatarImage
+{
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin-left: auto;
+  border-radius: 50%;
+}
+/* signup */
+#signUp
+{
+  padding: 40px 200px;
+}
+#signUp h1
+{
+  margin-bottom: 60px;
+}
+.signUp .form-group, #signUp .address-group
+{
+  width: auto;
+  margin-bottom: 20px;
+}
+.signUp .label-address
+{
+  font-weight: bolder;
+  margin-bottom: 30px;
+}
+/* activity manager */
+.activityManager
+{
+  padding: 40px 200px;
+}
+.activityManager h1
+{
+  margin-bottom: 60px;
+}
+.activityManager h2
+{
+  font-size: 24px;
+  margin: 60px 0;
+}
+.activityManager .modal-body input
+{
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.activityManager ul.activityList>li
+{
+  list-style-type: none;
+  border-bottom: 3px #567383 solid;
+  padding: 40px;
+  position: relative;
+}
+.activityManager form.delete
+{
+  display: inline;
+  position: absolute;
+  top: 50px;
+  right: 20px;
+}
+.activityManager button.add
+{
+  display: block;
+  margin-left: auto;
+}
+/* View .transaction */
+
+#usrName {
+  width: 400px;
+}
+
+#search-user-in-transactionManager {
+  margin: 10px 0 10px 20px;
+}
+
+.activity-in-transactionManager {
+  margin: 30px 0 10px 10px;
+}
+
+/* #getResult2 {
+  margin: 30px 0 10px 10px;
+} */
+
+#getResult2 p {
+  margin: 0 0 0 10px;
+}
+
+#getResult2 button {
+  margin: 0 0 0 10px;
+}
+
+/* We define the style of information presented when giving the status of apply transaction: success, refused, etc.. */
+
+#panel-result-apply-transaction button {
+  margin: 0 0 0 20px;
+}
+
+.apply-transaction {
+  display: inline-block;
+  width: max-content;
+  margin: 20px 20px 20px 20px;
+  padding: 10px;
+  /* border: 2px solid green; */
+  border-radius: 8px;
+}
+
+/* List of current Transactions */
+
+
+/* #transaction-container {
+  position: relative;
+  margin: 20px 0 0 0;
+} */
+
+#container-title-transactions {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  align-items: center;
+  margin: 50px 0 30px 0;
+  /* font-size: 0.6rem; */
+  background-color: #004080;
+  /* border: 2px solid red; */
+  width: 100%;
+  /* height: 200px; */
+}
+
+.transaction-title {
+  /* width: 100%; */
+  padding: 30px 0;
+  /* font-size: 0.5rem; */
+  margin: 0 0 0 20px;
+  color: white;
+  /* border: 2px solid green; */
+  
+}
+
+#list-of-buttons {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  align-items: center;
+  /* border: 2px solid red; */
+  /* width: 100%; */
+}
+
+#container-title-transactions button {
+  font-size: 0.8rem;
+  margin: 0 5px;
+}
+
+#description-state {
+  margin: 0 0 0 0;
+  padding: 0 0 20px 20px;
+  color: black;
+  font-size: 1rem;
+}
+
+.transaction-item {
+  position: relative;
+  /* margin: 10px 0 0 0; */
+  /* margin: 20px 0 20px 0; */
+  /* padding: 0 0 30px 0; */
+  /* border-bottom: 3px solid #567383; */
+}
+
+.transaction-item .status {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  text-align: right;
+}
+
+.transaction-item svg {
+  margin: 40px 0 0 0;
+}
+
+.transaction-paragraf {
+  margin: 1px 0 1px 20px;
+}
+
+.pending-transaction-msg {
+  margin: 0;
+  padding: 0;
+  font-size: 0.7rem;
+  color: red;
+  text-align: right;
+}
+
+.blink {
+  -webkit-animation-name: blinker;
+  -webkit-animation-duration: 1s;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-iteration-count: infinite;
+  
+  -moz-animation-name: blinker;
+  -moz-animation-duration: 1s;
+  -moz-animation-timing-function: linear;
+  -moz-animation-iteration-count: infinite;
+  
+  animation-name: blinker;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@-moz-keyframes blinker {  
+  0% { opacity: 1.0; }
+  50% { opacity: 0.0; }
+  100% { opacity: 1.0; }
+}
+
+@-webkit-keyframes blinker {  
+  0% { opacity: 1.0; }
+  50% { opacity: 0.0; }
+  100% { opacity: 1.0; }
+}
+
+@keyframes blinker {  
+  0% { opacity: 1.0; }
+  50% { opacity: 0.0; }
+  100% { opacity: 1.0; }
+}
+
+/* List of user activities */
+
+/* we hide the information of the container */
+.no-visible-container {
+  display: none;
+}
+
+/* we show the information of the container */
+.visible-container {
+  display: block;
+}
+
+.activity-container {
+  width: 100%;
+  /* border: 3px solid green; */
+
+
+  /* display: none; */
+  
+}
+
+.activity-container > div {
+  position: relative;
+  width: 60%;
+  min-width: 300px;
+  margin: 20px 0 20px 100px;
+  padding: 0 0 20px 0;
+  background-color: #666699;
+  /* border: 3px solid red; */
+}
+
+.activity-container > div > button {
+  position: absolute;
+  left: 102%;
+  top: 1px;
+}
+
+.activity-paragraf {
+  margin: 1px 0 1px 20px;
+  color: white;
+}
+
+.activity-button {
+  margin: 1px 0 1px 20px;
+  
+}
+
+/* popups */
+.mapboxgl-popup {
+  max-width: 400px;
+  font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+/* .mapboxgl-popup-content{
+  padding: 20px;
+} */
+.mapboxgl-popup-content .divPopup{
+  border-bottom: 1px solid #eeeeee;
+  padding: 20px;
+}
+.mapboxgl-popup-content .divPopup:last-child{
+  border-bottom: 1px solid transparent;
+}
+.mapboxgl-popup-content h1{
+  font-size: 20px;
+  margin-bottom: 0;
+  padding-top: 20px;
+}
+.mapboxgl-popup-content p{
+  margin-bottom: 0;
+  /* display: inline-block; */
+}
+.mapboxgl-popup-content .popupButton{
+  font-size: 20px;
+  padding: 3px 10px;
+  margin-top: 15px;
+}
+.mapboxgl-map{
+  /* overflow: inherit; */
+}
+.mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right{
+  display: none;
+}
+/* error pages */
+.error
+{
+  padding: 30pz 50px;
+}
+
+/* #text-banc h1
+{
+  margin-top: 150px;
+  font-family: 'Berkshire Swash', cursive !important;
+  font-size: 100px;
+  color: white;
+}
+#text-banc h2
+{
+  color: white;
+  font-family: 'Berkshire Swash', cursive;
+} */
+/* Definim aquestes media-queries, per aplicar diferents tamanys de lletra */
+@media (min-width: 0px) {
+  html { font-size: 14px; } 
+}
+@media (min-width: 576px) {
+  /* font-size: 160%; */
+  html { font-size: 16px; }
+}
+@media (min-width: 768px) {
+  /* font-size: 180%; */
+  html { font-size: 18px; }
+}
+@media (min-width: 992px) {
+  /* font-size: 200%; */
+  html { font-size: 20px; }
+}
+@media (min-width: 1200px) {
+  /* font-size: 240%; */
+  html { font-size: 24px; }
+  
+}
+@media (max-width: 1100px) {
+  #results#results li .btn-outline-info
+  {
+    margin-bottom: 10px; 
+  }
+  #results
+  {
+    padding: 50px 80px;
+  }
+} 
+@media (max-width: 750px) {
+  #search-form
+  {
+    padding: 20px 0;
+  }
+  #filter
+  {
+    display:block;
+    text-align: center;
+    margin: auto;
+  }
+  .form-group
+  {
+    /* margin: 0 20px; */
+    width: 80%;
+    margin: 10px auto;
+    display: block;
+  }
+  #filter h2, #filter button#submit
+  {
+    display: block;
+    margin: 10px auto;
+  }
+} 
+@media (max-width: 600px) {
+  #results
+  {
+    padding: 10px; 
+  }
+  #results li div
+  {
+    text-align: center;
+  }
+  #results#results li .btn-outline-info
+  {
+    margin: 10px 5px 0;
+  }
+} 

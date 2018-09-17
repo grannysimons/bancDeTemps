@@ -2,157 +2,161 @@
 
 ## Description
 
-Banco de tiempo donde usuarios proponen y reciben actividades sin transacciones monetarias
+Time banck where users give and consume activities with no money transfer
  
  ## User Stories
 
 List of user stories in order of priority/importance.
 
-Example:
-
 User profile:
- - Registrar-se i crear el perfil
- - Fer login
- - Crear/editar/eliminar activitats ofertades
- - Crear/editar/eliminar activitats demandades
+- register and create profile
+- login
+- CRUD offerted activities
+- CRUD demanded activities
+- CRUD transactions
 
 Search activities:
- - Veure totes les activitats de qualsevol usuari
- - Filtrar activitats per tipus d'activitat (sector/subsector), per top-rated
+- Show all activities from any user.
+- Filter activities by sector/subsector and/or by rate
 
 ##views
 
- - **404** - As a user I want to see a nice 404 page when I go to a page that doesn’t exist so that I know it was my fault 
- - **500** - As a user I want to see a nice error page when the super team screws it up so that I know that is not my fault
- - **homepage** - As a user I want to be able to access the homepage so that I see what the app is about and login and signup
- - **sign up** - As a user I want to sign up on the webpage so that I can see all the events that I could attend
- - **login** - Modal in the homepage
- - **logout** - Button in the homepage
- - **editar perfil** - As a user, I want to edit my profile
- - **activitats ofertades/demandades** - As a user I want to have listed my oferted/requested activities
- - **transaccions realitzades/pendents** - As a user I want to have listed my pending/finished activies
+- **404** - As a user I want to see a nice 404 page when I go to a page that doesn’t exist so that I know it was my fault 
+- **500** - As a user I want to see a nice error page when the super team screws it up so that I know that is not my fault
+- **homepage** - As a user I want to be able to access the homepage so that I see what the app is about, login, logout, signup and use the main activity filter. Login and logout with bootstrap modals.
+- **sign up** - As a user I want to sign up on the webpage so that I can apply any activity I want
+- **editar perfil** - As a user, I want to edit my profile
+- **offerted/demanded activities** - As a user I want to have listed my oferted/demanded activities
+- **pending/finished transactions** - As a user I want to have listed my pending/finished transactions
 
 ## Backlog
 
-- filtrar per proximitat
-- Fer valoracions (puntuació sobre 5 i comentaris) a usuaris a partir d'una activitat concreta contractada.
-- suggeriments als formularis per direccions-provincies-poblacions -> BBDD externes consultables amb una api? preguntar a Thor!!!!!!
-- Veure les activitats en un mapa.
-- Paginació de resultats de cerques.
-- Quan canvii el centre del mapa, que s'actualitzin els usuaris que s'hi visualitzin
-- perfil d'usuari amb imatge i activitats amb imatges -> paquet Fileupload (farem una classe!)
-- mails de notificació: nodemailer
-- quan es seleccioni un marcador del mapa, que aparegui un popup amb la info bàsica i un botó de "application" ràpida.
-- Notificacions: acceptar peticions, fer ratings, avis de missatge privat...
-- xat -> buscar algun paquet que ho faci ?
-- Quan es selecciona una activitat, seleccionar la franja horaria que a l'usuari li vagi millor
-- Rebre suggeriments de la aplicació per proximitat, rating d'usuari i tipus d'activitats ja utilitzades
-- Resultat de cerques per % d'afinitat per coincidència de DESCRIPCIÓ i TAGS.
+- filter by proximity to the user location
+- rate (rating and reviews) users considering a single executed activity.
+- live suggestions in address form fields: province->city->streets
+- see all activities in a map
+- paginate search results
+- when the map center changes should update users view in it.
+- user profile and activities with images (fileUpload package)
+- mail notifications (nodemailer)
+- when a map marker is selected, basic info and a "fast application" button will appear in a pop up over it.
+- Notifications: accept requests, rate, private message notifications, ... (socket.io)
+- xat (socket.io)
+- When an activity is selected, select the timetable that best fits to user preferences
+- Receive activity suggestions from the app by proximity, user rating, sector/subsector of already selected activities.
+- search results by percentage of affinity by coincidence of description and tags
 
-```
 
 ## ROUTES:
 
 ```
 GET / - Homepage
 GET /signup - Formulari d'alta amb activitats ofertades i demandades. Action = "/"
-POST / - Body: Nom, Cognoms, Nom d'usuari, Password, Mail, Direcció, Telèfon de contacte, Presentació personal, Imatge, Activitats ofertades, Activitats demandades
+POST /signup - Formulari d'alta amb activitats ofertades i demandades. Action = "/"
 GET /profile/edit - Formulari de modificació del perfil
+POST /profile/edit - Formulari de modificació del perfil
 GET /profile/activities - Llista d'activitats (veure, editar i eliminar activitats amb modals)
 GET /profile/transactions - Llista de transaccions (acceptar pendents i valorar finalitzades)
-GET /api/:idAct/request
-falten rutes!!!!!
 
+GET /api/:idAct/request
+GET /api/filter?sector=&subsector=&distance=
 ```
 
 ## MODELS
 
-```
-
-USUARI
-
-Id: auto
-Nom: String
-Cognoms: String
-Nom d'usuari: String
-Password: String
-Mail: String
-Direcció: Object{
-  - tipus de via: String
-  - Nom de via: String
-  - Numero: Number
-  - Codi Postal: String
-  - Població: String
-  - Província: String
-  - País: String
-}
-Latitud: Number
-Longitud: Number
-Telèfon de contacte: String
-Presentació personal: String
-Imatge: String
-Rating average: Number
-Rating Usuari: Array d'objectes
-  {
-    - id usuari: String
-    - rating: Number
-    - review: String
-  }
-Transaccions: Array d'objectes
-{
-  - id Usuari involucrat: String
-  - estat transacció: Enum d'Strings (Proposat/Acceptat/Rebutjat/Cancelat/Finalitzada)
-  - id Activitat: String
-}
-Activitats ofertades: Array d'idActivitat (POPULATE ACTIVITAT)
-Activitats demandades: Array d'idActivitat (POPULATE ACTIVITAT)
+USER:
 
 ```
+Id: ObjectId
+name: String
+lastName: String
+userName: String
+password: String
+mail: String
+direction: {
+  type: String,
+  name: String,
+  number: Number,
+  zip: String,
+  city: String,
+  province: String,
+  state: String,
+}
+latitude: Number
+longitude: Number
+contactTel: String
+personalIntroducing: String
+image: String
+ratingAvg: Number
+userRatings: [{
+  userId: String,
+  rating: Number,
+  review: String
+}]
+transactions: [{
+  involvedUserId: String,
+  state: {
+    state: String,
+    enum: ['Proposat', 'Acceptat', 'Rebutjat', 'Cancelat', 'Finalitzat']
+  },
+  idActivitat: String
+}]
+offertedActivities: [{
+  type: ObjectId, 
+  ref: 'Activity',
+}]
+demandedActivities: [{
+  type: ObjectId, 
+  ref: 'Activity',
+}]
+```
 
-ACTIVITAT
+ACTIVITY
 
-- Id: String
-- Sector: String
-- Subsector: String
-- Descripció: String
-- Tags: array d'Strings
-- Imatges: array d'Strings
-- Horaris: Array d'objectes:
-  {
-    dia: Enum Number (0-6),
-    franja: array [Enum Number (0-47)]
+```
+id: ObjectId
+sector: String
+subsector: String
+description: String
+tags: [String]
+imatges: [String]
+timetable: [{
+  day: {
+    type: Number,
+    enum: [0, 1, 2, 3, 4, 5, 6]
+  },
+  timeSlot: {
+    type: Number,
+    enum: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47]
   }
-- Durada_h: Number 
-- Rating average: Number
-- Rating activitat: array d'Objectes
-  {
-    - usuari servidor: Objecte:
-    {
-      - id qui valora: String
-      - rating: Number
-      - review: String
-    }
-    - usuari receptor: Objecte
-    {
-      - id qui valora: String
-      - rating: Number
-      - review: String
-    }
+}]
+duration: Number
+ratingAvg: Number
+ratingActivity:[{
+  userServer:{
+    idUserConsummer: ObjectId,
+    rating: Number,
+    review: String
+  },
+  userConsumer:{
+    idUserServer: ObjectId,
+    rating: Number,
+    review: String
   }
-
+}]
 ```
 
 ## Links
 
 ### Trello
 
-[Link to your trello board](https://trello.com)
+https://trello.com/b/zRpitrHz/banc-de-temps
 
 ### Git
 
 The url to your repository and to your deployed project
 
-[Repository Link](http://github.com)
+https://github.com/grannysimons/bancDeTemps
 
 [Deploy Link](http://heroku.com)
 

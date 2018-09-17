@@ -1,0 +1,80 @@
+<div class="panel panel-primary" id="search-user-in-transactionManager">
+        <div class="panel-heading">Search User Name to apply for transaction:</div>
+        <div class="panel-body">
+          <input type="text" class="form-control" id="usrName" placeholder="..."><br/>
+          <button class="btn btn-outline-info" onclick="performGetRequest2()">Search</button>
+          <button class="btn btn-outline-info" onclick="clearActivities()">Clear</button>
+          <div class="panel-body" id="getResult2"></div>
+          <div id="panel-result-apply-transaction"></div>
+        </div>
+</div>
+
+<div id="container-title-transactions">
+  <h3 class="transaction-title">PROPOSED TRANSACTIONS</h3>
+  <div id="list-of-buttons">
+     <button class="btn btn-info" id="status-proposed" data-status="Proposed" onclick="selectTransactionsStatus(this)">Proposed</button>
+    <button class="btn btn-warning" id="status-pending" data-status="Pending" onclick="selectTransactionsStatus(this)">Pending</button>
+    <button class="btn btn-warning" id="status-accepted" data-status="Accepted" onclick="selectTransactionsStatus(this)">Accepted</button>
+    <button class="btn btn-warning" id="status-refused" data-status="Refused" onclick="selectTransactionsStatus(this)">Refused</button>
+    <button class="btn btn-warning" id="status-finished" data-status="Finished" onclick="selectTransactionsStatus(this)">Finished</button>
+    <button class="btn btn-warning" id="status-cancelled" data-status="Cancelled" onclick="selectTransactionsStatus(this)">Cancelled</button>
+  </div>
+</div>
+
+<div class="transaction-container" id="transaction-container">
+  <p id="description-state">'Proposed' status is the list of transactions that I have originated (triggered by me)</p>
+  {{#if userData}}
+    {{#each userData }}
+
+    <div class="transaction-item" data-transaction="{{this._id}}" id="transaction-item-{{@index}}" data-status="{{state}}">
+      <p class="transaction-paragraf"><span><b>Transaction #{{@index}} {{state}}</b></span></p>
+      <p class="transaction-paragraf">Description: {{ idActivity.description }}</p>
+      <p class="transaction-paragraf">User Demanding: {{ demandingUserId.userName }}
+      <p class="transaction-paragraf">Sector: {{ idActivity.sector }}</p>
+      <p class="transaction-paragraf">Subsector: {{ idActivity.subsector }}</p> 
+      <p class="transaction-paragraf">Duration: {{ idActivity.duration }} hour</p>
+      <button class="btn btn-outline-info transaction-paragraf" onclick="seeListActivities(this)">See list Activities of User: {{ demandingUserId.userName }} </button>
+      <button class="btn btn-outline-info transaction-paragraf" onclick="clearOutput()">Reject</button>
+      {{!-- we print the activities and hide them --}}
+      <div class="activity-container no-visible-container" id="activity-container-{{@index}}" data-index="{{@index}}">
+      {{#each demandingUserId.offertedActivities}}
+        <div id="activity-item-{{@index}}" data-activity="{{this._id}}" data-index="{{@index}}">
+          <p class="activity-paragraf">Activity #{{@index}}</p>
+          <p class="activity-paragraf">Description: {{this.description}}</p>
+          <p class="activity-paragraf">Sector: {{this.sector}}</p>
+          <p class="activity-paragraf">Subsector: {{this.subsector}}</p>
+          <p class="activity-paragraf">Duration: {{this.duration}} hours</p>
+          <button class="btn btn-outline-info" onclick="applyForNewTransaction(this)" data-index="{{@index}}">Apply for Activity </button>
+        </div>
+      {{/each}}
+      </div>
+
+
+      <svg width=100% height="8">
+        <line x1="40" x2=60% y1="0" y2="0" style="stroke:#567383;stroke-width:6"/>
+      </svg>
+      {{!-- <hr style="height:2px> --}}
+    </div>
+  {{/each}}
+  {{/if}}
+  {{#unless userData}}
+    <p class='text-danger border border-danger apply-transaction'>THERE'S NO TRANSACTION WITH STATE 'PROPOSED'</p>
+  {{/unless}}
+</div>
+
+
+{{!-- <div id="search-user-in-transactionManager" class="form-group">
+  <form id="filterUserActivities">
+    <label for="usrName">Search User Name to apply for transaction:</label>
+    <input type="text" class="form-control d-inline" id="usrName">
+    <button id="submit" type="button" class="btn btn-primary d-inline">Search</button>
+  </form>  
+</div> --}}
+{{!-- <ul id="results-activities">
+  <li></li>
+</ul> --}}
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+<script src="/javascripts/main.js"></script>
+

@@ -1,0 +1,52 @@
+ <div class="container-fluid header" {{#if username}} id="transaction-container"{{/if}} >
+    <div id="text-banc" class="row align-items-center" >
+      <div class="col-12 align-items-start" >
+        {{!-- {{#unless username}} --}}
+        <h1 class="text-center">Time bank</h1>
+        <h2 class="subtitle text-center">Share time, share life</h2>
+        {{!-- {{/unless}}  --}}
+        {{!-- if session is active, we show the finish and proposed transactions pending to be accepted  --}}
+        
+       </div>
+    </div>
+    <div id="footer-main-page" class="row">
+      <div class="col-12 text-center align-self-center">
+        <button class="btn"><i class="fas fa-chevron-down fa-2x" id="scroll"></i></button>
+      </div>
+    </div>
+  </div>
+  {{!-- <div id="footer-main-page" class="row">
+    <button class="btn"><i class="fas fa-chevron-down fa-2x" id="scroll"></i></button>
+  </div> --}}
+
+<div id="search-form" class="container-fluid align-items-center">
+  <form id="filter">
+    <h2>Search:</h2>
+    <div class="form-group">
+      {{!-- <label for="UserInput">Username:</label> --}}
+      <input type="text" class="form-control" id="user" name="user" placeholder="Username">
+    </div>
+    <div class="form-group">
+      {{!-- <label for="UserSector">Sector:</label> --}}
+      <input type="text" class="form-control" id="sector" name="sector" placeholder="Sector of Activity">
+    </div>
+    <div class="form-group">
+      {{!-- <label for="UserSubSector">Subsector:</label> --}}
+      <input type="text" class="form-control" id="subsector" name="subsector" placeholder="Subsector of Activity">
+    </div>
+    <div class="form-group">
+      {{!-- <label for="UserSubSector">Subsector:</label> --}}
+      <input type="text" class="form-control" id="distance" name="distance" placeholder="Distance in km">
+    </div>
+    <button type="button" id="submit"><i class="fas fa-search"></i></button>
+  </form>
+</div>
+<div id="map"></div>
+<ul id="results">
+</ul>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src='https://unpkg.com/mapbox@1.0.0-beta9/dist/mapbox-sdk.min.js'></script>
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.js'></script>
+<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+<script src="/javascripts/main.js"></script>
