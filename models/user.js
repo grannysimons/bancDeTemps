@@ -23,6 +23,14 @@ const userSchema = new Schema({
     type: {type: String},
     coordinates: [Number],
   },
+  numTransactions : {
+    proposed: Number,
+    pending: Number,
+    accepted: Number,
+    refused: Number,
+    finished: Number,
+    cancelled: Number
+  }
 });
 
 userSchema.index({ location: "2dsphere" });

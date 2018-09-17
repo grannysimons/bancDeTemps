@@ -99,7 +99,7 @@ router.get('/acceptSecondLegTransaction', Middleware.acceptProposedTransaction.g
   
 });
 
-router.post('/insertNewTransaction',Middleware.insertNewTransaction.insertTransaction, (req, res, next) => { 
+router.post('/insertNewTransaction',Middleware.insertNewTransaction.insertTransaction, Middleware.insertNewTransaction.increaseCounterPendingTransactions, (req, res, next) => { 
   // Mirem a veure si s'ha retornat bé del ultim Middleware, i s'ha creat la segona transacció
   if (res.locals.transactionId) {
     const transactionId = res.locals.transactionId;

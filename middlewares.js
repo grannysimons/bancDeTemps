@@ -7,6 +7,7 @@ const saltRounds = 10;
 var MapboxClient = require('mapbox');
 var mapbox = require('mapbox');
 var geo = require('mapbox-geocoding');
+var socket = require('socket.io-client')('http://localhost:3000');
 // var mapbox = require('./mapbox-geocode.js');
 var mapBoxClient = new MapboxClient('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
 geo.setAccessToken('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
@@ -431,6 +432,32 @@ module.exports = {
         next(); // Desde la API farem el retorn a AXIOS, el retorn del res.json
       })
       .catch(error => next(error));
+    },
+    increaseCounterPendingTransactions: (req, res, next) => {
+      const {offertingUserId,demandingUserId,activityId,status} = req.body;
+      let conditions = { _id: offertingUserId }
+          , update = { $inc: { 'numTransactions.pending': 1 }}
+          , options = { multi: false };
+
+      User.update(conditions, update, options)
+      .then(numAffected => {
+        User.findById(offertingUserId).select({ 'numTransactions.pending': 1, '_id': 1})
+        .then (pendingTransactions => {
+          const pendingNum = pendingTransactions;
+          socket.emit('pending transaction', { my: offertingUserId });
+        })
+        .catch(error => {
+          next(error);
+        }) 
+                
+        // we send a socket message for Offerting User in order to show the message of number pending transactions
+        // console.log('el numero de files update es:', numAffected);
+        next();
+      })
+      .catch(error => {
+        next(error);
+      })
+
     }
     // updateUserTransactionArray: (req,res,next,transactionId) => {
     //   var {offertingUserId,demandingUserId,activityId,status} = req.body;
