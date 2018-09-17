@@ -16,8 +16,9 @@ const { error: {empty, userExist, userNotExist,errorMessage} } = require('../mes
 
 // ------------------To connect to remote mongoDB in mlab----------------------------------
 const mongoose = require('mongoose');
-const dbName2 = 'timebank';
-mongoose.connect(`mongodb://administrator:timebank2018@ds145412.mlab.com:45412/${dbName2}`);
+// const dbName2 = 'timebank';
+// mongoose.connect(`mongodb://administrator:timebank2018@ds145412.mlab.com:45412/${dbName2}`);
+mongoose.connect(process.env.MONGODB_URI) 
 
 router.get('/signup', function(req, res, next) {
   res.render('signup');

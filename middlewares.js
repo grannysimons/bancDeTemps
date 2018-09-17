@@ -7,10 +7,15 @@ const saltRounds = 10;
 var MapboxClient = require('mapbox');
 var mapbox = require('mapbox');
 var geo = require('mapbox-geocoding');
-var socket = require('socket.io-client')('http://localhost:3000');
+var socket = require('socket.io-client')(process.env.PRODUCT_URL);
+// var socket = require('socket.io-client')('http://localhost:3000');
 // var mapbox = require('./mapbox-geocode.js');
-var mapBoxClient = new MapboxClient('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
-geo.setAccessToken('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
+// var mapBoxClient = new MapboxClient('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
+// geo.setAccessToken('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
+
+var mapBoxClient = new MapboxClient(process.env.MAPBOX_TOKEN);
+geo.setAccessToken(process.env.MAPBOX_TOKEN);
+
 // var deepPopulate = require('mongoose-deep-populate')(mongoose);
 // PostSchema.plugin(deepPopulate, options /* more on options below */);
 

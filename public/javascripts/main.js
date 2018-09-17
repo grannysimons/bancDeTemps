@@ -70,8 +70,11 @@ window.addEventListener('load', ()=>{
   return -c/2 * (t*(t-2) - 1) + b;
   };
 
-  mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
-  
+  // mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
+  mapboxgl.accessToken = process.env.MAPBOX_TOKEN;
+
+
+
   if(navigator.geolocation)
   {
     navigator.geolocation.getCurrentPosition(position => {
@@ -128,7 +131,9 @@ function filter(){
   const distance = (document.getElementById('distance').value ? document.getElementById('distance').value : 30)*1000;
   if(distance < 1000) distance = 1000;
   var long, lat;
-  var url=`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
+  var url=`${process.env.PRODUCT_URL}/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
+
+  // var url=`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
   if(distance && distance!='' && navigator.geolocation)
   {
     console.log('estic agafant la posicio actual');
@@ -338,8 +343,11 @@ function addSearchResults(url){
 
 function apply(e){
   const idActivitat = e.target.classList[2].substring(6);
-  console.log(`http://localhost:3000/api/${idActivitat}/request`);
-  axios.get(`http://localhost:3000/api/${idActivitat}/request`)
+  // console.log(`http://localhost:3000/api/${idActivitat}/request`);
+  
+  
+  axios.get(`${process.env.PRODUCT_URL}/api/${idActivitat}/request`)
+  // axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
     const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
     $(idModal).modal('hide');
@@ -480,7 +488,9 @@ function loginFormSubmit() {
       userName : usrName,
       password : password
     }
-    axios.post('http://localhost:3000/auth/login', authData)
+    //${process.env.PRODUCT_URL}
+    axios.post(`${process.env.PRODUCT_URL}/auth/login`, authData)
+    // axios.post('http://localhost:3000/auth/login', authData)
     .then((response) => {
       if (response.data.message.state == 'success') {
         $("#login-messages").empty(); //we empty the activities <div>
@@ -534,7 +544,9 @@ function performGetRequest2() {
     const subSector = "";
         
     // we need to get the user_id in order to create the transaction later
-    axios.get(`http://localhost:3000/api/obtenirUserID2?userName=${usrName}`)
+    //${process.env.PRODUCT_URL}
+    axios.get(`${process.env.PRODUCT_URL}/api/obtenirUserID2?userName=${usrName}`)
+    // axios.get(`http://localhost:3000/api/obtenirUserID2?userName=${usrName}`)
     .then((response) => {
       console.log('el valor devuelto',response);
       if (response.data.userid) {
@@ -566,8 +578,11 @@ function findUserActivities(usrName, offertingUserId) {
     const subSector = "";
     var resultElement = document.getElementById('getResult2');
     resultElement.innerHTML = '';
+    
 
-    axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${offertingUserId}`)
+    // axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${offertingUserId}`)
+
+    axios.get(`${process.env.PRODUCT_URL}/api/filterUserActivitiesForTransactions?userId=${offertingUserId}`)
     .then((response) => {
       $("#panel-result-apply-transaction").empty(); // We remove any previous message in the PANEL MESSAGE
       let demandingUserId = response.data.currentUser._id;
@@ -638,8 +653,9 @@ function findUserActivities(usrName, offertingUserId) {
     let attributeJSON = element.getAttribute('dataprofile');
     let dataTransaction = JSON.parse(attributeJSON);
     console.log('dataTransaction.offertingUserId:', dataTransaction.offertingUserId);
-
-    axios.post('http://localhost:3000/api/insertNewTransaction', dataTransaction)
+    
+    // axios.post('http://localhost:3000/api/insertNewTransaction', dataTransaction)
+    axios.post(`${process.env.PRODUCT_URL}/api/insertNewTransaction`, dataTransaction)
     
     .then((response) => {
       $("#getResult2").empty(); //we empty the activities <div>
@@ -694,8 +710,9 @@ function selectTransactionsStatus(element) {
   // we setup the Classes of Siblings
   $(element).siblings().addClass('btn-warning');
   $(element).siblings().removeClass('btn-info');
-
-  axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
+  
+  // axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
+  axios.get(`${process.env.PRODUCT_URL}/api/getTransactionsOnState?state=${state}`)
     
     .then((response) => {
       
@@ -824,7 +841,9 @@ function selectTransactionsStatus(element) {
 }
 
 function InsertActivitiesPendingTransactions(demandingUserId,itemTransactionId) {
-  axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${demandingUserId}`)
+  
+  // axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${demandingUserId}`)
+  axios.get(`${process.env.PRODUCT_URL}/api/filterUserActivitiesForTransactions?userId=${demandingUserId}`)
   .then((resActivities) => {
     var newdivContainerActivities = document.createElement( "div" );
     $(newdivContainerActivities).addClass('activity-container no-visible-container');
@@ -863,8 +882,10 @@ function ChangeStatusTransaction(element,state) {
   // we pass as arguments the DOM Element in order to get the TransactionId, and the state we want to change
   let itemTransaction = element.parentNode;
   transactionId = itemTransaction.getAttribute('data-transaction');
+  
+  // axios.get(`http://localhost:3000/api/updateStateTransaction?state=${state}&transactionId=${transactionId}`)
 
-  axios.get(`http://localhost:3000/api/updateStateTransaction?state=${state}&transactionId=${transactionId}`)
+  axios.get(`${process.env.PRODUCT_URL}/api/updateStateTransaction?state=${state}&transactionId=${transactionId}`)
   .then((response) => {
     //we have successfully update the state of transaction. Let's show a message
     $(itemTransaction).empty(); //we empty the itemTransaction <div> to play message an a button to accept
@@ -918,7 +939,10 @@ function ChangeStatusTransaction(element,state) {
     let activityId = ActivityElement.getAttribute('data-activity');
     let transactionId = transactionElement.getAttribute('data-transaction');
     
-    axios.get(`http://localhost:3000/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
+    // axios.get(`http://localhost:3000/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
+
+
+    axios.get(`${process.env.PRODUCT_URL}/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
     .then((response) => {
       // The transaction has been applied and created. We show a SUCCESSFUL message.
       
@@ -964,7 +988,10 @@ function ChangeStatusTransaction(element,state) {
     } else {
       // We have to recover again the information of transaction involved
       element.innerHTML = "Hide Info transaction involved";
-      axios.get(`http://localhost:3000/api/getTransactionInfoSecondLeg?transactionId=${transactionId}`)
+      
+      // axios.get(`http://localhost:3000/api/getTransactionInfoSecondLeg?transactionId=${transactionId}`)
+
+      axios.get(`${process.env.PRODUCT_URL}/api/getTransactionInfoSecondLeg?transactionId=${transactionId}`)
       .then((response) => {
         let infoTransaction = response.data.transactions2[0];
         //now we have to add all the activities, and make them invisible
