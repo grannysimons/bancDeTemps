@@ -7,11 +7,10 @@ const Assets = require('../assets');
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const geocodingClient = mbxGeocoding({ accessToken: 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw' });
 const multer  = require('multer');
-const IsThere = require("is-there");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploadImages/avatars/');
+    cb(null, 'public/images/uploadImages/avatars/');
   },
   filename: function (req, file, cb) {
     let extension = '.jpg';
@@ -35,7 +34,7 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
 });
 
 router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
-  console.log("req.fields: ", req.fields);
+  // console.log("req: ", req.IncomingMessage);
   console.log("req.file: ", req.file);
 
   const roadType = req.body.roadType;
@@ -65,13 +64,15 @@ router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retri
         res.locals.userData.location = {type: "Point", coordinates: maxCoincidence.center};
       }
       res.locals.messages.passwordsAreDifferent='';
+      res.locals.userData.profileImg = req.file.filename ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
+      console.log('profileImg ',res.locals.userData.profileImg);
       User.update({userName: res.locals.userData.userName}, res.locals.userData)
       .then(user => {
         req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
         const data = {
           message: res.locals.messages,
           userData: res.locals.userData,
-          avatarURL: '/images/avatar.png',
+          // avatarURL: req.locals.userData.profileImg,
         };
         res.render('profile/edit', data);
       })

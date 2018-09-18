@@ -81,8 +81,9 @@ module.exports = {
       .catch(error => next(error));
     },
     retrieveData: (req, res, next) => {
-      const { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, } = res.locals.user;
-      res.locals.userPrevData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, }
+      const { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, profileImg} = res.locals.user;
+      res.locals.userPrevData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, profileImg};
+      if(!res.locals.userPrevData.profileImg || res.locals.userPrevData.profileImg === '') res.locals.userPrevData.profileImg = '/images/avatar.png';
       next();
     },
   },

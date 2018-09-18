@@ -23,6 +23,7 @@ const userSchema = new Schema({
     type: {type: String},
     coordinates: [Number],
   },
+  profileImg: String,
 });
 
 userSchema.index({ location: "2dsphere" });

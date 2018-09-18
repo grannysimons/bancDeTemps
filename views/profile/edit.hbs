@@ -118,11 +118,11 @@
     </div>
     <div class="row avatar">
       <div class="col-md-3">
-        <img src="{{avatarURL}}" alt="avatar" id="avatarImage"/>
+        <img src="{{#if userPrevData}}{{userPrevData.profileImg}}{{/if}}{{#if userData}}{{userData.profileImg}}{{/if}}" alt="avatar" id="avatarImage"/>
       </div>
       <div class="col-md-9">
         <div class="form-group">
-          <label for="profileImage">Upload profile image</label>
+          <label for="profileImage">Upload profile image (100px x 100px)</label>
           <input type="file" class="form-control-file" id="profileImage" accept=".jpg, .jpeg, .png" name="avatar">
         </div>
       </div>
