@@ -71,7 +71,7 @@ router.get('/transactions', Middleware.TransactionManager.getTransactions, (req,
     const dataTransactions = {
         userData: userData
     };
-    res.render('transactions',dataTransactions);
+    res.render('managers/transactionManager',dataTransactions);
     
 
 })

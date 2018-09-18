@@ -20,7 +20,7 @@ const dbName2 = 'timebank';
 mongoose.connect(`mongodb://administrator:timebank2018@ds145412.mlab.com:45412/${dbName2}`);
 
 router.get('/signup', function(req, res, next) {
-  res.render('signup');
+  res.render('auth/signup');
 });
 
 router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.checkNewUser, Middlewares.signUp.checkValidPassword, function(req, res, next) {

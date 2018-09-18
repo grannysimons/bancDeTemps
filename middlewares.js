@@ -37,7 +37,7 @@ module.exports = {
             message: res.locals.messages,
             userData: res.locals.userData,
           };
-          res.render('signup', data);
+          res.render('auth/signup', data);
         }
         else
         {

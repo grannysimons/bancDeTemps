@@ -91,7 +91,7 @@ router.get('/activityManager', Middlewares.activityManager.getActivities, (req, 
     offertedActivities: res.locals.offertedActivities,
     demandedActivities: res.locals.demandedActivities,
   }
-  res.render('profile/activityManager', data);
+  res.render('managers/activityManager', data);
 });
 
 router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, (req, res, next) => {
