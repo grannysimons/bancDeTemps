@@ -256,10 +256,15 @@ footer .footer-names
 #editProfile
 {
   padding: 40px 200px;
+  font-size: 14px;
 }
 #editProfile h1
 {
   margin-bottom: 60px;
+}
+#editProfile input
+{
+  padding: 10px;
 }
 .editProfile .form-group, #editProfile .address-group
 {
