@@ -49,6 +49,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
   app.locals.currentUser = req.session.currentUser;
+  // app.locals.profileImg = req.session.profileImg;
   next();
 })
 

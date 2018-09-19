@@ -34,7 +34,6 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
 });
 
 router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
-  // console.log("req: ", req.IncomingMessage);
   console.log("req.file: ", req.file);
 
   const roadType = req.body.roadType;

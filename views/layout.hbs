@@ -61,7 +61,13 @@
         </div>
         {{#if currentUser}}
         <div id="currentuser-logged" data-userid="{{currentUser._id}}" class="col-9 login">
-          <p>Hi, {{currentUser.userName}}!</p>
+          {{!-- <img src="/images/uploadImages/avatars/{{currentUser.userName}}.jpg" alt="">
+          <img src="/images/uploadImages/avatars/{{currentUser.userName}}.png" alt="">
+          <img src="/images/avatar.png" alt=""> --}}
+          <p class="hi-username">Hi, {{currentUser.userName}}!</p>
+          <div class="profile-img-container">
+            <img src="{{currentUser.profileImg}}" alt="{{currentUser.userName}}" class="profile-img">
+          </div>
         </div>
         {{/if}} 
         {{!-- {{#unless currentUser}}

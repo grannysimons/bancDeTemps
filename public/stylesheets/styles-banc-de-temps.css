@@ -85,6 +85,28 @@ margin: 20px 0 20px 20px;
   font-size: 100px;
   color: white;
 }
+#currentuser-logged .profile-img-container
+{
+  border-radius: 100%;
+  overflow: hidden;
+  width: 60px;
+  height: 60px;
+  display: inline-block;
+  text-align: center;
+}
+#currentuser-logged .profile-img-container .profile-img
+{
+  min-width: 60px;
+  min-height: 60px;
+  max-width: 65px;
+  max-height: 65px;
+}
+#currentuser-logged .hi-username
+{
+  margin-right: 20px;
+  display: inline-block;
+  margin-bottom: 0;
+}
 #text-banc h2
 {
   color: white;
