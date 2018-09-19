@@ -27,13 +27,10 @@ var server = http.createServer(app);
 
 var io = require('socket.io').listen(server);
 io.on('connection', (socket) => {
-  console.log('a user connected');
   socket.on('chat message', (msg) => {
-    console.log('el message passat es: ' + msg.my);
     io.emit('chat message', msg);
   });
   socket.on('disconnect', () => {
-    console.log('user disconnected');
   });
 });
 

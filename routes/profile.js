@@ -34,7 +34,6 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
 });
 
 router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
-  console.log("req.file: ", req.file);
 
   const roadType = req.body.roadType;
   const roadName = req.body.roadName;
@@ -64,7 +63,6 @@ router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retri
       }
       res.locals.messages.passwordsAreDifferent='';
       res.locals.userData.profileImg = req.file.filename ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
-      console.log('profileImg ',res.locals.userData.profileImg);
       User.update({userName: res.locals.userData.userName}, res.locals.userData)
       .then(user => {
         req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
@@ -81,7 +79,6 @@ router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retri
     }
   })
   .catch(error => {
-    console.log('editProfile error: ',error);
   })
 });
 
@@ -94,7 +91,6 @@ router.get('/activityManager', Middlewares.activityManager.getActivities, (req, 
 });
 
 router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, (req, res, next) => {
-  console.log('crear activittat');
   const type = req.params.type;
   const { sector, subsector, description, tags, duration } = req.body;
   const activityCreate = {
@@ -121,7 +117,6 @@ router.post('/activityManager/:idAct/delete', (req, res, next) => {
     res.redirect('/profile/activityManager');
   })
   .catch(error => {
-    console.log(error);
     next(error);
   })
 })
