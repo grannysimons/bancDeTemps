@@ -3,13 +3,11 @@ var socket = io();
 socket.connect();
 socket.on('chat message', (msg) => {
   // Let's check if user is registered. We have to check only if id #currentuser-logged exist
-  console.log('hem entrat a socket-on');
   if ($( "#currentuser-logged" ).length) {
     
     // element exists. Let's get the current_id
     const currentUserId = $( "#currentuser-logged" ).attr('data-userid');
     if (msg.my == currentUserId) {
-      console.log('ha coincidit el username. ensenyem missatge nova transaccio');
       // $('#currentuser-logged').text('New Pending Transaction to Accept!!');
       $('#currentuser-logged').append('<p id="pendingmsg" class="pending-transaction-msg blink">New Pending Transaction to Accept!!</p>');
       setTimeout(() => { $('#pendingmsg').removeClass('blink'); }, 10000);
@@ -27,12 +25,12 @@ socket.on('chat message', (msg) => {
 var map, globalMarkers=[];
 window.addEventListener('load', ()=>{
   document.querySelector('#filter #submit').addEventListener('click', filter);
+  document.querySelector('.logo-ironhack img').setAttribute('src', 'images/ironhack.png');
 
   var viewportHeight = $(window).height();  
   var viewportWidth = $(window).width();
 
   var heightNavBar = document.getElementById('navbar-main').offsetHeight;
-  // console.log('La altura del icono menu es de:',heightNavBar);
 
   var heightMainTitle = viewportHeight-2*heightNavBar;
   document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
@@ -91,7 +89,6 @@ window.addEventListener('load', ()=>{
   }
   else
   {
-    console.log('no navigator.geolocation');
     filter();
   }
 
@@ -115,15 +112,6 @@ window.onbeforeunload = function () {
   window.scrollTo(0, 0);
 }
 
-// $( window ).resize(function() {
-//   viewportHeight = $(window).height(); 
-//   heightMainTitle = viewportHeight-2*heightNavBar;
-//   document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
-//   document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
-//   document.getElementById('new').setAttribute("style",`height:${viewportHeight}px`);
-// });
-
-
 function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
@@ -136,7 +124,6 @@ function filter(){
   // var url=`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
   if(distance && distance!='' && navigator.geolocation)
   {
-    console.log('estic agafant la posicio actual');
     navigator.geolocation.getCurrentPosition(position => {
       long = position.coords.longitude;
       lat = position.coords.latitude;
@@ -343,11 +330,7 @@ function addSearchResults(url){
 
 function apply(e){
   const idActivitat = e.target.classList[2].substring(6);
-  // console.log(`http://localhost:3000/api/${idActivitat}/request`);
-  
-  
-  axios.get(`${process.env.PRODUCT_URL}/api/${idActivitat}/request`)
-  // axios.get(`http://localhost:3000/api/${idActivitat}/request`)
+  axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
     const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
     $(idModal).modal('hide');
@@ -385,9 +368,6 @@ function apply(e){
     const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
     $(idModal).modal('hide');
     document.getElementById('results').innerHTML = error.response.data.error;
-    // document.getElementById('results').innerHTML = message;
-    //REVISAR!!!
-    console.log('revisaaaar');
     const divButton = document.createElement('dev');
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
@@ -401,7 +381,6 @@ function apply(e){
 
 function shadowActivity(e){
   let activityNumber = e.target.getAttribute('id').substring(9);
-  console.log(activityNumber);
   document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.backgroundColor = '#efefef';
   document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.transition = 'background-color 1s';
 }
@@ -410,44 +389,6 @@ function stopShadowActivity(e){
   document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.backgroundColor = 'transparent';
   document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.transition = 'background-color 1s';
 }
-
-
-
-// function filterUserActivities() {
-//   const user = document.getElementById('usrName').value;
-//   const sector = "";
-//   const subsector = "";
-//   axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subsector}&userName=${user}`)
-//   .then((act) => {
-//     // console.log(act.data);
-//     document.getElementById('results-activities').innerHTML = '';
-//     for(let i=0; i<act.data.activities.length; i++)
-//     {
-//       let divDescription = document.createElement('div');
-//       divDescription.innerHTML = act.data.activities[i].description;
-//       let divDuration = document.createElement('div');
-//       divDuration.innerHTML = 'duration: ' + act.data.activities[i].duration + 'hours';
-//       document.getElementById('results-activities').appendChild(divDescription);
-//       document.getElementById('results-activities').appendChild(divDuration);
-      
-//       if(act.data.currentUser) 
-//       {
-//         let dynamicClass = 'apply-'+act.data.activities[i]._id;
-//         let buttonApply = document.createElement('button');
-//         buttonApply.classList.add('btn', 'btn-info', dynamicClass);
-//         buttonApply.setAttribute('id', 'apply-'+i);
-//         buttonApply.addEventListener('click', apply);
-//         buttonApply.innerHTML = 'Apply';
-
-//         document.getElementById('results-activities').appendChild(buttonApply);
-//       }
-
-//     }
-//   })
-//   .catch(error => {
-//     document.getElementById('results-activities').innerHTML = "erroooor!" + error;
-//   })
-// } 
 
 //---------------------LOGIN----------------------------------------------------
 
@@ -459,8 +400,6 @@ function loginFormSubmit() {
   // document.getElementById("auth-form").submit();
   const usrName = document.getElementById('usr').value;
   const password = document.getElementById('password').value;
-
-  console.log('el username es:', usrName);
 
   $("#login-messages").empty();
   //we check for user and password
@@ -497,27 +436,6 @@ function loginFormSubmit() {
         $("#login-messages").append("<p class='text-success border border-success rounded'>Login succeed!</p>");
         setTimeout(() => { location.reload(); }, 1000);
       }
-      // console.log('el valor devuelto',response);
-      // $.get('http://localhost:3000');
-      
-      // $.ajax({
-      //   url: 'http://localhost:3000',
-      //   data: null,
-      //   success: null,
-      //   dataType: null
-      // });
-      // $('html').load( '/' );
-      // axios.get('http://localhost:3000')
-      // .then((response) => {
-      //   console.log('hem tornat');
-      //   location.reload();
-      // })
-      
-      // .catch((error) => {
-
-      // })
-
-      
     })
     .catch((error) => {
       $("#login-messages").empty(); //we empty the activities <div>
@@ -548,7 +466,6 @@ function performGetRequest2() {
     axios.get(`${process.env.PRODUCT_URL}/api/obtenirUserID2?userName=${usrName}`)
     // axios.get(`http://localhost:3000/api/obtenirUserID2?userName=${usrName}`)
     .then((response) => {
-      console.log('el valor devuelto',response);
       if (response.data.userid) {
         offertingUserId = response.data.userid;
         // Now that we have retrieve the OfferingUserId, we can ask for activities of this user
@@ -652,10 +569,8 @@ function findUserActivities(usrName, offertingUserId) {
     let numActivity = element.getAttribute('numActivity');
     let attributeJSON = element.getAttribute('dataprofile');
     let dataTransaction = JSON.parse(attributeJSON);
-    console.log('dataTransaction.offertingUserId:', dataTransaction.offertingUserId);
-    
-    // axios.post('http://localhost:3000/api/insertNewTransaction', dataTransaction)
-    axios.post(`${process.env.PRODUCT_URL}/api/insertNewTransaction`, dataTransaction)
+
+    axios.post('http://localhost:3000/api/insertNewTransaction', dataTransaction)
     
     .then((response) => {
       $("#getResult2").empty(); //we empty the activities <div>
@@ -716,7 +631,6 @@ function selectTransactionsStatus(element) {
     
     .then((response) => {
       
-      console.log('el llistat de transaccions a mostrar es',response.data.transactions);
       $('#container-title-transactions > h3').html(`${state.toUpperCase()} TRANSACTIONS`);
       $("#transaction-container").empty(); //we empty the 'transaction-container' <div>
       
@@ -751,7 +665,6 @@ function selectTransactionsStatus(element) {
       
       
       if (listTransactions) {
-        // console.log('comprovem si ens retorna un array:',Array.isArray(listTransactions));
         if (Array.isArray(listTransactions)) {
           // We look if there's any element inside
           if (listTransactions.length>0) {
@@ -776,8 +689,6 @@ function selectTransactionsStatus(element) {
             $(newdiv2).append(`<p class="transaction-paragraf">Sector: ${ element.idActivity.sector }</p>`);
             $(newdiv2).append(`<p class="transaction-paragraf">Subsector: ${ element.idActivity.subsector }</p>`);
             $(newdiv2).append(`<p class="transaction-paragraf">Duration: ${ element.idActivity.duration } hour</p>`);
-            // console.log('el valor de newdiv2 abans',newdiv2);
-            // console.log('el state abans entrar al SWITCH:',state);
             switch (state) {
               case 'Proposed':
                 // We can CANCEL the transactions we have created.
@@ -786,7 +697,6 @@ function selectTransactionsStatus(element) {
                 $("#transaction-container").append( newdiv2 );
                 break;
               case 'Pending':
-                console.log('hem entrat a dins de pending');
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeListActivities(this)">See list Activities of User: ${ element.demandingUserId.userName }</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Refused')">Reject</button>`);
                 //now we have to add all the activities, and make them invisible
@@ -833,7 +743,6 @@ function selectTransactionsStatus(element) {
      
     })
     .catch( (error) => {
-      console.log('hem arribat a un error a dins de la Consulta del ESTAT');
     });
 
 
@@ -849,7 +758,6 @@ function InsertActivitiesPendingTransactions(demandingUserId,itemTransactionId) 
     $(newdivContainerActivities).addClass('activity-container no-visible-container');
     
     let activities2 = resActivities.data.activities;
-    // console.log('comprovem si es un array:',Array.isArray(activities2));
     for(let i=0; i<activities2.length; i++) {
       
       let newdivActivity = document.createElement( "div" );

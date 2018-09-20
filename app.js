@@ -46,9 +46,11 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'uploadImages')));
 
 app.use((req, res, next) => {
   app.locals.currentUser = req.session.currentUser;
+  // app.locals.profileImg = req.session.profileImg;
   next();
 })
 
@@ -68,8 +70,6 @@ app.use('/transaction', indexRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   const {userName, password} = req.body;
-  // console.log(`el username es: ${userName}`);
-  // console.log(`el password es: ${password}`);
   next(createError(404));
 });
 
@@ -79,8 +79,6 @@ app.use(function(err, req, res, next) {
   // res.locals.message = err.message;
   err.message = res.locals.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  console.log('error at app.use ',err);
 
   // render the error page
   res.status(err.status || 500);

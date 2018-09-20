@@ -29,7 +29,6 @@ module.exports = {
       res.locals.userData = {
         name, lastName, userName, password: passwordUser, repeatPassword, mail, telephone, introducing, direction: {roadType, roadName, number, zipCode, city, province, state,},
       }
-      console.log('res.locals.userData: ', res.locals.userData);
       next();
     },
     checkNewUser: (req, res, next) => {
@@ -43,7 +42,7 @@ module.exports = {
             message: res.locals.messages,
             userData: res.locals.userData,
           };
-          res.render('signup', data);
+          res.render('auth/signup', data);
         }
         else
         {
@@ -87,8 +86,9 @@ module.exports = {
       .catch(error => next(error));
     },
     retrieveData: (req, res, next) => {
-      const { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, } = res.locals.user;
-      res.locals.userPrevData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, }
+      const { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, profileImg} = res.locals.user;
+      res.locals.userPrevData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, profileImg};
+      if(!res.locals.userPrevData.profileImg || res.locals.userPrevData.profileImg === '') res.locals.userPrevData.profileImg = '/images/avatar.png';
       next();
     },
   },
@@ -116,11 +116,8 @@ module.exports = {
           const { roadName, number, zipCode, city, province, state } = res.locals.userData.direction;
           const query = roadName + ' ' + address + ' ' + number + ',' + zipCode + ' ' + city + ',' + province + ',' + state; 
           geo.geocode('mapbox.places', query, (err, geoData) => {
-          console.log('a punt per entrar a geoData');
           
           if (geoData) {
-              console.log('hem entrat a dins de geoData per obtenir les coordenades');
-              console.log('el valor de geodata es:', geoData);
               let longitude = geoData.features[0].geometry.coordinates[0];
               let latitude = geoData.features[0].geometry.coordinates[1];
               const location = {
@@ -128,11 +125,8 @@ module.exports = {
                 coordinates: [longitude,latitude]
               };
               res.locals.userData.location = location;
-              console.log('les coordenades de la ubicacio del client son:', location);
               
-            } else {
-              console.log('hi ha hagut un error:',err);
-            }
+            } 
           });
 
           //-----------------------------------------------------------------------------------------
@@ -140,7 +134,6 @@ module.exports = {
 
           User.update({userName: res.locals.userData.userName}, res.locals.userData)
           .then(user => {
-            // console.log('user ' + req.body.userName + ' correctly updated: ', user);
           })
           .catch(error => next(error));
 
@@ -187,7 +180,6 @@ module.exports = {
   },
   filter: {
     getUsers: (req, res, next) => {
-      console.log('getUsers');
       res.locals.activities = [];
       let filter = {};
       if(req.query.long && req.query.lat)
@@ -207,7 +199,6 @@ module.exports = {
         // };
       };
       if(req.query.userName) filter.userName = req.query.userName;
-      console.log('filter: ',filter);
       User.find(filter)
       .then(users => {
         var idUsers = [];
@@ -218,12 +209,10 @@ module.exports = {
         next();
       })
       .catch(error => {
-        console.log('filterByUserName. Error: ', error);
         next(error);
       });
     },
     getActivities: (req, res, next) => {
-      console.log('getActivities');
       var filter = {$and: []};
       if(res.locals.idUsers && res.locals.idUsers.length > 0) filter.$and.push({idUser: {$in: res.locals.idUsers}});
       if(req.query.sector) filter.$and.push({sector: req.query.sector});
@@ -238,7 +227,6 @@ module.exports = {
         next();
       })
       .catch(error => {
-        console.log('getActivities Error: ', error);
         next(error);
       })
     },
@@ -298,7 +286,6 @@ module.exports = {
       })
     },
     createTransaction: (req, res, next) => {
-      console.log('createTransaction');
       Transaction.create({
         idActivity: res.locals.idActivity,
         offertingUserId: res.locals.users.offertingUser,
@@ -326,7 +313,6 @@ module.exports = {
     getTransactions: (req, res, next) => {
       const currentUser = req.session.currentUser;
       let state = req.query.state;
-      console.log('mirem les transacions que tenen estat',req.query);
       var aa = 'offertingUserId',
           bb = 'demandingUserId'
       
@@ -423,8 +409,6 @@ module.exports = {
   insertNewTransaction: {
     insertTransaction: (req, res, next) => {
       const {offertingUserId,demandingUserId,activityId,status} = req.body;
-      // console.log('hem entrat al POST per crear la transacció!!!');
-      // console.log(offertingUserId,demandingUserId,activityId,status);
       Transaction.create({
         idActivity: activityId,
         offertingUserId: offertingUserId,
@@ -480,7 +464,6 @@ module.exports = {
       getTransactionInfo: (req, res, next) => {
         const transactionId = req.query.transactionId;
         const activityId = req.query.activityId;
-        console.log('el transactionId passat es: ',transactionId); 
         Transaction.findOne({_id: transactionId})
             .then(transaction => {
               res.locals.transactionInfo = transaction;
@@ -496,7 +479,6 @@ module.exports = {
       insertSecondTransaction: (req, res, next) => {
         // const transactionId = req.query.transactionId;
         const activityId = req.query.activityId;
-        console.log('el activityId passat es: ',activityId); 
         let dataTransaction = new Transaction ({
           idActivity: activityId,
           offertingUserId: res.locals.transactionInfo.demandingUserId,
@@ -509,7 +491,6 @@ module.exports = {
         dataTransaction.save()
         .then(result => {
           res.locals.transactionIdSecondTransaction = result._id;
-          console.log(result._id);  // this will be the new created ObjectId
           next();
         })
         .catch(error => {
@@ -519,7 +500,6 @@ module.exports = {
     updateFirstTransaction: (req, res, next) => {
       let transactionId1 = res.locals.transactionInfo._id
       let transactionId2 = res.locals.transactionIdSecondTransaction; 
-      console.log('el transactionId2 passat es: ',transactionId2); 
 
       //we have to update first transaction with the transaction_id of second. So, they are related
       let conditions = { _id: transactionId1 }
@@ -528,7 +508,6 @@ module.exports = {
 
       Transaction.update(conditions, update, options)
       .then(numAffected => {
-        console.log('el numero de files update es:', numAffected);
         next();
       })
       .catch(error => {
@@ -556,10 +535,8 @@ module.exports = {
       User.find({location: { $exists: true }}).select({ 'direction': 1, 'location': 1, '_id': 1})
       // Buildings.find({ref_inmueble: refInmueble}).select({ 'latitude': 1, 'longitude': 1, '_id': 0})
       .then(response => {
-        // console.log('la response de la consulta es',response);
         for (let i=0; i<response.length; i++ ) {
           const id = response[i]._id;
-          // console.log ('el primer user dades de direction es',response[i].direction);
           const { roadType, roadName, number, zipCode, city, province, state } = response[i].direction;
           // const roadName = response[i].direction.roadName
           //       ,number = response[i].direction.number
@@ -572,20 +549,16 @@ module.exports = {
           
           if (roadName != undefined) {
             geo.geocode('mapbox.places', query, (err, geoData) => {
-              // console.log('a punt per entrar a geoData. La query es:',query);
            
           
           
           if (geoData) {
-              // console.log('hem entrat a dins de geoData per obtenir les coordenades');
-              // console.log('el valor de geodata es:', geoData);
               let longitude = geoData.features[0].geometry.coordinates[0];
               let latitude = geoData.features[0].geometry.coordinates[1];
               const location = {
                 type: 'Point',
                 coordinates: [longitude,latitude]
               };
-              console.log('les coordenades de la ubicacio del client son:', location);
               let conditions = { _id: id }
                 , update = { $set: {location: location}}
                 , options = { multi: false };
@@ -593,15 +566,12 @@ module.exports = {
               // Buildings.update(conditions, update, options)
               User.findOneAndUpdate(conditions, update, options)
               .then(numAffected => {
-                console.log('el numero de files update es:', numAffected);
-                
               })
               .catch(error => {
                 next(error);
               })
               
             } else {
-              console.log('hi ha hagut un error:',err);
             }
           });
          

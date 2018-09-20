@@ -27,9 +27,7 @@ var server = http.createServer(app);
 
 var io = require('socket.io').listen(server);
 io.on('connection', (socket) => {
-  console.log('a user connected');
   socket.on('chat message', (msg) => {
-    console.log('el message passat es: ' + msg.my);
     io.emit('chat message', msg);
   });
   socket.on('pending transaction', (msg) => {
@@ -37,7 +35,6 @@ io.on('connection', (socket) => {
     io.emit('pending transaction', msg);
   });
   socket.on('disconnect', () => {
-    console.log('user disconnected');
   });
 });
 
