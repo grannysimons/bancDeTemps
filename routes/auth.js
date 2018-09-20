@@ -67,7 +67,7 @@ router.post('/login', (req,res,next) => {
                 req.session.currentUser = user;
                 const message = {
                   state: 'success',
-                  info: 'Login correct!!'
+                  info: 'Login succeed!'
                 };
                 res.json({message});   
               }

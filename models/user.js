@@ -23,18 +23,7 @@ const userSchema = new Schema({
     type: {type: String},
     coordinates: [Number],
   },
-<<<<<<< HEAD
-  numTransactions : {
-    proposed: Number,
-    pending: Number,
-    accepted: Number,
-    refused: Number,
-    finished: Number,
-    cancelled: Number
-  }
-=======
   profileImg: {type: String, default: '/images/avatar.png'},
->>>>>>> 4ffcd10dbbb53f9f536206407aa418adfc4a8666
 });
 
 userSchema.index({ location: "2dsphere" });
