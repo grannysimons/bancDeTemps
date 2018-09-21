@@ -4,38 +4,33 @@
 var envURL = 'https://timebank2018.herokuapp.com';
 
 // mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
-
-
-
+ // Define socket.io for messaging
+ var socket = io();
+ socket.connect();
+ socket.on('chat message', (msg) => {
+   // Let's check if user is registered. We have to check only if id #currentuser-logged exist
+   if ($( "#currentuser-logged" ).length) {
+     
+     // element exists. Let's get the current_id
+     const currentUserId = $( "#currentuser-logged" ).attr('data-userid');
+     if (msg.my == currentUserId) {
+       // $('#currentuser-logged').text('New Pending Transaction to Accept!!');
+       $('#currentuser-logged').append('<p id="pendingmsg" class="pending-transaction-msg blink">New Pending Transaction to Accept!!</p>');
+       setTimeout(() => { $('#pendingmsg').removeClass('blink'); }, 10000);
+       // for (let i=0;i<10;i++) {
+       //   $('#pendingmsg').fadeOut(500).fadeIn(500);
+       //   // $('.blink').fadeOut(500).fadeIn(500);
+       // }
+     
+     }
+   }
+   // $('#messages').append($('<li>').text(msg));
+ });
 
 
 var map, globalMarkers=[];
 window.addEventListener('load', ()=>{
-  
-  // Define socket.io for messaging
-var socket = io();
-socket.connect();
-socket.on('chat message', (msg) => {
-  // Let's check if user is registered. We have to check only if id #currentuser-logged exist
-  if ($( "#currentuser-logged" ).length) {
-    
-    // element exists. Let's get the current_id
-    const currentUserId = $( "#currentuser-logged" ).attr('data-userid');
-    if (msg.my == currentUserId) {
-      // $('#currentuser-logged').text('New Pending Transaction to Accept!!');
-      $('#currentuser-logged').append('<p id="pendingmsg" class="pending-transaction-msg blink">New Pending Transaction to Accept!!</p>');
-      setTimeout(() => { $('#pendingmsg').removeClass('blink'); }, 10000);
-      // for (let i=0;i<10;i++) {
-      //   $('#pendingmsg').fadeOut(500).fadeIn(500);
-      //   // $('.blink').fadeOut(500).fadeIn(500);
-      // }
-    
-    }
-  }
-  // $('#messages').append($('<li>').text(msg));
-});
-  
-  
+ 
   //comprovem que existeixi primer l'element
   if ($( "#filter" ).length) {
   document.querySelector('#filter').addEventListener('click', filter);
