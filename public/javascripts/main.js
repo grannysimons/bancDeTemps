@@ -145,6 +145,7 @@ function filter(){
 function addSearchResults(url){
   axios.get(url)
   .then((act) => {
+    console.log('hem tornat de axios i dibuixarem els marcadors');
     document.getElementById('results').innerHTML = '';
     var markers = [];
     if(act.data.activities)

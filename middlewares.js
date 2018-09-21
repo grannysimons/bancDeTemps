@@ -206,6 +206,7 @@ module.exports = {
           idUsers.push(user._id);
         });
         res.locals.idUsers = idUsers;
+        console.log('aquest es el array de users',idUsers);
         next();
       })
       .catch(error => {

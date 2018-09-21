@@ -25,6 +25,7 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
 });
 
 router.get('/filter', Middleware.filter.getUsers, Middleware.filter.getActivities, (req, res, next) => {
+  console.log('hem fet tots els middlewares de filter');
   const activities = res.locals.activities;
   if(activities && activities.length > 0)
   {
