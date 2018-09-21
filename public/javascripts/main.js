@@ -141,7 +141,7 @@ function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
-  const distance = (document.getElementById('distance').value ? document.getElementById('distance').value : 0.5)*1000;
+  let distance = (document.getElementById('distance').value ? document.getElementById('distance').value : 0.5)*1000;
   if(distance < 1000) distance = 1000;
   var long, lat;
   var url=`${envURL}/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
