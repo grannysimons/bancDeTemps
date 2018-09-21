@@ -215,6 +215,7 @@ module.exports = {
     getUsers: (req, res, next) => {
       res.locals.activities = [];
       let filter = {};
+      console.log('distance: ', req.query.distance);
       if(req.query.long && req.query.lat)
       {
 
