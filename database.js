@@ -6,10 +6,10 @@ const mongoose = require('mongoose');
 // mongoose.connect(`mongodb://administrator:timebank2018@ds145412.mlab.com:45412/${dbName2}`)
 mongoose.connect(process.env.MONGODB_URI) 
   .then(() => {
-    console.log('😀');
+    // console.log('😀');
   })
   .catch(() => {
-    console.log('😔');
+    // console.log('😔');
     mongoose.connection.close();
   })
 
