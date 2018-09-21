@@ -88,7 +88,7 @@ module.exports = {
   },
   editProfile_post: {
     retrieveData: (req, res, next) => {
-      console.log('req.body: ', req.body);
+      // console.log('req.body: ', req.body);
       const { name, lastName, userName, passwordUser, repeatPassword, mail, roadType, roadName, number, zipCode, city, province, state, telephone, introducing } = req.body;
       res.locals.userData = { name, lastName, userName, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
       if(passwordUser) res.locals.userData.password = passwordUser;
@@ -97,7 +97,7 @@ module.exports = {
       next();
     },
     checkPassword: (req,res,next) => {
-      console.log('checkPassword!');
+      // console.log('checkPassword!');
       if(res.locals.userData.password || res.locals.userData.repeatedPassword)
       {
         if(res.locals.userData.password===res.locals.userData.repeatPassword)
@@ -160,18 +160,18 @@ module.exports = {
       next();
     },
     getLocation: (req, res, next) => {
-      console.log('getLocation!!!');
+      // console.log('getLocation!!!');
       //-------------------------CODI INTRODUIT PER ALBERT-----------------------------------
           // anem a posar les coordenades a la propietat LOCATION , fent el forward geocoding
           const { roadType, roadName, number, zipCode, city, province, state } = res.locals.userData.direction;
           const query = roadType + ' ' + roadName + ' ' + number + ',' + zipCode + ' ' + city + ',' + province + ',' + state; 
-          console.log('query? ', query);
+          // console.log('query? ', query);
           geo.geocode('mapbox.places', query, (err, geoData) => {
-          console.log('a punt per entrar a geoData');
+          // console.log('a punt per entrar a geoData');
           
           if (geoData) {
-              console.log('hem entrat a dins de geoData per obtenir les coordenades');
-              console.log('el valor de geodata es:', geoData);
+              // console.log('hem entrat a dins de geoData per obtenir les coordenades');
+              // console.log('el valor de geodata es:', geoData);
               let longitude = geoData.features[0].geometry.coordinates[0];
               let latitude = geoData.features[0].geometry.coordinates[1];
               const location = {
@@ -179,11 +179,11 @@ module.exports = {
                 coordinates: [longitude,latitude]
               };
               res.locals.userData.location = location;
-              console.log('les coordenades de la ubicacio del client son:', location);
+              // console.log('les coordenades de la ubicacio del client son:', location);
               next();
               
             } else {
-              console.log('hi ha hagut un error:',err);
+              // console.log('hi ha hagut un error:',err);
               next(err);
             }
           });

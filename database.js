@@ -5,10 +5,10 @@ const mongoose = require('mongoose');
 const dbName2 = 'timebank';
 mongoose.connect(`mongodb://administrator:timebank2018@ds145412.mlab.com:45412/${dbName2}`)
   .then(() => {
-    console.log('😀');
+    // console.log('😀');
   })
   .catch(() => {
-    console.log('😔');
+    // console.log('😔');
     mongoose.connection.close();
   })
 

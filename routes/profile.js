@@ -34,7 +34,7 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
 });
 
 router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, Middlewares.editProfile_post.getLocation, function(req, res, next) {
-  console.log("req.file: ", req.file);
+  // console.log("req.file: ", req.file);
 
   const roadType = req.body.roadType;
   const roadName = req.body.roadName;
@@ -85,7 +85,7 @@ router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retri
   // })
   res.locals.messages.passwordsAreDifferent='';
   res.locals.userData.profileImg = (req.file && req.file.filename) ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
-  console.log('profileImg ',res.locals.userData.profileImg);
+  // console.log('profileImg ',res.locals.userData.profileImg);
   User.update({userName: res.locals.userData.userName}, res.locals.userData)
   .then(user => {
     req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
