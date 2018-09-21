@@ -3,6 +3,9 @@
 var envURL = 'http://localhost:3000';
 // var envURL = 'https://timebank2018.herokuapp.com/';
 
+// mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
+
+
 // Define socket.io for messaging
 var socket = io();
 socket.connect();
@@ -29,7 +32,14 @@ socket.on('chat message', (msg) => {
 
 var map, globalMarkers=[];
 window.addEventListener('load', ()=>{
-  document.querySelector('#filter #submit').addEventListener('click', filter);
+  //comprovem que existeixi primer l'element
+  if ($( "#filter" ).length) {
+  document.querySelector('#filter').addEventListener('click', filter);
+  } 
+  if ($( "#submit" ).length) {
+    document.querySelector('#submit').addEventListener('click', filter);
+    } 
+  // document.querySelector('#filter #submit').addEventListener('click', filter);
   document.querySelector('.logo-ironhack img').setAttribute('src', 'images/ironhack.png');
 
   var viewportHeight = $(window).height();  
@@ -38,16 +48,25 @@ window.addEventListener('load', ()=>{
   var heightNavBar = document.getElementById('navbar-main').offsetHeight;
 
   var heightMainTitle = viewportHeight-2*heightNavBar;
-  document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
-  document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
+  if ($( "#text-banc" ).length) {
+    document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`); 
+  }
+  if ($( "#footer-main-page" ).length) {
+    document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
+  }
   // document.getElementById('new').setAttribute("style",`height:${viewportHeight}px`);
   var linkLogin = document.getElementById("my-login");
 
   //smooth scroll
-  const y = document.getElementById('search-form').offsetHeight;
-  document.getElementById('scroll').onclick = function () {
-    scrollTo(document.body, y, 500);   
+  if ($( "#search-form" ).length) {
+    const y = document.getElementById('search-form').offsetHeight;
   }
+
+  if ($( "#scroll" ).length) {
+    document.getElementById('scroll').onclick = function () {
+    scrollTo(document.body, y, 500);   
+    }
+  }  
     
   function scrollTo(element, to, duration) {
     var start = element.scrollTop,
@@ -65,6 +84,7 @@ window.addEventListener('load', ()=>{
     };
     animateScroll();
   }
+
 
   Math.easeInOutQuad = function (t, b, c, d) {
   t /= d/2;
@@ -145,15 +165,17 @@ function filter(){
 function addSearchResults(url){
   axios.get(url)
   .then((act) => {
-    console.log('hem tornat de axios i dibuixarem els marcadors');
+    
     document.getElementById('results').innerHTML = '';
     var markers = [];
     if(act.data.activities)
     {
       for(let i=0; i<act.data.activities.length; i++)
       {
+        
         if(act.data.activities[i].idUser.location.coordinates.length === 2 )
-        {
+        { 
+          
           var divPopup = document.createElement('div');
           var divPopupLeft = document.createElement('div');
           divPopupLeft.classList.add('col-sm-7');
@@ -197,6 +219,8 @@ function addSearchResults(url){
           divPopup.addEventListener('mouseover', shadowActivity);
           divPopup.addEventListener('mouseout', stopShadowActivity);
 
+          
+
           var markerCreated = false;
           markers.forEach(marker => {
             if(marker.location.coordinates[0] === act.data.activities[i].idUser.location.coordinates[0] && marker.location.coordinates[1] === act.data.activities[i].idUser.location.coordinates[1])
@@ -211,6 +235,8 @@ function addSearchResults(url){
             markers.push({location: act.data.activities[i].idUser.location, popupHTML: [divPopup]});
           }
         }
+        // console.log('ha acabat de fer el if');
+        
 
         let liElement = document.createElement('li');
         liElement.classList.add('row');
@@ -296,6 +322,8 @@ function addSearchResults(url){
         }
       }
 
+      // console.log('hem arribat passat el if, fila 305');
+
       if(globalMarkers && globalMarkers.length > 0)
       {
         globalMarkers.forEach(marker => {
@@ -313,6 +341,9 @@ function addSearchResults(url){
         .setDOMContent(mainDiv)
 
         //marker!
+        
+        // console.log('les coordenades del usuari son:',markerElement.location.coordinates);
+        map.flyTo({center: markerElement.location.coordinates}); // centrem el mapa
         var marker = new mapboxgl.Marker()
         .setLngLat(markerElement.location.coordinates)
         .setPopup(popup) // sets a popup on this marker
@@ -330,7 +361,8 @@ function addSearchResults(url){
     }
   })
   .catch(error => {
-    document.getElementById('results').innerHTML = "Error " + error;
+    // document.getElementById('results').innerHTML = "Error " + error;
+    document.getElementById('results').innerHTML = "Error: This User doesn't exist. Try again please";
   })
 }
 

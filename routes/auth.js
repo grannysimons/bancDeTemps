@@ -75,7 +75,7 @@ router.post('/login', (req,res,next) => {
               {    
                 const message = {
                   state: 'error',
-                  info: 'Password is not correct'
+                  info: 'User or Password is not correct'
                 };
                 res.json({message});    
               }
@@ -84,7 +84,7 @@ router.post('/login', (req,res,next) => {
           {
             const message = {
               state: 'error',
-              info: 'This user doesnt exist'
+              info: 'User or Password is not correct'
             };
             res.json({message});    
           }

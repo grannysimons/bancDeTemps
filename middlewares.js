@@ -182,6 +182,7 @@ module.exports = {
     getUsers: (req, res, next) => {
       res.locals.activities = [];
       let filter = {};
+      // console.log('el valor de req.query.distance es:',req.query.distance);
       if(req.query.long && req.query.lat)
       {
 
@@ -198,39 +199,119 @@ module.exports = {
         //   },
         // };
       };
-      if(req.query.userName) filter.userName = req.query.userName;
-      User.find(filter)
+      // Let's check if there's some specific username, otherwise, we have to search for all of them
+      if(req.query.userName) {
+        filter.userName = req.query.userName;
+        // console.log('el username que busquem es',filter.userName);
+        User.findOne({userName: filter.userName})
       .then(users => {
-        var idUsers = [];
-        users.forEach(user => {
-          idUsers.push(user._id);
-        });
-        res.locals.idUsers = idUsers;
-        console.log('aquest es el array de users',idUsers);
+        
+        // var idUsers = [];
+        // users.forEach(user => {
+        //   idUsers.push(user._id);
+        // });
+        res.locals.idUsers = [users._id];
+        // console.log('aquest es el array de users',res.locals.idUsers);
         next();
       })
       .catch(error => {
         next(error);
       });
-    },
-    getActivities: (req, res, next) => {
-      var filter = {$and: []};
-      if(res.locals.idUsers && res.locals.idUsers.length > 0) filter.$and.push({idUser: {$in: res.locals.idUsers}});
-      if(req.query.sector) filter.$and.push({sector: req.query.sector});
-      else if(req.query.subsector) filter.$and.push({subsector: req.query.subsector});
-      
-      if(filter.$and.length === 0) filter = {}; 
-      
-      Activity.find(filter)
-      .populate('idUser')
-      .then(activities => {
-        res.locals.activities = activities;
+      } else { 
+        // console.log('Busquem tots els users que estan a dins una distancia determinada');
+        filter.userName = '';
+        User.find({ location:
+          { $geoWithin:
+             { $centerSphere: [ [ req.query.long, req.query.lat ], req.query.distance / 3963.2 ] } } })
+        .then(users => {
+  
+        var idUsers = [];
+        users.forEach(user => {
+          idUsers.push(user._id);
+        });
+        res.locals.idUsers = idUsers;
+        // console.log('aquest es el array de users',res.locals.idUsers);
         next();
       })
       .catch(error => {
         next(error);
-      })
+      });
+      }  
     },
+    getActivities: (req, res, next) => {
+      //-------------------CODI ALBERT: MIREM SI ESTEM AGAFANT LES ACTIVITATS D'UN SOL USER, O BÉ DE MES D'UN USER. I DESPRES FILTREM TAMBE PER SECTOR I SUBSECTOR
+      
+      let numberOfUsers = res.locals.idUsers.length;
+      // console.log('el numero usuaris a mirar i agafar les activitats es:', numberOfUsers);
+      // console.log('el valor de sector es:',req.query.sector);
+      // console.log('el valor de subsector es:',req.query.subsector);
+      let filter = {};
+      switch (numberOfUsers) {
+        case 0 :
+          //aquest cas es quan no hi ha usuaris a prop de on estas ubicat;
+          break;
+        default :
+          //aquest cas és quan hem fet la búsqueda d'un usuari en concret. Hem d'agafar les activitats d'aquest usuari
+          //si filtrem per sector/subsector, nomes hem de mostrar les activitats del sector
+          if (req.query.sector === '' && req.query.subsector === '') {
+            filter = {
+              idUser : {$in : res.locals.idUsers}};
+          } else if (req.query.sector === '' ) {
+            filter = {
+              idUser : {$in : res.locals.idUsers},
+              subsector : req.query.subsector,
+            };
+          } else {
+            filter = {
+              idUser : {$in : res.locals.idUsers},
+              sector : req.query.sector
+            };
+          }
+
+          Activity.find(filter)
+          .populate('idUser')
+          .then(activities => {
+            res.locals.activities = activities;
+            next();
+           })
+          .catch(error => {
+          next(error);
+          })
+          // break;
+        // default:
+        //   let filterMany = {
+        //     idUser : {$in : res.locals.idUsers},
+        //     // sector : req.query.subsector,
+        //     // subsector : req.query.subsector,
+        //   };
+        //   Activity.find(filterMany)
+        //   .populate('idUser')
+        //   .then(activities => {
+        //     res.locals.activities = activities;
+        //     next();
+        //    })
+        //   .catch(error => {
+        //   next(error);
+        //   })
+       }
+      // var filter = {$and: []};
+      // if(res.locals.idUsers && res.locals.idUsers.length > 0) filter.$and.push({idUser: {$in: res.locals.idUsers}});
+      // if(req.query.sector) filter.$and.push({sector: req.query.sector});
+      // else if(req.query.subsector) filter.$and.push({subsector: req.query.subsector});
+      
+      // if(filter.$and.length === 0) filter = {}; 
+      
+      // Activity.find(filter)
+      // .populate('idUser')
+      // .then(activities => {
+      //   res.locals.activities = activities;
+      //   next();
+      // })
+      // .catch(error => {
+      //   next(error);
+      // })
+      // console.log('les activitats son', res.locals.activities);
+    }
   },
   startRequest: {
     getInvolvedUser: (req, res, next) => {
