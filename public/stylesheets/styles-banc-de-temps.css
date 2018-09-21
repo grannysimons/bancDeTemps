@@ -93,6 +93,8 @@ margin: 20px 0 20px 20px;
   height: 60px;
   display: inline-block;
   text-align: center;
+  position: relative;
+  top: 5px;
 }
 #currentuser-logged .profile-img-container .profile-img
 {
@@ -106,6 +108,8 @@ margin: 20px 0 20px 20px;
   margin-right: 20px;
   display: inline-block;
   margin-bottom: 0;
+  position: relative;
+  bottom: 15px;
 }
 #text-banc h2
 {
@@ -252,10 +256,15 @@ footer .footer-names
 #editProfile
 {
   padding: 40px 200px;
+  font-size: 14px;
 }
 #editProfile h1
 {
   margin-bottom: 60px;
+}
+#editProfile input
+{
+  padding: 10px;
 }
 .editProfile .form-group, #editProfile .address-group
 {

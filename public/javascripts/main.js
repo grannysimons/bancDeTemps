@@ -26,7 +26,6 @@ socket.on('chat message', (msg) => {
 var map, globalMarkers=[];
 window.addEventListener('load', ()=>{
   document.querySelector('#filter #submit').addEventListener('click', filter);
-  document.querySelector('.logo-ironhack img').setAttribute('src', 'images/ironhack.png');
 
   var viewportHeight = $(window).height();  
   var viewportWidth = $(window).width();
