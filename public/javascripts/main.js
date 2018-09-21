@@ -75,7 +75,7 @@ window.addEventListener('load', ()=>{
       map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v10',
-        zoom: 15,
+        zoom: 14,
         center: point
       });
       
