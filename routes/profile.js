@@ -84,21 +84,21 @@ router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retri
   //   console.log('editProfile error: ',error);
   // })
   res.locals.messages.passwordsAreDifferent='';
-      res.locals.userData.profileImg = (req.file && req.file.filename) ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
-      console.log('profileImg ',res.locals.userData.profileImg);
-      User.update({userName: res.locals.userData.userName}, res.locals.userData)
-      .then(user => {
-        req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
-        const data = {
-          message: res.locals.messages,
-          userData: res.locals.userData,
-          // avatarURL: req.locals.userData.profileImg,
-        };
-        res.render('profile/edit', data);
-      })
-      .catch(error => {
-        next(error);
-      });
+  res.locals.userData.profileImg = (req.file && req.file.filename) ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
+  console.log('profileImg ',res.locals.userData.profileImg);
+  User.update({userName: res.locals.userData.userName}, res.locals.userData)
+  .then(user => {
+    req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
+    const data = {
+      message: res.locals.messages,
+      userData: res.locals.userData,
+      // avatarURL: req.locals.userData.profileImg,
+    };
+    res.render('profile/edit', data);
+  })
+  .catch(error => {
+    next(error);
+  });
 });
 
 router.get('/activityManager', Middlewares.activityManager.getActivities, (req, res, next) => {
