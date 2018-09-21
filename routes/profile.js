@@ -33,7 +33,8 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
   res.render('profile/edit', { userPrevData });
 });
 
-router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
+router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, Middlewares.editProfile_post.getLocation, function(req, res, next) {
+  console.log("req.file: ", req.file);
 
   const roadType = req.body.roadType;
   const roadName = req.body.roadName;
@@ -43,26 +44,48 @@ router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retri
   const province = req.body.province;
   const state = req.body.state;
   const query = roadType + ' ' + roadName + ' ' + number + ', ' + zipCode + ' ' + city + ', ' + province + ', ' + state;
-  geocodingClient.forwardGeocode({
-    query: query,
-    limit: 2
-  })
-  .send()
-  .then(response => {
-    const match = response.body;
-    if(match)
-    {
-      var maxCoincidence = undefined;
-      match.features.forEach(coincidence => {
-        if(!maxCoincidence || maxCoincidence.relevance < coincidence.relevance) maxCoincidence = coincidence;
-      });
+  // geocodingClient.forwardGeocode({
+  //   query: query,
+  //   limit: 2
+  // })
+  // .send()
+  // .then(response => {
+  //   const match = response.body;
+  //   if(match)
+  //   {
+  //     var maxCoincidence = undefined;
+  //     match.features.forEach(coincidence => {
+  //       if(!maxCoincidence || maxCoincidence.relevance < coincidence.relevance) maxCoincidence = coincidence;
+  //     });
       
-      if(maxCoincidence)
-      {
-        res.locals.userData.location = {type: "Point", coordinates: maxCoincidence.center};
-      }
-      res.locals.messages.passwordsAreDifferent='';
-      res.locals.userData.profileImg = req.file.filename ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
+  //     if(maxCoincidence)
+  //     {
+  //       res.locals.userData.location = {type: "Point", coordinates: maxCoincidence.center};
+  //     }
+  //     res.locals.messages.passwordsAreDifferent='';
+  //     res.locals.userData.profileImg = (req.file && req.file.filename) ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
+  //     console.log('profileImg ',res.locals.userData.profileImg);
+  //     User.update({userName: res.locals.userData.userName}, res.locals.userData)
+  //     .then(user => {
+  //       req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
+  //       const data = {
+  //         message: res.locals.messages,
+  //         userData: res.locals.userData,
+  //         // avatarURL: req.locals.userData.profileImg,
+  //       };
+  //       res.render('profile/edit', data);
+  //     })
+  //     .catch(error => {
+  //       next(error);
+  //     });
+  //   }
+  // })
+  // .catch(error => {
+  //   console.log('editProfile error: ',error);
+  // })
+  res.locals.messages.passwordsAreDifferent='';
+      res.locals.userData.profileImg = (req.file && req.file.filename) ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
+      console.log('profileImg ',res.locals.userData.profileImg);
       User.update({userName: res.locals.userData.userName}, res.locals.userData)
       .then(user => {
         req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
@@ -76,10 +99,6 @@ router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retri
       .catch(error => {
         next(error);
       });
-    }
-  })
-  .catch(error => {
-  })
 });
 
 router.get('/activityManager', Middlewares.activityManager.getActivities, (req, res, next) => {
