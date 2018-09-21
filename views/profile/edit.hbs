@@ -18,25 +18,25 @@
     <div class="form-group row">
       <label for="name" class="col-md-2">Name</label>
       <div class="col-md-10">
-        <input type="text" class="form-control" id="name" name="name" {{#if userPrevData}} value="{{userPrevData.name}}" {{/if}} {{#if userData}} value="{{userData.name}}" {{/if}}>
+        <input type="text" class="form-control form-control-sm" id="name" name="name" {{#if userPrevData}} value="{{userPrevData.name}}" {{/if}} {{#if userData}} value="{{userData.name}}" {{/if}}>
       </div>
     </div>
     <div class="form-group row">
       <label for="lastName" class="col-md-2">Last name</label>
       <div class="col-md-10">
-        <input type="text" class="form-control" id="lastName" name="lastName" {{#if userPrevData}} value="{{userPrevData.lastName}}" {{/if}}  {{#if userData}} value="{{userData.lastName}}" {{/if}}>
+        <input type="text" class="form-control form-control-sm" id="lastName" name="lastName" {{#if userPrevData}} value="{{userPrevData.lastName}}" {{/if}}  {{#if userData}} value="{{userData.lastName}}" {{/if}}>
       </div>
     </div>
     <div class="form-group row">
       <label for="userName" class="col-md-2">Username</label>
       <div class="col-md-10">
-        <input type="text" class="form-control form-control-plain-text {{#if message.userAlreadyExists}} is-invalid {{/if}}" id="userName" name="userName" {{#if userPrevData}} {{#unless message.userAlreadyExists}}value="{{userPrevData.userName}}" {{/unless}}{{/if}}  {{#if userData}} value="{{userData.userName}}" {{/if}} readonly>
+        <input type="text" class="form-control form-control-plain-text form-control-sm {{#if message.userAlreadyExists}} is-invalid {{/if}}" id="userName" name="userName" {{#if userPrevData}} {{#unless message.userAlreadyExists}}value="{{userPrevData.userName}}" {{/unless}}{{/if}}  {{#if userData}} value="{{userData.userName}}" {{/if}} readonly>
       </div>
     </div>
     <div class="form-group row">
       <label for="password" class="col-md-2">Password</label>
       <div class="col-md-4">
-        <input type="password" class="form-control {{#if message.passwordsAreDifferent}} is-invalid {{/if}}" id="passwordUser" name="password">
+        <input type="password" class="form-control form-control-sm {{#if message.passwordsAreDifferent}} is-invalid {{/if}}" id="passwordUser" name="password">
         {{#if message.passwordsAreDifferent}}
           <div class="invalid-feedback">
             Passwords are different. Write them again
@@ -45,7 +45,7 @@
       </div>
       <label for="repeatPassword" class="col-md-2">Repeat password</label>
       <div class="col-md-4">
-        <input type="password" class="form-control {{#if message.passwordsAreDifferent}} is-invalid {{/if}}" id="repeatPassword" name="repeatPassword">
+        <input type="password" class="form-control form-control-sm {{#if message.passwordsAreDifferent}} is-invalid {{/if}}" id="repeatPassword" name="repeatPassword">
       {{#if message.passwordsAreDifferent}}
         <div class="invalid-feedback">
           Passwords are different. Write them again
@@ -56,7 +56,19 @@
     <div class="form-group row">
       <label for="mail" class="col-md-2">Mail</label>
       <div class="col-md-10">
-        <input type="mail" class="form-control form-control-plain-text" id="mail" name="mail" {{#if userPrevData}} value="{{userPrevData.mail}}" {{/if}} {{#if userData}} value="{{userData.mail}}" {{/if}} readonly>
+        <input type="mail" class="form-control form-control-plain-text form-control-sm" id="mail" name="mail" {{#if userPrevData}} value="{{userPrevData.mail}}" {{/if}} {{#if userData}} value="{{userData.mail}}" {{/if}} readonly>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="telephone" class="col-md-2">Telephone</label>
+      <div class="col-md-10">
+        <input type="mail" class="form-control form-control-sm" id="telephone" name="telephone" {{#if userPrevData}} value="{{userPrevData.telephone}}" {{/if}} {{#if userData}} value="{{userData.telephone}}" {{/if}}>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="introducing" class="col-md-2">Introduce Yourself</label>
+      <div class="col-md-10">
+        <textarea class="form-control form-control-sm" id="introducing" name="introducing">{{#if userPrevData}}{{userPrevData.introducing}}{{/if}}  {{#if userData}}{{userData.introducing}}{{/if}}</textarea>
       </div>
     </div>
     <div class="form-group address">
@@ -64,66 +76,54 @@
       <div class="address-group row">
         <label for="roadType" class="col-md-3">Road type</label>
         <div class="col-md-9">
-          <input type="text" class="form-control" id="roadType" name="roadType" {{#if userPrevData}} value="{{userPrevData.direction.roadType}}" {{/if}} {{#if userData}} value="{{userData.direction.roadType}}" {{/if}}>
+          <input type="text" class="form-control form-control-sm" id="roadType" name="roadType" {{#if userPrevData}} value="{{userPrevData.direction.roadType}}" {{/if}} {{#if userData}} value="{{userData.direction.roadType}}" {{/if}}>
         </div>
       </div>
       <div class="address-group row">
         <label for="roadName" class="col-md-3">Road name</label>
         <div class="col-md-9">
-          <input type="text" class="form-control" id="roadName" name="roadName" {{#if userPrevData}} value="{{userPrevData.direction.roadName}}" {{/if}} {{#if userData}} value="{{userData.direction.roadName}}" {{/if}}>
+          <input type="text" class="form-control form-control-sm" id="roadName" name="roadName" {{#if userPrevData}} value="{{userPrevData.direction.roadName}}" {{/if}} {{#if userData}} value="{{userData.direction.roadName}}" {{/if}}>
         </div>
       </div>
       <div class="address-group row">
         <label for="number" class="col-md-3">Number</label>
         <div class="col-md-9">
-          <input type="text" class="form-control" id="number" name="number" {{#if userPrevData}} value="{{userPrevData.direction.number}}" {{/if}} {{#if userData}} value="{{userData.direction.number}}" {{/if}}>
+          <input type="text" class="form-control form-control-sm" id="number" name="number" {{#if userPrevData}} value="{{userPrevData.direction.number}}" {{/if}} {{#if userData}} value="{{userData.direction.number}}" {{/if}}>
         </div>
       </div>
       <div class="address-group row">
         <label for="zipCode" class="col-md-3">Zip code</label>
         <div class="col-md-9">
-          <input type="text" class="form-control" id="zipCode" name="zipCode" {{#if userPrevData}} value="{{userPrevData.direction.zipCode}}" {{/if}} {{#if userData}} value="{{userData.direction.zipCode}}" {{/if}}>
+          <input type="text" class="form-control form-control-sm" id="zipCode" name="zipCode" {{#if userPrevData}} value="{{userPrevData.direction.zipCode}}" {{/if}} {{#if userData}} value="{{userData.direction.zipCode}}" {{/if}}>
         </div>
       </div>
       <div class="address-group row">
         <label for="city" class="col-md-3">City</label>
         <div class="col-md-9">
-          <input type="text" class="form-control" id="city" name="city" {{#if userPrevData}} value="{{userPrevData.direction.city}}" {{/if}} {{#if userData}} value="{{userData.direction.city}}" {{/if}}>
+          <input type="text" class="form-control form-control-sm" id="city" name="city" {{#if userPrevData}} value="{{userPrevData.direction.city}}" {{/if}} {{#if userData}} value="{{userData.direction.city}}" {{/if}}>
         </div>
       </div>
       <div class="address-group row">
         <label for="province" class="col-md-3">Province</label>
         <div class="col-md-9">
-          <input type="text" class="form-control" id="province" name="province" {{#if userPrevData}} value="{{userPrevData.direction.province}}" {{/if}} {{#if userData}} value="{{userData.direction.province}}" {{/if}}>
+          <input type="text" class="form-control form-control-sm" id="province" name="province" {{#if userPrevData}} value="{{userPrevData.direction.province}}" {{/if}} {{#if userData}} value="{{userData.direction.province}}" {{/if}}>
         </div>
       </div>
       <div class="address-group row">
         <label for="state" class="col-md-3">State</label>
         <div class="col-md-9">
-          <input type="text" class="form-control" id="state" name="state" {{#if userPrevData}} value="{{userPrevData.direction.state}}" {{/if}} {{#if userData}} value="{{userData.direction.state}}" {{/if}}>
+          <input type="text" class="form-control form-control-sm" id="state" name="state" {{#if userPrevData}} value="{{userPrevData.direction.state}}" {{/if}} {{#if userData}} value="{{userData.direction.state}}" {{/if}}>
         </div>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label for="telephone" class="col-md-2">Contact Telephone</label>
-      <div class="col-md-10">
-        <input type="mail" class="form-control" id="telephone" name="telephone" {{#if userPrevData}} value="{{userPrevData.telephone}}" {{/if}} {{#if userData}} value="{{userData.telephone}}" {{/if}}>
-      </div>
-    </div>
-    <div class="form-group row">
-      <label for="introducing" class="col-md-2">Introduce Yourself</label>
-      <div class="col-md-10">
-        <textarea class="form-control" id="introducing" name="introducing">{{#if userPrevData}}{{userPrevData.introducing}}{{/if}}  {{#if userData}}{{userData.introducing}}{{/if}}</textarea>
       </div>
     </div>
     <div class="row avatar">
       <div class="col-md-3">
-        <img src="{{avatarURL}}" alt="avatar" id="avatarImage"/>
+        <img src="{{#if userPrevData}}{{userPrevData.profileImg}}{{/if}}{{#if userData}}{{userData.profileImg}}{{/if}}" alt="avatar" id="avatarImage"/>
       </div>
       <div class="col-md-9">
         <div class="form-group">
-          <label for="profileImage">Upload profile image</label>
-          <input type="file" class="form-control-file" id="profileImage" accept=".jpg, .jpeg, .png" name="avatar">
+          <label for="profileImage">Upload profile image (100px x 100px)</label>
+          <input type="file" class="form-control-file form-control-sm" id="profileImage" accept=".jpg, .jpeg, .png" name="avatar">
         </div>
       </div>
     </div>

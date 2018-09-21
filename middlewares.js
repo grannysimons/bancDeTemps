@@ -7,10 +7,15 @@ const saltRounds = 10;
 var MapboxClient = require('mapbox');
 var mapbox = require('mapbox');
 var geo = require('mapbox-geocoding');
-var socket = require('socket.io-client')('http://localhost:3000');
+var socket = require('socket.io-client')(process.env.PRODUCT_URL);
+// var socket = require('socket.io-client')('http://localhost:3000');
 // var mapbox = require('./mapbox-geocode.js');
-var mapBoxClient = new MapboxClient('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
-geo.setAccessToken('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
+// var mapBoxClient = new MapboxClient('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
+// geo.setAccessToken('pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw');
+
+var mapBoxClient = new MapboxClient(process.env.MAPBOX_TOKEN);
+geo.setAccessToken(process.env.MAPBOX_TOKEN);
+
 // var deepPopulate = require('mongoose-deep-populate')(mongoose);
 // PostSchema.plugin(deepPopulate, options /* more on options below */);
 
@@ -24,7 +29,6 @@ module.exports = {
       res.locals.userData = {
         name, lastName, userName, password: passwordUser, repeatPassword, mail, telephone, introducing, direction: {roadType, roadName, number, zipCode, city, province, state,},
       }
-      console.log('res.locals.userData: ', res.locals.userData);
       next();
     },
     checkNewUser: (req, res, next) => {
@@ -38,7 +42,7 @@ module.exports = {
             message: res.locals.messages,
             userData: res.locals.userData,
           };
-          res.render('signup', data);
+          res.render('auth/signup', data);
         }
         else
         {
@@ -82,13 +86,15 @@ module.exports = {
       .catch(error => next(error));
     },
     retrieveData: (req, res, next) => {
-      const { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, } = res.locals.user;
-      res.locals.userPrevData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, }
+      const { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, profileImg} = res.locals.user;
+      res.locals.userPrevData = { name, lastName, userName, password, repeatPassword, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, profileImg};
+      if(!res.locals.userPrevData.profileImg || res.locals.userPrevData.profileImg === '') res.locals.userPrevData.profileImg = '/images/avatar.png';
       next();
     },
   },
   editProfile_post: {
     retrieveData: (req, res, next) => {
+      // console.log('req.body: ', req.body);
       const { name, lastName, userName, passwordUser, repeatPassword, mail, roadType, roadName, number, zipCode, city, province, state, telephone, introducing } = req.body;
       res.locals.userData = { name, lastName, userName, mail, telephone, introducing, direction: { roadType, roadName, number, zipCode, city, province, state }, };
       if(passwordUser) res.locals.userData.password = passwordUser;
@@ -97,6 +103,7 @@ module.exports = {
       next();
     },
     checkPassword: (req,res,next) => {
+      // console.log('checkPassword!');
       if(res.locals.userData.password || res.locals.userData.repeatedPassword)
       {
         if(res.locals.userData.password===res.locals.userData.repeatPassword)
@@ -106,36 +113,35 @@ module.exports = {
           res.locals.userData.password = hashedPassword;
           res.locals.userData.repeatedPassword = hashedPassword;
           res.locals.messages.passwordsAreDifferent='';
-          //-------------------------CODI INTRODUIT PER ALBERT-----------------------------------
-          // anem a posar les coordenades a la propietat LOCATION , fent el forward geocoding
-          const { roadName, number, zipCode, city, province, state } = res.locals.userData.direction;
-          const query = roadName + ' ' + address + ' ' + number + ',' + zipCode + ' ' + city + ',' + province + ',' + state; 
-          geo.geocode('mapbox.places', query, (err, geoData) => {
-          console.log('a punt per entrar a geoData');
+          // //-------------------------CODI INTRODUIT PER ALBERT-----------------------------------
+          // // anem a posar les coordenades a la propietat LOCATION , fent el forward geocoding
+          // const { roadName, number, zipCode, city, province, state } = res.locals.userData.direction;
+          // const query = roadName + ' ' + address + ' ' + number + ',' + zipCode + ' ' + city + ',' + province + ',' + state; 
+          // geo.geocode('mapbox.places', query, (err, geoData) => {
+          // console.log('a punt per entrar a geoData');
           
-          if (geoData) {
-              console.log('hem entrat a dins de geoData per obtenir les coordenades');
-              console.log('el valor de geodata es:', geoData);
-              let longitude = geoData.features[0].geometry.coordinates[0];
-              let latitude = geoData.features[0].geometry.coordinates[1];
-              const location = {
-                type: 'Point',
-                coordinates: [longitude,latitude]
-              };
-              res.locals.userData.location = location;
-              console.log('les coordenades de la ubicacio del client son:', location);
+          // if (geoData) {
+          //     console.log('hem entrat a dins de geoData per obtenir les coordenades');
+          //     console.log('el valor de geodata es:', geoData);
+          //     let longitude = geoData.features[0].geometry.coordinates[0];
+          //     let latitude = geoData.features[0].geometry.coordinates[1];
+          //     const location = {
+          //       type: 'Point',
+          //       coordinates: [longitude,latitude]
+          //     };
+          //     res.locals.userData.location = location;
+          //     console.log('les coordenades de la ubicacio del client son:', location);
               
-            } else {
-              console.log('hi ha hagut un error:',err);
-            }
-          });
+          //   } else {
+          //     console.log('hi ha hagut un error:',err);
+          //   }
+          // });
 
-          //-----------------------------------------------------------------------------------------
+          // //-----------------------------------------------------------------------------------------
 
 
           User.update({userName: res.locals.userData.userName}, res.locals.userData)
           .then(user => {
-            // console.log('user ' + req.body.userName + ' correctly updated: ', user);
           })
           .catch(error => next(error));
 
@@ -158,7 +164,38 @@ module.exports = {
         }
       }
       next();
-    }
+    },
+    getLocation: (req, res, next) => {
+      // console.log('getLocation!!!');
+      //-------------------------CODI INTRODUIT PER ALBERT-----------------------------------
+          // anem a posar les coordenades a la propietat LOCATION , fent el forward geocoding
+          const { roadType, roadName, number, zipCode, city, province, state } = res.locals.userData.direction;
+          const query = roadType + ' ' + roadName + ' ' + number + ',' + zipCode + ' ' + city + ',' + province + ',' + state; 
+          // console.log('query? ', query);
+          geo.geocode('mapbox.places', query, (err, geoData) => {
+          // console.log('a punt per entrar a geoData');
+          
+          if (geoData) {
+              // console.log('hem entrat a dins de geoData per obtenir les coordenades');
+              // console.log('el valor de geodata es:', geoData);
+              let longitude = geoData.features[0].geometry.coordinates[0];
+              let latitude = geoData.features[0].geometry.coordinates[1];
+              const location = {
+                type: 'Point',
+                coordinates: [longitude,latitude]
+              };
+              res.locals.userData.location = location;
+              // console.log('les coordenades de la ubicacio del client son:', location);
+              next();
+              
+            } else {
+              // console.log('hi ha hagut un error:',err);
+              next(err);
+            }
+          });
+
+          //-----------------------------------------------------------------------------------------
+    },
   },
   activityManager: {
     getActivities: (req, res, next) => {
@@ -182,9 +219,9 @@ module.exports = {
   },
   filter: {
     getUsers: (req, res, next) => {
-      console.log('getUsers');
       res.locals.activities = [];
       let filter = {};
+      // console.log('el valor de req.query.distance es:',req.query.distance);
       if(req.query.long && req.query.lat)
       {
 
@@ -201,42 +238,119 @@ module.exports = {
         //   },
         // };
       };
-      if(req.query.userName) filter.userName = req.query.userName;
-      console.log('filter: ',filter);
-      User.find(filter)
+      // Let's check if there's some specific username, otherwise, we have to search for all of them
+      if(req.query.userName) {
+        filter.userName = req.query.userName;
+        // console.log('el username que busquem es',filter.userName);
+        User.findOne({userName: filter.userName})
       .then(users => {
+        
+        // var idUsers = [];
+        // users.forEach(user => {
+        //   idUsers.push(user._id);
+        // });
+        res.locals.idUsers = [users._id];
+        // console.log('aquest es el array de users',res.locals.idUsers);
+        next();
+      })
+      .catch(error => {
+        next(error);
+      });
+      } else { 
+        // console.log('Busquem tots els users que estan a dins una distancia determinada');
+        filter.userName = '';
+        User.find({ location:
+          { $geoWithin:
+             { $centerSphere: [ [ req.query.long, req.query.lat ], req.query.distance / 3963.2 ] } } })
+        .then(users => {
+  
         var idUsers = [];
         users.forEach(user => {
           idUsers.push(user._id);
         });
         res.locals.idUsers = idUsers;
+        // console.log('aquest es el array de users',res.locals.idUsers);
         next();
       })
       .catch(error => {
-        console.log('filterByUserName. Error: ', error);
         next(error);
       });
+      }  
     },
     getActivities: (req, res, next) => {
-      console.log('getActivities');
-      var filter = {$and: []};
-      if(res.locals.idUsers && res.locals.idUsers.length > 0) filter.$and.push({idUser: {$in: res.locals.idUsers}});
-      if(req.query.sector) filter.$and.push({sector: req.query.sector});
-      else if(req.query.subsector) filter.$and.push({subsector: req.query.subsector});
+      //-------------------CODI ALBERT: MIREM SI ESTEM AGAFANT LES ACTIVITATS D'UN SOL USER, O BÉ DE MES D'UN USER. I DESPRES FILTREM TAMBE PER SECTOR I SUBSECTOR
       
-      if(filter.$and.length === 0) filter = {}; 
+      let numberOfUsers = res.locals.idUsers.length;
+      // console.log('el numero usuaris a mirar i agafar les activitats es:', numberOfUsers);
+      // console.log('el valor de sector es:',req.query.sector);
+      // console.log('el valor de subsector es:',req.query.subsector);
+      let filter = {};
+      switch (numberOfUsers) {
+        case 0 :
+          //aquest cas es quan no hi ha usuaris a prop de on estas ubicat;
+          break;
+        default :
+          //aquest cas és quan hem fet la búsqueda d'un usuari en concret. Hem d'agafar les activitats d'aquest usuari
+          //si filtrem per sector/subsector, nomes hem de mostrar les activitats del sector
+          if (req.query.sector === '' && req.query.subsector === '') {
+            filter = {
+              idUser : {$in : res.locals.idUsers}};
+          } else if (req.query.sector === '' ) {
+            filter = {
+              idUser : {$in : res.locals.idUsers},
+              subsector : req.query.subsector,
+            };
+          } else {
+            filter = {
+              idUser : {$in : res.locals.idUsers},
+              sector : req.query.sector
+            };
+          }
+
+          Activity.find(filter)
+          .populate('idUser')
+          .then(activities => {
+            res.locals.activities = activities;
+            next();
+           })
+          .catch(error => {
+          next(error);
+          })
+          // break;
+        // default:
+        //   let filterMany = {
+        //     idUser : {$in : res.locals.idUsers},
+        //     // sector : req.query.subsector,
+        //     // subsector : req.query.subsector,
+        //   };
+        //   Activity.find(filterMany)
+        //   .populate('idUser')
+        //   .then(activities => {
+        //     res.locals.activities = activities;
+        //     next();
+        //    })
+        //   .catch(error => {
+        //   next(error);
+        //   })
+       }
+      // var filter = {$and: []};
+      // if(res.locals.idUsers && res.locals.idUsers.length > 0) filter.$and.push({idUser: {$in: res.locals.idUsers}});
+      // if(req.query.sector) filter.$and.push({sector: req.query.sector});
+      // else if(req.query.subsector) filter.$and.push({subsector: req.query.subsector});
       
-      Activity.find(filter)
-      .populate('idUser')
-      .then(activities => {
-        res.locals.activities = activities;
-        next();
-      })
-      .catch(error => {
-        console.log('getActivities Error: ', error);
-        next(error);
-      })
-    },
+      // if(filter.$and.length === 0) filter = {}; 
+      
+      // Activity.find(filter)
+      // .populate('idUser')
+      // .then(activities => {
+      //   res.locals.activities = activities;
+      //   next();
+      // })
+      // .catch(error => {
+      //   next(error);
+      // })
+      // console.log('les activitats son', res.locals.activities);
+    }
   },
   startRequest: {
     getInvolvedUser: (req, res, next) => {
@@ -293,7 +407,6 @@ module.exports = {
       })
     },
     createTransaction: (req, res, next) => {
-      console.log('createTransaction');
       Transaction.create({
         idActivity: res.locals.idActivity,
         offertingUserId: res.locals.users.offertingUser,
@@ -321,7 +434,6 @@ module.exports = {
     getTransactions: (req, res, next) => {
       const currentUser = req.session.currentUser;
       let state = req.query.state;
-      console.log('mirem les transacions que tenen estat',req.query);
       var aa = 'offertingUserId',
           bb = 'demandingUserId'
       
@@ -418,8 +530,6 @@ module.exports = {
   insertNewTransaction: {
     insertTransaction: (req, res, next) => {
       const {offertingUserId,demandingUserId,activityId,status} = req.body;
-      // console.log('hem entrat al POST per crear la transacció!!!');
-      // console.log(offertingUserId,demandingUserId,activityId,status);
       Transaction.create({
         idActivity: activityId,
         offertingUserId: offertingUserId,
@@ -475,7 +585,6 @@ module.exports = {
       getTransactionInfo: (req, res, next) => {
         const transactionId = req.query.transactionId;
         const activityId = req.query.activityId;
-        console.log('el transactionId passat es: ',transactionId); 
         Transaction.findOne({_id: transactionId})
             .then(transaction => {
               res.locals.transactionInfo = transaction;
@@ -491,7 +600,6 @@ module.exports = {
       insertSecondTransaction: (req, res, next) => {
         // const transactionId = req.query.transactionId;
         const activityId = req.query.activityId;
-        console.log('el activityId passat es: ',activityId); 
         let dataTransaction = new Transaction ({
           idActivity: activityId,
           offertingUserId: res.locals.transactionInfo.demandingUserId,
@@ -504,7 +612,6 @@ module.exports = {
         dataTransaction.save()
         .then(result => {
           res.locals.transactionIdSecondTransaction = result._id;
-          console.log(result._id);  // this will be the new created ObjectId
           next();
         })
         .catch(error => {
@@ -514,7 +621,6 @@ module.exports = {
     updateFirstTransaction: (req, res, next) => {
       let transactionId1 = res.locals.transactionInfo._id
       let transactionId2 = res.locals.transactionIdSecondTransaction; 
-      console.log('el transactionId2 passat es: ',transactionId2); 
 
       //we have to update first transaction with the transaction_id of second. So, they are related
       let conditions = { _id: transactionId1 }
@@ -523,7 +629,6 @@ module.exports = {
 
       Transaction.update(conditions, update, options)
       .then(numAffected => {
-        console.log('el numero de files update es:', numAffected);
         next();
       })
       .catch(error => {
@@ -551,10 +656,8 @@ module.exports = {
       User.find({location: { $exists: true }}).select({ 'direction': 1, 'location': 1, '_id': 1})
       // Buildings.find({ref_inmueble: refInmueble}).select({ 'latitude': 1, 'longitude': 1, '_id': 0})
       .then(response => {
-        // console.log('la response de la consulta es',response);
         for (let i=0; i<response.length; i++ ) {
           const id = response[i]._id;
-          // console.log ('el primer user dades de direction es',response[i].direction);
           const { roadType, roadName, number, zipCode, city, province, state } = response[i].direction;
           // const roadName = response[i].direction.roadName
           //       ,number = response[i].direction.number
@@ -567,20 +670,16 @@ module.exports = {
           
           if (roadName != undefined) {
             geo.geocode('mapbox.places', query, (err, geoData) => {
-              // console.log('a punt per entrar a geoData. La query es:',query);
            
           
           
           if (geoData) {
-              // console.log('hem entrat a dins de geoData per obtenir les coordenades');
-              // console.log('el valor de geodata es:', geoData);
               let longitude = geoData.features[0].geometry.coordinates[0];
               let latitude = geoData.features[0].geometry.coordinates[1];
               const location = {
                 type: 'Point',
                 coordinates: [longitude,latitude]
               };
-              console.log('les coordenades de la ubicacio del client son:', location);
               let conditions = { _id: id }
                 , update = { $set: {location: location}}
                 , options = { multi: false };
@@ -588,15 +687,12 @@ module.exports = {
               // Buildings.update(conditions, update, options)
               User.findOneAndUpdate(conditions, update, options)
               .then(numAffected => {
-                console.log('el numero de files update es:', numAffected);
-                
               })
               .catch(error => {
                 next(error);
               })
               
             } else {
-              console.log('hi ha hagut un error:',err);
             }
           });
          

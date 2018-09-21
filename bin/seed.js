@@ -535,7 +535,6 @@ Activity.create(activities)
   return Transaction.create(transactions)
 })
 .then(() => {
-  console.log('correctly created users, activities and transactions');
   mongoose.connection.close();
 })
-.catch(error => console.log('error creating users and activities in the database', error));
+.catch(error => {});

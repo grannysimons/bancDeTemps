@@ -16,11 +16,12 @@ const { error: {empty, userExist, userNotExist,errorMessage} } = require('../mes
 
 // ------------------To connect to remote mongoDB in mlab----------------------------------
 const mongoose = require('mongoose');
-const dbName2 = 'timebank';
-mongoose.connect(`mongodb://administrator:timebank2018@ds145412.mlab.com:45412/${dbName2}`);
+// const dbName2 = 'timebank';
+// mongoose.connect(`mongodb://administrator:timebank2018@ds145412.mlab.com:45412/${dbName2}`);
+mongoose.connect(process.env.MONGODB_URI) 
 
 router.get('/signup', function(req, res, next) {
-  res.render('signup');
+  res.render('auth/signup');
 });
 
 router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.checkNewUser, Middlewares.signUp.checkValidPassword, function(req, res, next) {
@@ -31,16 +32,13 @@ router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.check
   userData.password = hashedPassword;
   delete userData.repeatPassword;
   userData.location = {type: 'Point', coordinates: [0,0]};
-  console.log('userData: ', userData);
   User.create(userData)
   .then(user => {
-    console.log('user creat ok!');
     req.session.currentUser = user;
     res.redirect('/');
   })
   .catch(error => 
     {
-      console.log('user creat ko!');
       next(error)
     });
 });
@@ -50,8 +48,6 @@ router.post('/signup', Middlewares.signUp.retrieveData, Middlewares.signUp.check
 router.post('/login', (req,res,next) => {
     
   const {userName, password} = req.body;
-  console.log('el username es',userName);
-  console.log('el password es',password);
   
   if(!userName || !password)
   {
@@ -68,35 +64,29 @@ router.post('/login', (req,res,next) => {
           {   
               if(bcrypt.compareSync(password, user.password))
               {
-                console.log('estem a 1');  
                 req.session.currentUser = user;
                 const message = {
                   state: 'success',
-                  info: 'Login correct!!'
+                  info: 'Login succeed!'
                 };
                 res.json({message});   
-                // res.redirect('/');
               }
               else
               {    
                 const message = {
                   state: 'error',
-                  info: 'Password is not correct'
+                  info: 'User or Password is not correct'
                 };
                 res.json({message});    
-                // req.flash('info', errorMessage);
-                // res.redirect('/');
               }
           }
           else
           {
             const message = {
               state: 'error',
-              info: 'This user doesnt exist'
+              info: 'User or Password is not correct'
             };
             res.json({message});    
-            // req.flash('info', usernotExist);
-            //   res.redirect('/');
           }
       })
       .catch((error => {
@@ -105,13 +95,11 @@ router.post('/login', (req,res,next) => {
           info: '500 error in server. Try again'
         };
         res.json({message});  
-        // next(error);
       }))
   }
 })
 
 router.get('/logout', (req, res, next) => {
-  console.log('no hem entrat al logout');
   delete req.session.currentUser;
   res.redirect('/');
 })

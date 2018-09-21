@@ -5,7 +5,6 @@ const Transaction = require('../models/transaction');
 const Middleware = require('../middlewares');
 
 router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getInvolvedUser, Middleware.startRequest.transactionExists, Middleware.startRequest.createTransaction, (req, res, next) => {
-  console.log('request');
   User.updateOne(
     { _id: res.locals.users.offertingUser }, 
     { $push: { transactions: res.locals.transactionId } } )
@@ -19,7 +18,6 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
     })
   })
   .catch(error => {
-    console.log('error!!! ', error);
     res.status(500);
     res.json({ error });
   })
@@ -27,7 +25,9 @@ router.get('/:idAct/request', Middleware.isLogged, Middleware.startRequest.getIn
 });
 
 router.get('/filter', Middleware.filter.getUsers, Middleware.filter.getActivities, (req, res, next) => {
+  console.log('hem fet tots els middlewares de filter');
   const activities = res.locals.activities;
+  // console.log('el valor activities es',activities);
   if(activities && activities.length > 0)
   {
     res.status(200);
@@ -45,35 +45,9 @@ router.get('/filter', Middleware.filter.getUsers, Middleware.filter.getActivitie
   }
 });
 
-// router.get('/filterUserActivities', Middleware.filter.filterByUsername, Middleware.filter.filterBySectorSubsector, (req, res, next) => {
-//   const activitiesByUserSectorSubsector = res.locals.activitiesByUserSectorSubsector;
-//   const activitiesBySectorSubsector = res.locals.activitiesBySectorSubsector;
-//   console.log('el valor de activities es:', activitiesByUserSectorSubsector);
-
-//   if(activitiesByUserSectorSubsector)
-//   {
-//     activities = activitiesByUserSectorSubsector;
-//     res.status(200);
-//     res.json({ activities, currentUser: req.session.currentUser });
-//   }
-  
-//   else
-//   {
-//     res.status(500);
-//     res.json({ error });
-//   }
-// });
-
-
-
 //-----------API ROUTES FOR TRANSACTION MANAGER----------------------------------
 
-
 router.get('/filterUserActivitiesForTransactions', Middleware.acceptProposedTransaction.getUserActivities, (req,res,next) => {
-  
-  
-  console.log('EL LLISTAT ACTIVITATS ES:',res.locals.activities);
-
   if (res.locals.activities) {
     const activities = res.locals.activities;
     res.json({activities,currentUser: req.session.currentUser}); // retornem a AXIOS el transactionId2. Si ho passa bé, ensenyem missatge que s'ha creat be la transacció
@@ -86,9 +60,6 @@ router.get('/filterUserActivitiesForTransactions', Middleware.acceptProposedTran
 });
 
 router.get('/acceptSecondLegTransaction', Middleware.acceptProposedTransaction.getTransactionInfo,Middleware.acceptProposedTransaction.insertSecondTransaction,Middleware.acceptProposedTransaction.updateFirstTransaction, (req,res,next) => {
-  // const {state} = req.query;
-  // console.log('ESTEM CONSULTANT LES TRANSACCIONS QUE TENEN ESTAT:',req.query);
-
   if (res.locals.transactionIdSecondTransaction) {
     const transactionId2 = res.locals.transactionIdSecondTransaction;
     res.json({transactionId2}); // retornem a AXIOS el transactionId2. Si ho passa bé, ensenyem missatge que s'ha creat be la transacció
@@ -116,40 +87,29 @@ router.post('/insertNewTransaction',Middleware.insertNewTransaction.insertTransa
 
 
 router.get('/getTransactionsOnState', Middleware.TransactionManager.getTransactions, (req, res, next) => {
-  console.log('Hem fet tots els passos per recuperar les dades de la transaccio');
   let transactions = res.locals.transactions
   res.json({ transactions });
   
 });
 
 router.get('/updateStateTransaction', Middleware.TransactionManager.updateStatusTransaction, (req, res, next) => {
-  console.log('Hem fet tots els passos per recuperar les dades de la transaccio');
   let transactions = res.locals.transactions
   res.json({ transactions });
   
 });
 
 router.get('/getTransactionInfoSecondLeg', Middleware.TransactionManager.getTransactionInfoSecondLeg, (req, res, next) => {
-  console.log('Hem fet tots els passos per recuperar les dades del 2LEG transaccio');
-  console.log('el valor de la resposta es:', res.locals.transactionSecondLeg);
   let transactions2 = res.locals.transactionSecondLeg;
   res.json({ transactions2 });
   
 });
 
 router.get('/obtenirUserID2', (req,res,next) => {
-  console.log('2.HEM POGUT ACCEDIR AL MIDDLEWARE');
-  // console.log('2.1 EL USER ID PASSAT A LOCALS ES:', res.locals);
   const userName = req.query.userName;
-      console.log('el nom passat es BBBB: ',userName); 
       User.findOne({userName: userName})
       .then(user => {
         let userid = user._id; 
-        console.log('EL USER ID QUE PASSEM A LOCALS ES: ', userid);
-        // res.locals.userid = user._id;
-        // console.log('EL VALOR GUARDAT A LOCALS DEL USER ID ES',res.locals);
-        res.json({userid}); //amb aquest comando passem les dades que volem de resposta a AXIOS. Per agafarles, desde el main.js del browser sera: response.data.userid
-        // next();
+        res.json({userid}); 
       })
       .catch(error => {
         next(error);

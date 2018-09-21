@@ -7,11 +7,10 @@ const Assets = require('../assets');
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const geocodingClient = mbxGeocoding({ accessToken: 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw' });
 const multer  = require('multer');
-const IsThere = require("is-there");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploadImages/avatars/');
+    cb(null, 'public/images/uploadImages/avatars/');
   },
   filename: function (req, file, cb) {
     let extension = '.jpg';
@@ -34,9 +33,8 @@ router.get('/edit', Middlewares.editProfile_get.checkUserExists, Middlewares.edi
   res.render('profile/edit', { userPrevData });
 });
 
-router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, function(req, res, next) {
-  console.log("req.fields: ", req.fields);
-  console.log("req.file: ", req.file);
+router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retrieveData, Middlewares.editProfile_post.checkPassword, Middlewares.editProfile_post.getLocation, function(req, res, next) {
+  // console.log("req.file: ", req.file);
 
   const roadType = req.body.roadType;
   const roadName = req.body.roadName;
@@ -46,43 +44,61 @@ router.post('/edit', upload.single('avatar'), Middlewares.editProfile_post.retri
   const province = req.body.province;
   const state = req.body.state;
   const query = roadType + ' ' + roadName + ' ' + number + ', ' + zipCode + ' ' + city + ', ' + province + ', ' + state;
-  geocodingClient.forwardGeocode({
-    query: query,
-    limit: 2
-  })
-  .send()
-  .then(response => {
-    const match = response.body;
-    if(match)
-    {
-      var maxCoincidence = undefined;
-      match.features.forEach(coincidence => {
-        if(!maxCoincidence || maxCoincidence.relevance < coincidence.relevance) maxCoincidence = coincidence;
-      });
+  // geocodingClient.forwardGeocode({
+  //   query: query,
+  //   limit: 2
+  // })
+  // .send()
+  // .then(response => {
+  //   const match = response.body;
+  //   if(match)
+  //   {
+  //     var maxCoincidence = undefined;
+  //     match.features.forEach(coincidence => {
+  //       if(!maxCoincidence || maxCoincidence.relevance < coincidence.relevance) maxCoincidence = coincidence;
+  //     });
       
-      if(maxCoincidence)
-      {
-        res.locals.userData.location = {type: "Point", coordinates: maxCoincidence.center};
-      }
-      res.locals.messages.passwordsAreDifferent='';
-      User.update({userName: res.locals.userData.userName}, res.locals.userData)
-      .then(user => {
-        req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
-        const data = {
-          message: res.locals.messages,
-          userData: res.locals.userData,
-          avatarURL: '/images/avatar.png',
-        };
-        res.render('profile/edit', data);
-      })
-      .catch(error => {
-        next(error);
-      });
-    }
+  //     if(maxCoincidence)
+  //     {
+  //       res.locals.userData.location = {type: "Point", coordinates: maxCoincidence.center};
+  //     }
+  //     res.locals.messages.passwordsAreDifferent='';
+  //     res.locals.userData.profileImg = (req.file && req.file.filename) ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
+  //     console.log('profileImg ',res.locals.userData.profileImg);
+  //     User.update({userName: res.locals.userData.userName}, res.locals.userData)
+  //     .then(user => {
+  //       req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
+  //       const data = {
+  //         message: res.locals.messages,
+  //         userData: res.locals.userData,
+  //         // avatarURL: req.locals.userData.profileImg,
+  //       };
+  //       res.render('profile/edit', data);
+  //     })
+  //     .catch(error => {
+  //       next(error);
+  //     });
+  //   }
+  // })
+  // .catch(error => {
+  //   console.log('editProfile error: ',error);
+  // })
+  res.locals.messages.passwordsAreDifferent='';
+  res.locals.userData.profileImg = (req.file && req.file.filename) ? '/images/uploadImages/avatars/'+req.file.filename : '/images/avatar.png';
+  // console.log('profileImg ',res.locals.userData.profileImg);
+  User.update({userName: res.locals.userData.userName}, res.locals.userData)
+  .then(user => {
+    req.session.currentUser = Assets.extend(req.session.currentUser, res.locals.userData);
+    const data = {
+      message: res.locals.messages,
+      userData: res.locals.userData,
+      // avatarURL: req.locals.userData.profileImg,
+    };
+    res.render('profile/edit', data);
   })
   .catch(error => {
-    console.log('editProfile error: ',error);
-  })
+    next(error);
+  });
 });
 
 router.get('/activityManager', Middlewares.activityManager.getActivities, (req, res, next) => {
@@ -90,11 +106,10 @@ router.get('/activityManager', Middlewares.activityManager.getActivities, (req, 
     offertedActivities: res.locals.offertedActivities,
     demandedActivities: res.locals.demandedActivities,
   }
-  res.render('profile/activityManager', data);
+  res.render('managers/activityManager', data);
 });
 
 router.post('/activityManager/:type', Middlewares.geoLocation.inverseGeocoding, (req, res, next) => {
-  console.log('crear activittat');
   const type = req.params.type;
   const { sector, subsector, description, tags, duration } = req.body;
   const activityCreate = {
@@ -121,7 +136,6 @@ router.post('/activityManager/:idAct/delete', (req, res, next) => {
     res.redirect('/profile/activityManager');
   })
   .catch(error => {
-    console.log(error);
     next(error);
   })
 })

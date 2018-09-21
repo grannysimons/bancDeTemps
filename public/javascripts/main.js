@@ -1,15 +1,21 @@
 // import timetable from '../../timetable';
+
+var envURL = 'http://localhost:3000';
+// var envURL = 'https://timebank2018.herokuapp.com/';
+
+// mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
+
+
+// Define socket.io for messaging
 var socket = io();
 socket.connect();
 socket.on('chat message', (msg) => {
   // Let's check if user is registered. We have to check only if id #currentuser-logged exist
-  console.log('hem entrat a socket-on');
   if ($( "#currentuser-logged" ).length) {
     
     // element exists. Let's get the current_id
     const currentUserId = $( "#currentuser-logged" ).attr('data-userid');
     if (msg.my == currentUserId) {
-      console.log('ha coincidit el username. ensenyem missatge nova transaccio');
       // $('#currentuser-logged').text('New Pending Transaction to Accept!!');
       $('#currentuser-logged').append('<p id="pendingmsg" class="pending-transaction-msg blink">New Pending Transaction to Accept!!</p>');
       setTimeout(() => { $('#pendingmsg').removeClass('blink'); }, 10000);
@@ -26,25 +32,41 @@ socket.on('chat message', (msg) => {
 
 var map, globalMarkers=[];
 window.addEventListener('load', ()=>{
-  document.querySelector('#filter #submit').addEventListener('click', filter);
+  //comprovem que existeixi primer l'element
+  if ($( "#filter" ).length) {
+  document.querySelector('#filter').addEventListener('click', filter);
+  } 
+  if ($( "#submit" ).length) {
+    document.querySelector('#submit').addEventListener('click', filter);
+    } 
+  // document.querySelector('#filter #submit').addEventListener('click', filter);
+  document.querySelector('.logo-ironhack img').setAttribute('src', 'images/ironhack.png');
 
   var viewportHeight = $(window).height();  
   var viewportWidth = $(window).width();
 
   var heightNavBar = document.getElementById('navbar-main').offsetHeight;
-  // console.log('La altura del icono menu es de:',heightNavBar);
 
   var heightMainTitle = viewportHeight-2*heightNavBar;
-  document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
-  document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
+  if ($( "#text-banc" ).length) {
+    document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`); 
+  }
+  if ($( "#footer-main-page" ).length) {
+    document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
+  }
   // document.getElementById('new').setAttribute("style",`height:${viewportHeight}px`);
   var linkLogin = document.getElementById("my-login");
 
   //smooth scroll
-  const y = document.getElementById('search-form').offsetHeight;
-  document.getElementById('scroll').onclick = function () {
-    scrollTo(document.body, y, 500);   
+  if ($( "#search-form" ).length) {
+    const y = document.getElementById('search-form').offsetHeight;
   }
+
+  if ($( "#scroll" ).length) {
+    document.getElementById('scroll').onclick = function () {
+    scrollTo(document.body, y, 500);   
+    }
+  }  
     
   function scrollTo(element, to, duration) {
     var start = element.scrollTop,
@@ -63,6 +85,7 @@ window.addEventListener('load', ()=>{
     animateScroll();
   }
 
+
   Math.easeInOutQuad = function (t, b, c, d) {
   t /= d/2;
   if (t < 1) return c/2*t*t + b;
@@ -71,7 +94,10 @@ window.addEventListener('load', ()=>{
   };
 
   mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
-  
+  // mapboxgl.accessToken = process.env.MAPBOX_TOKEN;
+
+
+
   if(navigator.geolocation)
   {
     navigator.geolocation.getCurrentPosition(position => {
@@ -79,7 +105,7 @@ window.addEventListener('load', ()=>{
       map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v10',
-        zoom: 15,
+        zoom: 14,
         center: point
       });
       
@@ -88,7 +114,6 @@ window.addEventListener('load', ()=>{
   }
   else
   {
-    console.log('no navigator.geolocation');
     filter();
   }
 
@@ -112,26 +137,18 @@ window.onbeforeunload = function () {
   window.scrollTo(0, 0);
 }
 
-// $( window ).resize(function() {
-//   viewportHeight = $(window).height(); 
-//   heightMainTitle = viewportHeight-2*heightNavBar;
-//   document.getElementById('text-banc').setAttribute("style",`height:${heightMainTitle}px`);
-//   document.getElementById('footer-main-page').setAttribute("style",`height:${heightNavBar}px`);
-//   document.getElementById('new').setAttribute("style",`height:${viewportHeight}px`);
-// });
-
-
 function filter(){
   const sector = document.getElementById('sector').value;
   const subSector = document.getElementById('subsector').value;
   const user = document.getElementById('user').value;
-  const distance = (document.getElementById('distance').value ? document.getElementById('distance').value : 30)*1000;
+  const distance = (document.getElementById('distance').value ? document.getElementById('distance').value : 0.5)*1000;
   if(distance < 1000) distance = 1000;
   var long, lat;
-  var url=`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
+  var url=`${envURL}/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
+
+  // var url=`http://localhost:3000/api/filter?sector=${sector}&subsector=${subSector}&userName=${user}`;
   if(distance && distance!='' && navigator.geolocation)
   {
-    console.log('estic agafant la posicio actual');
     navigator.geolocation.getCurrentPosition(position => {
       long = position.coords.longitude;
       lat = position.coords.latitude;
@@ -148,14 +165,17 @@ function filter(){
 function addSearchResults(url){
   axios.get(url)
   .then((act) => {
+    
     document.getElementById('results').innerHTML = '';
     var markers = [];
     if(act.data.activities)
     {
       for(let i=0; i<act.data.activities.length; i++)
       {
+        
         if(act.data.activities[i].idUser.location.coordinates.length === 2 )
-        {
+        { 
+          
           var divPopup = document.createElement('div');
           var divPopupLeft = document.createElement('div');
           divPopupLeft.classList.add('col-sm-7');
@@ -199,6 +219,8 @@ function addSearchResults(url){
           divPopup.addEventListener('mouseover', shadowActivity);
           divPopup.addEventListener('mouseout', stopShadowActivity);
 
+          
+
           var markerCreated = false;
           markers.forEach(marker => {
             if(marker.location.coordinates[0] === act.data.activities[i].idUser.location.coordinates[0] && marker.location.coordinates[1] === act.data.activities[i].idUser.location.coordinates[1])
@@ -213,6 +235,8 @@ function addSearchResults(url){
             markers.push({location: act.data.activities[i].idUser.location, popupHTML: [divPopup]});
           }
         }
+        // console.log('ha acabat de fer el if');
+        
 
         let liElement = document.createElement('li');
         liElement.classList.add('row');
@@ -298,6 +322,8 @@ function addSearchResults(url){
         }
       }
 
+      // console.log('hem arribat passat el if, fila 305');
+
       if(globalMarkers && globalMarkers.length > 0)
       {
         globalMarkers.forEach(marker => {
@@ -315,6 +341,9 @@ function addSearchResults(url){
         .setDOMContent(mainDiv)
 
         //marker!
+        
+        // console.log('les coordenades del usuari son:',markerElement.location.coordinates);
+        map.flyTo({center: markerElement.location.coordinates}); // centrem el mapa
         var marker = new mapboxgl.Marker()
         .setLngLat(markerElement.location.coordinates)
         .setPopup(popup) // sets a popup on this marker
@@ -332,14 +361,15 @@ function addSearchResults(url){
     }
   })
   .catch(error => {
-    document.getElementById('results').innerHTML = "Error " + error;
+    // document.getElementById('results').innerHTML = "Error " + error;
+    document.getElementById('results').innerHTML = "Error: This User doesn't exist. Try again please";
   })
 }
 
 function apply(e){
   const idActivitat = e.target.classList[2].substring(6);
-  console.log(`http://localhost:3000/api/${idActivitat}/request`);
-  axios.get(`http://localhost:3000/api/${idActivitat}/request`)
+  axios.get(`${envURL}/api/${idActivitat}/request`)
+  // axios.get(`http://localhost:3000/api/${idActivitat}/request`)
   .then(act => {
     const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
     $(idModal).modal('hide');
@@ -377,9 +407,6 @@ function apply(e){
     const idModal = '#'+e.target.parentNode.parentNode.parentNode.parentNode.getAttribute('id');
     $(idModal).modal('hide');
     document.getElementById('results').innerHTML = error.response.data.error;
-    // document.getElementById('results').innerHTML = message;
-    //REVISAR!!!
-    console.log('revisaaaar');
     const divButton = document.createElement('dev');
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
@@ -393,7 +420,6 @@ function apply(e){
 
 function shadowActivity(e){
   let activityNumber = e.target.getAttribute('id').substring(9);
-  console.log(activityNumber);
   document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.backgroundColor = '#efefef';
   document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.transition = 'background-color 1s';
 }
@@ -402,44 +428,6 @@ function stopShadowActivity(e){
   document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.backgroundColor = 'transparent';
   document.getElementsByClassName('moreInfo'+activityNumber)[0].parentElement.parentElement.style.transition = 'background-color 1s';
 }
-
-
-
-// function filterUserActivities() {
-//   const user = document.getElementById('usrName').value;
-//   const sector = "";
-//   const subsector = "";
-//   axios.get(`http://localhost:3000/api/filterUserActivities?sector=${sector}&subsector=${subsector}&userName=${user}`)
-//   .then((act) => {
-//     // console.log(act.data);
-//     document.getElementById('results-activities').innerHTML = '';
-//     for(let i=0; i<act.data.activities.length; i++)
-//     {
-//       let divDescription = document.createElement('div');
-//       divDescription.innerHTML = act.data.activities[i].description;
-//       let divDuration = document.createElement('div');
-//       divDuration.innerHTML = 'duration: ' + act.data.activities[i].duration + 'hours';
-//       document.getElementById('results-activities').appendChild(divDescription);
-//       document.getElementById('results-activities').appendChild(divDuration);
-      
-//       if(act.data.currentUser) 
-//       {
-//         let dynamicClass = 'apply-'+act.data.activities[i]._id;
-//         let buttonApply = document.createElement('button');
-//         buttonApply.classList.add('btn', 'btn-info', dynamicClass);
-//         buttonApply.setAttribute('id', 'apply-'+i);
-//         buttonApply.addEventListener('click', apply);
-//         buttonApply.innerHTML = 'Apply';
-
-//         document.getElementById('results-activities').appendChild(buttonApply);
-//       }
-
-//     }
-//   })
-//   .catch(error => {
-//     document.getElementById('results-activities').innerHTML = "erroooor!" + error;
-//   })
-// } 
 
 //---------------------LOGIN----------------------------------------------------
 
@@ -451,8 +439,6 @@ function loginFormSubmit() {
   // document.getElementById("auth-form").submit();
   const usrName = document.getElementById('usr').value;
   const password = document.getElementById('password').value;
-
-  console.log('el username es:', usrName);
 
   $("#login-messages").empty();
   //we check for user and password
@@ -480,34 +466,18 @@ function loginFormSubmit() {
       userName : usrName,
       password : password
     }
-    axios.post('http://localhost:3000/auth/login', authData)
+    //${process.env.PRODUCT_URL}
+    axios.post(`${envURL}/auth/login`, authData)
+    // axios.post('http://localhost:3000/auth/login', authData)
     .then((response) => {
       if (response.data.message.state == 'success') {
-        $("#login-messages").empty(); //we empty the activities <div>
-        $("#login-messages").append("<p class='text-success border border-success rounded'>Login succeed!</p>");
+        $("#login-messages").empty(); //we empty 
+        $("#login-messages").append(`<p class='text-success border border-success rounded'>${response.data.message.info}</p>`);
         setTimeout(() => { location.reload(); }, 1000);
+      } else {
+        $("#login-messages").empty(); //we empty 
+        $("#login-messages").append(`<p class='text-danger border border-danger rounded'>${response.data.message.info}</p>`);
       }
-      // console.log('el valor devuelto',response);
-      // $.get('http://localhost:3000');
-      
-      // $.ajax({
-      //   url: 'http://localhost:3000',
-      //   data: null,
-      //   success: null,
-      //   dataType: null
-      // });
-      // $('html').load( '/' );
-      // axios.get('http://localhost:3000')
-      // .then((response) => {
-      //   console.log('hem tornat');
-      //   location.reload();
-      // })
-      
-      // .catch((error) => {
-
-      // })
-
-      
     })
     .catch((error) => {
       $("#login-messages").empty(); //we empty the activities <div>
@@ -534,9 +504,10 @@ function performGetRequest2() {
     const subSector = "";
         
     // we need to get the user_id in order to create the transaction later
-    axios.get(`http://localhost:3000/api/obtenirUserID2?userName=${usrName}`)
+    //${process.env.PRODUCT_URL}
+    axios.get(`${envURL}/api/obtenirUserID2?userName=${usrName}`)
+    // axios.get(`http://localhost:3000/api/obtenirUserID2?userName=${usrName}`)
     .then((response) => {
-      console.log('el valor devuelto',response);
       if (response.data.userid) {
         offertingUserId = response.data.userid;
         // Now that we have retrieve the OfferingUserId, we can ask for activities of this user
@@ -566,8 +537,11 @@ function findUserActivities(usrName, offertingUserId) {
     const subSector = "";
     var resultElement = document.getElementById('getResult2');
     resultElement.innerHTML = '';
+    
 
-    axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${offertingUserId}`)
+    // axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${offertingUserId}`)
+
+    axios.get(`${envURL}/api/filterUserActivitiesForTransactions?userId=${offertingUserId}`)
     .then((response) => {
       $("#panel-result-apply-transaction").empty(); // We remove any previous message in the PANEL MESSAGE
       let demandingUserId = response.data.currentUser._id;
@@ -637,10 +611,11 @@ function findUserActivities(usrName, offertingUserId) {
     let numActivity = element.getAttribute('numActivity');
     let attributeJSON = element.getAttribute('dataprofile');
     let dataTransaction = JSON.parse(attributeJSON);
-    console.log('dataTransaction.offertingUserId:', dataTransaction.offertingUserId);
-
-    axios.post('http://localhost:3000/api/insertNewTransaction', dataTransaction)
     
+
+    // axios.post('http://localhost:3000/api/insertNewTransaction', dataTransaction)
+
+    axios.post(`${envURL}/api/insertNewTransaction`, dataTransaction)
     .then((response) => {
       $("#getResult2").empty(); //we empty the activities <div>
       $("#panel-result-apply-transaction").empty();
@@ -694,12 +669,12 @@ function selectTransactionsStatus(element) {
   // we setup the Classes of Siblings
   $(element).siblings().addClass('btn-warning');
   $(element).siblings().removeClass('btn-info');
-
-  axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
+  
+  // axios.get(`http://localhost:3000/api/getTransactionsOnState?state=${state}`)
+  axios.get(`${envURL}/api/getTransactionsOnState?state=${state}`)
     
     .then((response) => {
       
-      console.log('el llistat de transaccions a mostrar es',response.data.transactions);
       $('#container-title-transactions > h3').html(`${state.toUpperCase()} TRANSACTIONS`);
       $("#transaction-container").empty(); //we empty the 'transaction-container' <div>
       
@@ -734,7 +709,6 @@ function selectTransactionsStatus(element) {
       
       
       if (listTransactions) {
-        // console.log('comprovem si ens retorna un array:',Array.isArray(listTransactions));
         if (Array.isArray(listTransactions)) {
           // We look if there's any element inside
           if (listTransactions.length>0) {
@@ -759,8 +733,6 @@ function selectTransactionsStatus(element) {
             $(newdiv2).append(`<p class="transaction-paragraf">Sector: ${ element.idActivity.sector }</p>`);
             $(newdiv2).append(`<p class="transaction-paragraf">Subsector: ${ element.idActivity.subsector }</p>`);
             $(newdiv2).append(`<p class="transaction-paragraf">Duration: ${ element.idActivity.duration } hour</p>`);
-            // console.log('el valor de newdiv2 abans',newdiv2);
-            // console.log('el state abans entrar al SWITCH:',state);
             switch (state) {
               case 'Proposed':
                 // We can CANCEL the transactions we have created.
@@ -769,7 +741,6 @@ function selectTransactionsStatus(element) {
                 $("#transaction-container").append( newdiv2 );
                 break;
               case 'Pending':
-                console.log('hem entrat a dins de pending');
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="seeListActivities(this)">See list Activities of User: ${ element.demandingUserId.userName }</button>`);
                 $(newdiv2).append(`<button class="btn btn-outline-info transaction-paragraf" onclick="ChangeStatusTransaction(this,'Refused')">Reject</button>`);
                 //now we have to add all the activities, and make them invisible
@@ -816,7 +787,6 @@ function selectTransactionsStatus(element) {
      
     })
     .catch( (error) => {
-      console.log('hem arribat a un error a dins de la Consulta del ESTAT');
     });
 
 
@@ -824,13 +794,14 @@ function selectTransactionsStatus(element) {
 }
 
 function InsertActivitiesPendingTransactions(demandingUserId,itemTransactionId) {
-  axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${demandingUserId}`)
+  
+  // axios.get(`http://localhost:3000/api/filterUserActivitiesForTransactions?userId=${demandingUserId}`)
+  axios.get(`${envURL}/api/filterUserActivitiesForTransactions?userId=${demandingUserId}`)
   .then((resActivities) => {
     var newdivContainerActivities = document.createElement( "div" );
     $(newdivContainerActivities).addClass('activity-container no-visible-container');
     
     let activities2 = resActivities.data.activities;
-    // console.log('comprovem si es un array:',Array.isArray(activities2));
     for(let i=0; i<activities2.length; i++) {
       
       let newdivActivity = document.createElement( "div" );
@@ -863,8 +834,10 @@ function ChangeStatusTransaction(element,state) {
   // we pass as arguments the DOM Element in order to get the TransactionId, and the state we want to change
   let itemTransaction = element.parentNode;
   transactionId = itemTransaction.getAttribute('data-transaction');
+  
+  // axios.get(`http://localhost:3000/api/updateStateTransaction?state=${state}&transactionId=${transactionId}`)
 
-  axios.get(`http://localhost:3000/api/updateStateTransaction?state=${state}&transactionId=${transactionId}`)
+  axios.get(`${envURL}/api/updateStateTransaction?state=${state}&transactionId=${transactionId}`)
   .then((response) => {
     //we have successfully update the state of transaction. Let's show a message
     $(itemTransaction).empty(); //we empty the itemTransaction <div> to play message an a button to accept
@@ -918,7 +891,10 @@ function ChangeStatusTransaction(element,state) {
     let activityId = ActivityElement.getAttribute('data-activity');
     let transactionId = transactionElement.getAttribute('data-transaction');
     
-    axios.get(`http://localhost:3000/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
+    // axios.get(`http://localhost:3000/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
+
+
+    axios.get(`${envURL}/api/acceptSecondLegTransaction?transactionId=${transactionId}&activityId=${activityId}`)
     .then((response) => {
       // The transaction has been applied and created. We show a SUCCESSFUL message.
       
@@ -964,7 +940,10 @@ function ChangeStatusTransaction(element,state) {
     } else {
       // We have to recover again the information of transaction involved
       element.innerHTML = "Hide Info transaction involved";
-      axios.get(`http://localhost:3000/api/getTransactionInfoSecondLeg?transactionId=${transactionId}`)
+      
+      // axios.get(`http://localhost:3000/api/getTransactionInfoSecondLeg?transactionId=${transactionId}`)
+
+      axios.get(`${envURL}/api/getTransactionInfoSecondLeg?transactionId=${transactionId}`)
       .then((response) => {
         let infoTransaction = response.data.transactions2[0];
         //now we have to add all the activities, and make them invisible
