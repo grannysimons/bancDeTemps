@@ -6,7 +6,13 @@ var envURL = 'https://timebank2018.herokuapp.com/';
 // mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
 
 
-// Define socket.io for messaging
+
+
+
+var map, globalMarkers=[];
+window.addEventListener('load', ()=>{
+  
+  // Define socket.io for messaging
 var socket = io();
 socket.connect();
 socket.on('chat message', (msg) => {
@@ -28,10 +34,8 @@ socket.on('chat message', (msg) => {
   }
   // $('#messages').append($('<li>').text(msg));
 });
-
-
-var map, globalMarkers=[];
-window.addEventListener('load', ()=>{
+  
+  
   //comprovem que existeixi primer l'element
   if ($( "#filter" ).length) {
   document.querySelector('#filter').addEventListener('click', filter);
