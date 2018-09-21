@@ -1,7 +1,7 @@
 // import timetable from '../../timetable';
 
-var envURL = 'http://localhost:3000';
-// var envURL = 'https://timebank2018.herokuapp.com/';
+// var envURL = 'http://localhost:3000';
+var envURL = 'https://timebank2018.herokuapp.com/';
 
 // mapboxgl.accessToken = 'pk.eyJ1IjoibWFyaW9uYXJvY2EiLCJhIjoiY2prYTFlMHhuMjVlaTNrbWV6M3QycHlxMiJ9.MZnaxVqaxmF5fMrxlgTvlw';
 
